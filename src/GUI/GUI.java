@@ -91,16 +91,14 @@ public class GUI extends JFrame {
 		JButton enableBotButton = new JButton("Enable Bot");
 		JButton enableRestockMonitorButton = new JButton("Enable Restock Monitor");
 		JButton deactivateLicense = new JButton("Deactivate License");
-		
+
 		Action deactivateLicenseAction = new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (prompt("Deactivating license will disable the bot on this computer. You will be able to reactivate and download using the key\nin the original email we sent you upon purchase. Are you sure you want to deactivate this license? ", "Are you sure you want to deactivate this license?") == 0) {	
-					main.getBotSecurity().deactivateLicense(); //runs deactivate license from software security
-				}	
+				processDeactivate();
 			}
-			
+
 		};
 		deactivateLicense.addActionListener(deactivateLicenseAction);
 
@@ -116,18 +114,17 @@ public class GUI extends JFrame {
 
 		JPanel splitPaneHolder = new JPanel();
 		splitPaneHolder.setLayout(new BorderLayout(0,0));
-		
+
 		JSplitPane splitPane = new JSplitPane();
 		splitPaneHolder.add(splitPane, BorderLayout.NORTH);
 		splitPaneHolder.add(deactivateAndEnableButtonsPanel, BorderLayout.SOUTH);
-		
+
 		splitPane.setResizeWeight(0.5);
 		contentPane.add(splitPaneHolder, BorderLayout.SOUTH);
 
 		JPanel textConsolePanel = new JPanel();
 
 		JPanel HTMLConsolePanel = new JPanel();
-
 
 		splitPane.setLeftComponent(textConsolePanel);
 		textConsolePanel.setLayout(new BorderLayout(0,0));
@@ -433,7 +430,7 @@ public class GUI extends JFrame {
 		}
 		return prompt("Are you sure you want to "+message, "Confirm "+type+" Deletion");
 	}
-	
+
 	private int prompt(String message, String title) { //called by confirm action, also called upon license deactivation
 		return JOptionPane.showOptionDialog(null,message, title, 0, 0, null, null, 0);
 	}
@@ -483,8 +480,19 @@ public class GUI extends JFrame {
 
 	public void setStarted() {
 		//sets enable button to abort
-		
+
 	}
-	
+
+	private void processDeactivate() { //maybe have a prompt asking if they want to reactivate on windows or mac, because this current setup will give them their existing OS bot regardless
+		if (prompt("Deactivating license will disable the bot on this computer. You will be able to reactivate and redownload on any computer\nusing the key in the original email we sent you upon purchase. Are you sure you want to deactivate this license? ", "Are you sure you want to deactivate this license?") == 0) {	
+			if (main.getBotSecurity().deactivateLicense()) { //runs deactivate license from software security, which returns true if deactivated
+				JOptionPane.showMessageDialog(null,"License deactivated successfully! Your download link and activation key from your purchase\nconfirmation email have been reactivated. You may now reactivate the bot on any computer using those credentials. The bot will exit now.", "License Deactivated", 2);
+				System.exit(0);
+			} else { //deactivation failed, could've been sparked by their already having 0 downloads in the db
+				JOptionPane.showMessageDialog(null, "Licence deactivation failed. Check your internet connection because deactivation requires internet connectivity. \nIf this problem persists, email us at team@supremesharkbot.com for a manual deactivation.", "Deactivation Failed", 0);
+			}
+		}	
+	}
+
 
 }

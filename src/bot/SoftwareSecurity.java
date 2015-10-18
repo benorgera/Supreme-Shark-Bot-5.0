@@ -90,6 +90,7 @@ public class SoftwareSecurity {
 
 	private void updateSoftware(JSONObject JSON) {
 		System.out.println("Updating software");
+		//future things pulled from JSON must be added to the blank list of json keys`
 
 
 	}
@@ -220,6 +221,8 @@ public class SoftwareSecurity {
 		JSONObject blankJSONObjectMadeToAvoidErrors = new JSONObject(); //returns json object with values expected to avoid org.jsonexception
 		blankJSONObjectMadeToAvoidErrors.put("banned", "no");
 		blankJSONObjectMadeToAvoidErrors.put("version", 0.1);
+		blankJSONObjectMadeToAvoidErrors.put("success", false);
+		blankJSONObjectMadeToAvoidErrors.put("licenseType", "");
 
 		return blankJSONObjectMadeToAvoidErrors; //returns null if error connecting
 	}
@@ -298,7 +301,14 @@ public class SoftwareSecurity {
 		return activationKeyValue;
 	}
 
-	public void deactivateLicense() { //called by GUI to deactivate license
+	public boolean deactivateLicense() { //called by GUI to deactivate license
 		JSONObject deactivateResponse = connectToServer("http://www.supremesharkbot.com:8080/deactivateLicense/?key="+main.getActivationKey());
+		
+		if (deactivateResponse.getBoolean("success")) { //deactivated successfully, remove their license from computer
+			clearPrefsRoot();
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
