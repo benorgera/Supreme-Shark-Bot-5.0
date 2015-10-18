@@ -24,6 +24,7 @@ public class OrderSettings {
 	private String cvv;
 	private String refreshRate;
 	private String proxyAddress;
+	private String proxyPort;
 	private String proxyUser;
 	private String proxyPass;
 	private String checkoutType;
@@ -36,7 +37,7 @@ public class OrderSettings {
 	}
 
 	public void assignValuesFromFieldArray(Object[] fieldsAsArray) {//receives array from gui and stores values
-		for (int counter = 0; counter <= 21; counter ++) {
+		for (int counter = 0; counter < fieldValuesAsArray.length; counter ++) {
 
 			if (fieldsAsArray[counter] == null) {
 				//deprecated field (auto process/ disable images)
@@ -195,7 +196,7 @@ public class OrderSettings {
 	}
 	
 	private void initializeArrayOfValues() { //makes array of values in same order as checkout info
-		fieldValuesAsArray = new String[22];
+		fieldValuesAsArray = new String[23];
 		fieldValuesAsArray[0] = name;
 		fieldValuesAsArray[1] = email;
 		fieldValuesAsArray[2] = phone;
@@ -215,15 +216,24 @@ public class OrderSettings {
 		fieldValuesAsArray[16] = null; //these are from the old checkout profiles (autoproccess/ disable images are deprecated)
 		fieldValuesAsArray[17] = address3;
 		fieldValuesAsArray[18] = proxyAddress;
-		fieldValuesAsArray[19] = proxyUser;
-		fieldValuesAsArray[20] = proxyPass;
-		fieldValuesAsArray[21] = checkoutType;
+		fieldValuesAsArray[19] = proxyPort;
+		fieldValuesAsArray[20] = proxyUser;
+		fieldValuesAsArray[21] = proxyPass;
+		fieldValuesAsArray[22] = checkoutType;
 	}
 
 	private void initializeValues() {//initializes values in array
 		for (int i = 0; i< fieldValuesAsArray.length; i ++) {
 			fieldValuesAsArray[i] = "";
 		}
+	}
+
+	public String getProxyPort() {
+		return proxyPort;
+	}
+
+	public void setProxyPort(String proxyPort) {
+		this.proxyPort = proxyPort;
 	}
 
 }

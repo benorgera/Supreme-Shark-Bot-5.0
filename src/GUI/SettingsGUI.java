@@ -72,6 +72,7 @@ public class SettingsGUI extends JFrame {
 	//technical settings
 	//tech fields
 	private JTextField proxyAddressField;
+	private JTextField proxyPortField;
 	private JTextField proxyUserField;
 	private JTextField proxyPassField;
 	private JTextField refreshRateField;
@@ -396,15 +397,21 @@ public class SettingsGUI extends JFrame {
 
 			}
 		});
-		JLabel proxyAddressLabel = new JLabel("Proxy Address:");
+		JLabel proxyHostAddressLabel = new JLabel("Proxy Address:");
 		JLabel proxyUserLabel = new JLabel("Username:");
 		JLabel proxyPassLabel = new JLabel("Password:");
+		
+		JLabel proxyPortLabel = new JLabel("Proxy Port:");
+		
 
 
 		techPanel.add(new JLabel("Proxy Settings:"), "span");
 		techPanel.add(Box.createRigidArea(new Dimension(0,10)), "span"); //spacer under header
-		techPanel.add(proxyAddressLabel);
+		techPanel.add(proxyHostAddressLabel);
 		techPanel.add(proxyAddressField);
+		
+		techPanel.add(proxyPortLabel);
+		techPanel.add(proxyPortField);
 
 		techPanel.add(proxyUserLabel);
 		techPanel.add(proxyUserField);
@@ -433,7 +440,7 @@ public class SettingsGUI extends JFrame {
 	}
 
 	private void buildFieldsAsArray() {
-		fieldsAsArray = new Object[22];
+		fieldsAsArray = new Object[23];
 		fieldsAsArray[0] = nameField;
 		fieldsAsArray[1] = emailField;
 		fieldsAsArray[2] = phoneField;
@@ -453,9 +460,10 @@ public class SettingsGUI extends JFrame {
 		fieldsAsArray[16] = null; //these are from the old checkout profiles (autoproccess/ disable images are deprecated)
 		fieldsAsArray[17] = address3Field;
 		fieldsAsArray[18] = proxyAddressField;
-		fieldsAsArray[19] = proxyUserField;
-		fieldsAsArray[20] = proxyPassField;
-		fieldsAsArray[21] = checkoutTypeField;
+		fieldsAsArray[19] = proxyPortField;
+		fieldsAsArray[20] = proxyUserField;
+		fieldsAsArray[21] = proxyPassField;
+		fieldsAsArray[22] = checkoutTypeField;
 
 	}
 
@@ -564,6 +572,9 @@ public class SettingsGUI extends JFrame {
 	private void initializeTechFields() {
 		proxyAddressField = new JTextField();
 		proxyAddressField.setColumns(10);
+		
+		proxyPortField = new JTextField();
+		proxyPortField.setColumns(10);
 
 		proxyUserField = new JTextField();
 		proxyUserField.setColumns(10);
@@ -705,7 +716,7 @@ public class SettingsGUI extends JFrame {
 
 			}
 
-			if (counter != 21) {
+			if (counter != 22) { //this must be the array length - 1
 				returnString = returnString.concat("\n");
 			}
 		}

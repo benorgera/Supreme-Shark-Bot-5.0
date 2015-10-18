@@ -27,6 +27,7 @@ public class main {
 			System.out.println("Unforeseen security error"); //this should never be thrown 
 			e.printStackTrace();
 		}
+		
 		loader.passUI("Initializing bot interface");
 		orders = new ArrayList<Order>();
 		timerStack = new Stack<Timer>();

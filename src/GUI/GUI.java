@@ -32,8 +32,13 @@ import bot.main;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class GUI extends JFrame {
 	private static boolean isPro; //true if pro
@@ -90,7 +95,22 @@ public class GUI extends JFrame {
 
 		JButton enableBotButton = new JButton("Enable Bot");
 		JButton enableRestockMonitorButton = new JButton("Enable Restock Monitor");
+
+		JPanel testAndDeactivatePanel = new JPanel(new BorderLayout(0,0));
+		JButton testProxies = new JButton("Test Proxies");
+
+		Action testProxiesAction = new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				testProxies();
+			}
+		};
+		testProxies.addActionListener(testProxiesAction);
+
 		JButton deactivateLicense = new JButton("Deactivate License");
+		testAndDeactivatePanel.add(deactivateLicense, BorderLayout.WEST);
+		testAndDeactivatePanel.add(testProxies, BorderLayout.EAST);
 
 		Action deactivateLicenseAction = new AbstractAction() {
 
@@ -107,7 +127,7 @@ public class GUI extends JFrame {
 		enableButtonsPanel.add(enableBotButton, BorderLayout.WEST);
 		enableButtonsPanel.add(enableRestockMonitorButton, BorderLayout.EAST);
 
-		deactivateAndEnableButtonsPanel.add(deactivateLicense, BorderLayout.WEST);
+		deactivateAndEnableButtonsPanel.add(testAndDeactivatePanel, BorderLayout.WEST);
 		deactivateAndEnableButtonsPanel.add(enableButtonsPanel, BorderLayout.EAST);
 
 		orderTabHolder.addChangeListener(tabChange = new TabChangeListener());
@@ -492,6 +512,34 @@ public class GUI extends JFrame {
 				JOptionPane.showMessageDialog(null, "Licence deactivation failed. Check your internet connection because deactivation requires internet connectivity. \nIf this problem persists, email us at team@supremesharkbot.com for a manual deactivation.", "Deactivation Failed", 0);
 			}
 		}	
+	}
+
+	private void testProxies() { //tests proxies (if they exist)
+		for (Order o: main.getOrders()) {
+			long startTime = System.currentTimeMillis();
+			String proxyAddress = o.getOrderSettings().getProxyAddress();
+			int proxyPort = Integer.parseInt(o.getOrderSettings().getProxyPort());
+			String proxyUser = o.getOrderSettings().getProxyUser();
+			String proxyPass = o.getOrderSettings().getProxytPass();
+
+			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, proxyPort));
+			String userpass = proxyUser + ":" + proxyPass;
+			String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
+			
+			
+			try {
+				URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxy);
+				con.setRequestProperty("Authorization", basicAuth);
+				con.connect();
+				con.getInputStream();
+				long endTime = System.currentTimeMillis();
+				System.out.println("Connection Time: "+(endTime-startTime));
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			} 
+
+		}
 	}
 
 
