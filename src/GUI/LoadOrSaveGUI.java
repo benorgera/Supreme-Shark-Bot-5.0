@@ -37,7 +37,6 @@ public class LoadOrSaveGUI extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setContentPane(contentPane);
-		setVisible(true);
 
 		if ("save".equals(type)) {
 			loading = false;
@@ -83,6 +82,7 @@ public class LoadOrSaveGUI extends JFrame {
 			}
 		});
 		SetCentered centerer = new SetCentered(this);
+		setVisible(true);
 	}
 
 	private void processLoad(File selectedFile) {

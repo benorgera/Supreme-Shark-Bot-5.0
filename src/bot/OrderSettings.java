@@ -41,13 +41,13 @@ public class OrderSettings {
 
 			if (fieldsAsArray[counter] == null) {
 				//deprecated field (auto process/ disable images)
-			} else if (fieldsAsArray[counter] instanceof JComboBox) { //get Jcombobox item
-
-				fieldValuesAsArray[counter] = (String) ((JComboBox) fieldsAsArray[counter]).getSelectedItem();
+			} else if (fieldsAsArray[counter] instanceof JComboBox) { //get Jcombobox ite
+				
+				this.fieldValuesAsArray[counter] = (String) ((JComboBox) fieldsAsArray[counter]).getSelectedItem();
 
 			} else { //get jtext field text
 
-				fieldValuesAsArray[counter] = (String) ((JTextField) fieldsAsArray[counter]).getText();
+				this.fieldValuesAsArray[counter] = (String) ((JTextField) fieldsAsArray[counter]).getText();
 
 			}
 		}
@@ -196,7 +196,7 @@ public class OrderSettings {
 	}
 	
 	private void initializeArrayOfValues() { //makes array of values in same order as checkout info
-		fieldValuesAsArray = new String[23];
+		fieldValuesAsArray = new String [23];
 		fieldValuesAsArray[0] = name;
 		fieldValuesAsArray[1] = email;
 		fieldValuesAsArray[2] = phone;
@@ -223,7 +223,7 @@ public class OrderSettings {
 	}
 
 	private void initializeValues() {//initializes values in array
-		for (int i = 0; i< fieldValuesAsArray.length; i ++) {
+		for (int i = 0; i < fieldValuesAsArray.length; i ++) {
 			fieldValuesAsArray[i] = "";
 		}
 	}

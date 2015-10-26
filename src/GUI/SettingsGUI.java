@@ -743,7 +743,7 @@ public class SettingsGUI extends JFrame {
 			if (fieldsAsArray[counter] == null) {
 				//deprecated field (auto process/ disable images)
 
-			} else if (line.equals("")) {
+			} else if (line.isEmpty()) {
 				//blank line was skipped
 				System.out.println("Line was blank, field not manipulated");
 			} else if (fieldsAsArray[counter] instanceof JComboBox) { //set Jcombobox item

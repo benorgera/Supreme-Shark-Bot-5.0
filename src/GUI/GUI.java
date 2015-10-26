@@ -39,6 +39,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 
 public class GUI extends JFrame {
 	private static boolean isPro; //true if pro
@@ -46,6 +47,7 @@ public class GUI extends JFrame {
 	private JPanel contentPane;
 	private JTabbedPane orderTabHolder;
 	private int orderCount = 0;
+	private JTextArea textConsoleArea; //text console, reached by textConsoleNewLine
 	private final String[] headers = {"Keywords", "Category", "Color", "Size", "Early Link", "Status", "Actions"};
 	private final String[] newItemRow =  {"", "", "", "", "", "", "Delete Item"};
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
@@ -166,7 +168,7 @@ public class GUI extends JFrame {
 		HTMLConsolePanel.add(HTMLConsole, BorderLayout.NORTH);
 		HTMLConsole.setHorizontalAlignment(SwingConstants.CENTER);
 
-		JTextArea textConsoleArea = new JTextArea();
+		textConsoleArea = new JTextArea();
 		textConsoleArea.setRows(8);
 		textConsoleArea.setEditable(false);
 
@@ -516,30 +518,47 @@ public class GUI extends JFrame {
 
 	private void testProxies() { //tests proxies (if they exist)
 		for (Order o: main.getOrders()) {
-			long startTime = System.currentTimeMillis();
-			String proxyAddress = o.getOrderSettings().getProxyAddress();
-			int proxyPort = Integer.parseInt(o.getOrderSettings().getProxyPort());
-			String proxyUser = o.getOrderSettings().getProxyUser();
-			String proxyPass = o.getOrderSettings().getProxytPass();
-
-			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, proxyPort));
-			String userpass = proxyUser + ":" + proxyPass;
-			String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
-			
-			
+			System.out.println("Order "+o.getOrderNum()+" proxy attempt\n\tAddress: "+o.getOrderSettings().getProxyAddress()+"\n\tPort: "+o.getOrderSettings().getProxyPort());
+			System.out.println(Arrays.asList(o.getOrderSettings().getFieldValuesAsArray()));
+			System.out.println(o.getOrderSettings().getName());
 			try {
+				Proxy proxy;
+
+				long startTime = System.currentTimeMillis();
+				String proxyAddress = o.getOrderSettings().getProxyAddress();
+				String proxyPort = o.getOrderSettings().getProxyPort();
+				String proxyUser = o.getOrderSettings().getProxyUser();
+				String proxyPass = o.getOrderSettings().getProxytPass();
+
+				if (proxyPort != null && !proxyPort.isEmpty()) { //no port specified, 80 assumed
+					proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, Integer.parseInt(proxyPort)));
+					System.out.println("Order "+o.getOrderNum()+" proxy address: "+proxyAddress+" on port "+Integer.parseInt(proxyPort));
+				} else { //port specified
+					proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, 80));
+					System.out.println("Order "+o.getOrderNum()+" proxy address: "+proxyAddress+" on port 80 assumed because no port provided");
+				}
+
+				String userpass = proxyUser + ":" + proxyPass;
+				String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
+
+
 				URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxy);
 				con.setRequestProperty("Authorization", basicAuth);
 				con.connect();
 				con.getInputStream();
 				long endTime = System.currentTimeMillis();
 				System.out.println("Connection Time: "+(endTime-startTime));
+				textConsoleNewLine("Order "+o.getOrderNum()+" proxy initialized successfully\n\tTime to Supreme Server: "+(endTime-startTime)+" ms");
 			} catch (Exception e) {
-
+				textConsoleNewLine("Order "+o.getOrderNum()+" proxy failed");
 				e.printStackTrace();
-			} 
+			}
 
 		}
+	}
+	
+	public void textConsoleNewLine(String message) { //pushes new line to text consoel
+		textConsoleArea.setText(textConsoleArea.getText()+"\n"+message);
 	}
 
 
