@@ -26,6 +26,7 @@ import javax.swing.JSplitPane;
 import bot.ButtonColumn;
 import bot.Encrypter;
 import bot.Order;
+import bot.ProxyTester;
 import bot.SetCentered;
 import bot.main;
 
@@ -39,6 +40,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class GUI extends JFrame {
@@ -105,7 +107,14 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				testProxies();
+				textConsoleNewLine("Proxy test started");
+				
+				for (Order o : main.getOrders()) {
+					ProxyTester tester = new ProxyTester(o, textConsoleArea);
+					tester.execute();
+					
+				}
+
 			}
 		};
 		testProxies.addActionListener(testProxiesAction);
@@ -515,50 +524,9 @@ public class GUI extends JFrame {
 			}
 		}	
 	}
-
-	private void testProxies() { //tests proxies (if they exist)
-		for (Order o: main.getOrders()) {
-			System.out.println("Order "+o.getOrderNum()+" proxy attempt\n\tAddress: "+o.getOrderSettings().getProxyAddress()+"\n\tPort: "+o.getOrderSettings().getProxyPort());
-			System.out.println(Arrays.asList(o.getOrderSettings().getFieldValuesAsArray()));
-			System.out.println(o.getOrderSettings().getName());
-			try {
-				Proxy proxy;
-
-				long startTime = System.currentTimeMillis();
-				String proxyAddress = o.getOrderSettings().getProxyAddress();
-				String proxyPort = o.getOrderSettings().getProxyPort();
-				String proxyUser = o.getOrderSettings().getProxyUser();
-				String proxyPass = o.getOrderSettings().getProxytPass();
-
-				if (proxyPort != null && !proxyPort.isEmpty()) { //no port specified, 80 assumed
-					proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, Integer.parseInt(proxyPort)));
-					System.out.println("Order "+o.getOrderNum()+" proxy address: "+proxyAddress+" on port "+Integer.parseInt(proxyPort));
-				} else { //port specified
-					proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, 80));
-					System.out.println("Order "+o.getOrderNum()+" proxy address: "+proxyAddress+" on port 80 assumed because no port provided");
-				}
-
-				String userpass = proxyUser + ":" + proxyPass;
-				String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
-
-
-				URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxy);
-				con.setRequestProperty("Authorization", basicAuth);
-				con.connect();
-				con.getInputStream();
-				long endTime = System.currentTimeMillis();
-				System.out.println("Connection Time: "+(endTime-startTime));
-				textConsoleNewLine("Order "+o.getOrderNum()+" proxy initialized successfully\n\tTime to Supreme Server: "+(endTime-startTime)+" ms");
-			} catch (Exception e) {
-				textConsoleNewLine("Order "+o.getOrderNum()+" proxy failed");
-				e.printStackTrace();
-			}
-
-		}
-	}
 	
 	public void textConsoleNewLine(String message) { //pushes new line to text consoel
-		textConsoleArea.setText(textConsoleArea.getText()+"\n"+message);
+		textConsoleArea.setText(textConsoleArea.getText() + (textConsoleArea.getText() == "" ? "" : "\n") +message);
 	}
 
 

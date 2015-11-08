@@ -770,9 +770,9 @@ public class SettingsGUI extends JFrame {
 	}
 
 	private void setFieldsAccordingToOrderSettings() {//gets order settings fields array and converts it to a checkout profile
-		String[] formValuesFromOrderSettings = this.orderSettings.getFieldValuesAsArray();
+		Object[] formValuesFromOrderSettings = this.orderSettings.getFieldValuesAsArray();
 		String valuesAsCheckoutFile = "";
-		for (String values : formValuesFromOrderSettings) {
+		for (Object values : formValuesFromOrderSettings) {
 			valuesAsCheckoutFile = valuesAsCheckoutFile.concat(values+"\n");
 		}
 
@@ -807,5 +807,6 @@ public class SettingsGUI extends JFrame {
 		action1[0].actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
 
 	}
+	
 }
 

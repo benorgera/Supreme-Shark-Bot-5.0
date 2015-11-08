@@ -42,7 +42,7 @@ public class OrderSettings {
 			if (fieldsAsArray[counter] == null) {
 				//deprecated field (auto process/ disable images)
 			} else if (fieldsAsArray[counter] instanceof JComboBox) { //get Jcombobox ite
-				
+
 				this.fieldValuesAsArray[counter] = (String) ((JComboBox) fieldsAsArray[counter]).getSelectedItem();
 
 			} else { //get jtext field text
@@ -53,6 +53,7 @@ public class OrderSettings {
 		}
 
 		System.out.println("Values assigned in order settings");
+		storeValuesFromArray(fieldValuesAsArray);
 	}
 
 
@@ -194,7 +195,7 @@ public class OrderSettings {
 	public String[] getFieldValuesAsArray() {
 		return fieldValuesAsArray;
 	}
-	
+
 	private void initializeArrayOfValues() { //makes array of values in same order as checkout info
 		fieldValuesAsArray = new String [23];
 		fieldValuesAsArray[0] = name;
@@ -234,6 +235,33 @@ public class OrderSettings {
 
 	public void setProxyPort(String proxyPort) {
 		this.proxyPort = proxyPort;
+	}
+
+	private void storeValuesFromArray(String[] array) {
+		name = array[0];
+		email = array[1];
+		phone = array[2];
+		address1 = array[3];
+		address2 = array[4];
+		postalCode = array[5];
+		city = array[6];
+		stateAbbr = array[7];
+		country = array[8];
+		ccProvider = array[9];
+		ccNumber = array[10];
+		expMonth = array[11];
+		expYear = array[12];
+		cvv = array[13];
+		refreshRate = array[14];
+	    //15 is from the old checkout profiles (autoproccess/ disable images are deprecated)
+		//16 is from the old checkout profiles (autoproccess/ disable images are deprecated)
+		address3 = array[17];
+		proxyAddress = array[18];
+		proxyPort = array[19];
+		proxyUser = array[20];
+		proxyPass = array[21];
+		checkoutType = array[22];	
+		
 	}
 
 }
