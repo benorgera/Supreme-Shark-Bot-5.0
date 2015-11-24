@@ -1,7 +1,5 @@
 package bot;
 
-import java.util.Arrays;
-
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
@@ -43,7 +41,7 @@ public class OrderSettings {
 				//deprecated field (auto process/ disable images)
 			} else if (fieldsAsArray[counter] instanceof JComboBox) { //get Jcombobox ite
 
-				this.fieldValuesAsArray[counter] = (String) ((JComboBox) fieldsAsArray[counter]).getSelectedItem();
+				this.fieldValuesAsArray[counter] = (String) ((JComboBox<?>) fieldsAsArray[counter]).getSelectedItem();
 
 			} else { //get jtext field text
 

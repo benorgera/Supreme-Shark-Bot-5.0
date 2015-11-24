@@ -5,13 +5,13 @@ import java.lang.reflect.Method;
 import javax.swing.SwingWorker;
 
 
-public class BackgroundDeployer extends SwingWorker {
+public class BackgroundDeployer extends SwingWorker<Object, Object> {
 	
 	private Method method;
 	
 	private Object[] args;
 	
-	public BackgroundDeployer(Method method) {
+	public BackgroundDeployer(Method method, Object[] args) {
 		this.method = method;
 		this.args = args;
 	}

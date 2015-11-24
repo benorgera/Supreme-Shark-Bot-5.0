@@ -29,11 +29,13 @@ import java.util.Arrays;
 import net.miginfocom.swing.MigLayout;
 
 public class SettingsGUI extends JFrame {
+	
+	private static final long serialVersionUID = 6264764193908764903L;
+
 	private Object[] fieldsAsArray;
 
-	private JComboBox storeOption;
+	private JComboBox<String> storeOption;
 
-	private Encrypter encrypter;
 	private JPanel contentPane;
 	private final String r = "*";
 	private final Color rC = Color.RED;
@@ -48,10 +50,10 @@ public class SettingsGUI extends JFrame {
 	private JTextField address2Field;
 	private JTextField address3Field;
 	private JTextField stateAbbrField;
-	private JComboBox countryField;
-	private JComboBox ccProviderField;
+	private JComboBox<String> countryField;
+	private JComboBox<String> ccProviderField;
 	private JTextField ccNumberField;
-	private JComboBox expMonthField;
+	private JComboBox<String> expMonthField;
 	private JTextField expYearField;
 	private JTextField cvvField;
 	//address req's
@@ -76,7 +78,7 @@ public class SettingsGUI extends JFrame {
 	private JTextField proxyUserField;
 	private JTextField proxyPassField;
 	private JTextField refreshRateField;
-	private JComboBox checkoutTypeField;
+	private JComboBox<String> checkoutTypeField;
 
 	private OrderSettings orderSettings;
 
@@ -178,7 +180,6 @@ public class SettingsGUI extends JFrame {
 	private String currentStore = "US"; //US by default
 
 	public SettingsGUI(OrderSettings settings, int orderNumber, final Encrypter encrypter) {
-		this.encrypter = encrypter;
 		this.orderSettings = settings;
 		setTitle("Order "+orderNumber+" Settings");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -207,15 +208,16 @@ public class SettingsGUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Load Checkout Info From File");
-				LoadOrSaveGUI gui = new LoadOrSaveGUI("load", encrypter);
+				new LoadOrSaveGUI("load", encrypter);
 			}
 		});
+		
 		JButton saveCheckoutInfoButton = new JButton("Save Checkout Info To File");
 		saveCheckoutInfoButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Save Checkout Info To File");
-				LoadOrSaveGUI gui = new LoadOrSaveGUI("save", encrypter);
+				new LoadOrSaveGUI("save", encrypter);
 			}
 		});
 
@@ -277,7 +279,7 @@ public class SettingsGUI extends JFrame {
 		addressPanel.add(addressSettingsHeader, "span");
 		addressPanel.add(Box.createRigidArea(new Dimension(0,10)), "span"); //spacer under header
 
-		countryField.setModel(new DefaultComboBoxModel(countriesUS));
+		countryField.setModel(new DefaultComboBoxModel<String>(countriesUS));
 		JLabel countryReq = new JLabel(r);
 		countryReq.setForeground(rC);
 		addressPanel.add(countryLabel);
@@ -342,7 +344,7 @@ public class SettingsGUI extends JFrame {
 		addressPanel.add(stateAbbrReq);
 
 		JLabel ccProviderLabel = new JLabel("Credit Card Provider:");
-		ccProviderField.setModel(new DefaultComboBoxModel(ccProvidersUS));
+		ccProviderField.setModel(new DefaultComboBoxModel<String>(ccProvidersUS));
 		JLabel ccProviderReq = new JLabel(r);
 		ccProviderReq.setForeground(rC);
 		addressPanel.add(ccProviderLabel);	
@@ -373,7 +375,7 @@ public class SettingsGUI extends JFrame {
 		JPanel storePanel = new JPanel();
 		contentPane.add(storePanel, BorderLayout.NORTH);
 
-		storeOption = new JComboBox(stores);
+		storeOption = new JComboBox<String>(stores);
 		storePanel.add(new JLabel("Store:"), BorderLayout.WEST);
 		storePanel.add(storeOption, BorderLayout.EAST);
 		storeOption.addActionListener (new ActionListener () {
@@ -435,7 +437,7 @@ public class SettingsGUI extends JFrame {
 		setFieldsAccordingToOrderSettings(); //gets order settings object values and fills out form with them
 
 		pack();
-		SetCentered centerer = new SetCentered(this);
+		new SetCentered(this);
 		setVisible(true);
 	}
 
@@ -537,8 +539,8 @@ public class SettingsGUI extends JFrame {
 		stateAbbrLabel.setText("State Abbreviation (2 letters):");
 		cityLabel.setText("City:");
 		countryLabel.setText("Country:");
-		countryField.setModel(new DefaultComboBoxModel(countriesUS));
-		ccProviderField.setModel(new DefaultComboBoxModel(ccProvidersUS));
+		countryField.setModel(new DefaultComboBoxModel<String>(countriesUS));
+		ccProviderField.setModel(new DefaultComboBoxModel<String>(ccProvidersUS));
 		System.out.println("Names set to US");
 	}
 
@@ -546,8 +548,8 @@ public class SettingsGUI extends JFrame {
 		//sets labels and comboboxes to UK
 		cityLabel.setText("City:");
 		countryLabel.setText("Country:");
-		countryField.setModel(new DefaultComboBoxModel(countriesUK));
-		ccProviderField.setModel(new DefaultComboBoxModel(ccProvidersUK));
+		countryField.setModel(new DefaultComboBoxModel<String>(countriesUK));
+		ccProviderField.setModel(new DefaultComboBoxModel<String>(ccProvidersUK));
 		System.out.println("Names set to UK");
 	}
 
@@ -557,8 +559,8 @@ public class SettingsGUI extends JFrame {
 		stateAbbrLabel.setText("State Abbreviation (2 letters):"); //set just to prevent municipality from showing twice
 		countryLabel.setText("Prefecture:");
 		cityLabel.setText("Municipality:");
-		countryField.setModel(new DefaultComboBoxModel(countriesJP));
-		ccProviderField.setModel(new DefaultComboBoxModel(ccProvidersJP));
+		countryField.setModel(new DefaultComboBoxModel<String>(countriesJP));
+		ccProviderField.setModel(new DefaultComboBoxModel<String>(ccProvidersJP));
 		System.out.println("Names set to JP");
 	}
 
@@ -585,8 +587,8 @@ public class SettingsGUI extends JFrame {
 		refreshRateField = new JTextField();
 		refreshRateField.setColumns(10);
 
-		checkoutTypeField = new JComboBox();
-		checkoutTypeField.setModel(new DefaultComboBoxModel(checkoutTypeFieldOptions));
+		checkoutTypeField = new JComboBox<String>();
+		checkoutTypeField.setModel(new DefaultComboBoxModel<String>(checkoutTypeFieldOptions));
 
 	}
 
@@ -638,7 +640,7 @@ public class SettingsGUI extends JFrame {
 		stateAbbrField = new JTextField();
 		stateAbbrField.setColumns(10);
 
-		countryField = new JComboBox();
+		countryField = new JComboBox<String>();
 		countryField.addActionListener (new ActionListener () {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -653,7 +655,7 @@ public class SettingsGUI extends JFrame {
 			}
 		});
 
-		ccProviderField = new JComboBox();
+		ccProviderField = new JComboBox<String>();
 		ccProviderField.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -677,7 +679,7 @@ public class SettingsGUI extends JFrame {
 		ccNumberField = new JTextField();
 		ccNumberField.setColumns(10);
 
-		expMonthField = new JComboBox(months);
+		expMonthField = new JComboBox<String>(months);
 
 		expYearField = new JTextField();
 		expYearField.setColumns(10);
@@ -708,7 +710,7 @@ public class SettingsGUI extends JFrame {
 				//deprecated field (auto process/ disable images)
 			} else if (fieldsAsArray[counter] instanceof JComboBox) { //get Jcombobox item
 
-				returnString = returnString.concat((String) ((JComboBox) fieldsAsArray[counter]).getSelectedItem());
+				returnString = returnString.concat((String) ((JComboBox<?>) fieldsAsArray[counter]).getSelectedItem());
 
 			} else { //get jtext field text
 
@@ -751,7 +753,7 @@ public class SettingsGUI extends JFrame {
 				if (counter == 8) {//8th line of file is country
 					triggerStoreOptionActionListener(line); //sets ui to correct store based on the country, allowing the country to be selected properly (if this didnt happen the country field would have the wrong options and the country would always be US)
 				}
-				((JComboBox) fieldsAsArray[counter]).setSelectedItem(line);
+				((JComboBox<?>) fieldsAsArray[counter]).setSelectedItem(line);
 
 			} else { //set jtext field text
 

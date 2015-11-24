@@ -5,17 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.prefs.Preferences;
-
 import javax.swing.JOptionPane;
-
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
-
 import GUI.LoadingGIF;
 
 public class SoftwareSecurity {
@@ -51,28 +47,28 @@ public class SoftwareSecurity {
 		loadingGIF.passUI("Checking activation key");
 		prefs = Preferences.userRoot().node(this.getClass().getName());
 		activationKeyValue = prefs.get(activatedKeyToken, "failed"); //sets activationKeyValue, itll be failed if failed
-		System.out.println("activationKeyValue: "+activationKeyValue);
+		System.out.println("activationKeyValue: " + activationKeyValue);
 
 		loadingGIF.passUI("Checking license activity");
 		bannedKeyValue = prefs.getBoolean(bannedKeyToken, false); //sets banned value, banned is false upon failure
-		System.out.println("bannedKeyValue from storage: "+bannedKeyValue);
+		System.out.println("bannedKeyValue from storage: " + bannedKeyValue);
 		if (checkBanned()) { //it was banned
 			prefs.putBoolean(bannedKeyToken, true);
 			System.out.println("License was banned");
 			bannedKeyValue = true;
 		}
-		System.out.println("bannedKeyValue following server check: "+bannedKeyValue);
+		System.out.println("bannedKeyValue following server check: " + bannedKeyValue);
 
 		loadingGIF.passUI("Checking if activated");
 		enabledKeyValue = prefs.getBoolean(enabledKeyToken, false); //if enabled couldnt be recovered enabled was false
-		System.out.println("enabledKeyValue: "+enabledKeyValue);
+		System.out.println("enabledKeyValue: " + enabledKeyValue);
 
 		loadingGIF.passUI("Checking license status");
 		licenseStatusValue = licenseStatusEnum.valueOf(prefs.get(licenseStatusToken, "ERROR")); //version set to error if version couldn't be recovered
-		System.out.println("licenseStatusValue from storage: "+licenseStatusValue);
+		System.out.println("licenseStatusValue from storage: " + licenseStatusValue);
 
-		checkLicenseStatus();
-		System.out.println("licenseStatusValue following server check: "+licenseStatusValue);
+		checkLicenseStatus(); //checks license status from server
+		System.out.println("licenseStatusValue following server check: " + licenseStatusValue);
 
 		Object[] res = checkOutdated(); //array of boolean of if its outdated and JSON of version info
 		if ((Boolean) res[0]) {
@@ -104,10 +100,10 @@ public class SoftwareSecurity {
 		double newestVersionNumber = newestVersionInfo.getDouble("version");
 
 		if (newestVersionNumber>thisVersionNumber) {// its outdated
-			System.out.println("newestVersionNumber: "+newestVersionNumber+" > "+"thisVersionNumber: "+thisVersionNumber);
+			System.out.println("newestVersionNumber: " + newestVersionNumber + " > " + "thisVersionNumber: " + thisVersionNumber);
 			returnValue[0] = true;
 		} else {
-			System.out.println("newestVersionNumber: "+newestVersionNumber+" <= "+"thisVersionNumber: "+thisVersionNumber);
+			System.out.println("newestVersionNumber: " + newestVersionNumber + " <= " + "thisVersionNumber: " + thisVersionNumber);
 			returnValue[0] = false;
 		}
 		return returnValue;
@@ -159,7 +155,7 @@ public class SoftwareSecurity {
 				System.exit(0);
 			} else if (!"".equals(keyRes)) { //the keyRes wasn't blank
 				ready = true;
-				System.out.println("Activation Key Entered: "+ keyRes);
+				System.out.println("Activation Key Entered: " + keyRes);
 			}
 		}
 		return keyRes;
@@ -168,7 +164,7 @@ public class SoftwareSecurity {
 	private boolean attemptActivation(String userEnteredKey) {
 
 		boolean res = connectToServer(makeActivationLink(userEnteredKey)).getBoolean("success");
-		System.out.println("Server Response to Activation: "+res);
+		System.out.println("Server Response to Activation: " + res);
 		if(res) {
 			message("Activated Successfully!");
 			activationKeyValue = userEnteredKey; //set the key so it can be accessed by setActivates
@@ -199,7 +195,7 @@ public class SoftwareSecurity {
 		}
 
 
-		return "http://supremesharkbot.com:8080/activation/?key="+enteredKey+"&mac_address="+macAddress+"&ip_address="+ipAddress;
+		return "http://supremesharkbot.com:8080/activation/?key=" + enteredKey + "&mac_address=" + macAddress + "&ip_address=" + ipAddress;
 	}
 
 	private JSONObject connectToServer(String site) { //every call to this method must add to the blankjsonobjectmadetoavoiderrors if it calls a new json key
@@ -213,11 +209,14 @@ public class SoftwareSecurity {
 			encoding = encoding == null ? "UTF-8" : encoding;
 			String body = IOUtils.toString(in, encoding);
 			JSONObject obj = new JSONObject(body); 
+			System.out.println("Server connection successful, returning JSON from server");
 			return obj;
 		} catch (Exception e) {
-			System.out.println("Error during server connection: "+e.getMessage());
+			System.out.println("Error during server connection: " + e.getMessage());
 		}
-
+		
+		
+		System.out.println("Because connection failed returning default JSON");
 		JSONObject blankJSONObjectMadeToAvoidErrors = new JSONObject(); //returns json object with values expected to avoid org.jsonexception
 		blankJSONObjectMadeToAvoidErrors.put("banned", "no");
 		blankJSONObjectMadeToAvoidErrors.put("version", 0.1);
@@ -236,7 +235,7 @@ public class SoftwareSecurity {
 		BufferedReader in = new BufferedReader(new InputStreamReader(
 				whatismyip.openStream()));
 		InetAddress ip = InetAddress.getLocalHost();
-		ipAddress = ("External:'" +in.readLine()+"',Host:"+ip.getHostAddress()+"'");
+		ipAddress = ("External:'"  + in.readLine() + "',Host:" + ip.getHostAddress() + "'");
 
 		//get mac
 		NetworkInterface network = NetworkInterface.getByInetAddress(ip);
@@ -255,7 +254,7 @@ public class SoftwareSecurity {
 	}
 
 	private boolean checkBanned() { //return true if it was banned
-		if ("yes".equals(connectToServer("http://supremesharkbot.com:8080/banned/?key="+activationKeyValue).get("banned"))) {
+		if ("yes".equals(connectToServer("http://supremesharkbot.com:8080/banned/?key=" + activationKeyValue).get("banned"))) {
 			return true;
 		} else {
 			return false;
@@ -278,13 +277,13 @@ public class SoftwareSecurity {
 
 		licenseStatusEnum res = null;
 		try {
-			res = licenseStatusEnum.valueOf((String) connectToServer("http://www.supremesharkbot.com:8080/licenseStatus/?key="+activationKeyValue).get("licenseType"));
+			res = licenseStatusEnum.valueOf((String) connectToServer("http://www.supremesharkbot.com:8080/licenseStatus/?key=" + activationKeyValue).get("licenseType"));
 		} catch (Exception e) {
 			System.out.println("Couldn't get license status");
 		}
 
 		if (null != res && !licenseStatusEnum.ERROR.equals(res)) { //server had a licenseStatus, giving them that one
-			System.out.println("License From Server Was: "+res+", Setting licenseStatusValue As Such");
+			System.out.println("License From Server Was: " + res + ", Setting licenseStatusValue As Such");
 			licenseStatusValue = res;
 			prefs.put(licenseStatusToken, licenseStatusValue.toString());
 		} else if (licenseStatusEnum.ERROR.equals(licenseStatusValue)) {//server and storage doesn't know, they're getting regular and hopefully that's what they paid for

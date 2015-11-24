@@ -11,11 +11,10 @@ import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 
 
-public class ProxyTester extends SwingWorker {
+public class ProxyTester extends SwingWorker<Object, Object> {
 
 	private ArrayList<String> results;
 	private Order o;
-	private SwingWorker worker;
 	private JTextArea area;
 
 	public ProxyTester(Order o, JTextArea area) {
@@ -77,7 +76,7 @@ public class ProxyTester extends SwingWorker {
 	
 	@Override
 	protected void done() {
-		for (String s : results) area.setText(area.getText()+"\n"+s);
+		for (String s : results) area.setText(area.getText() +"\n"+s);
 	}
 
 

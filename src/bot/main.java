@@ -31,10 +31,8 @@ public class main {
 		loader.passUI("Initializing bot interface");
 		orders = new ArrayList<Order>();
 		timerStack = new Stack<Timer>();
-		System.out.println(botSecurity.getThisVersionNumber()+ " get this version number");
-		System.out.println(botSecurity.getVersionIsPro() + " get version is pro");
 		frame = new GUI(botSecurity.getVersionIsPro(), botSecurity.getThisVersionNumber());
-		Order order = new Order();
+		new Order();
 		schedulerSettings = new SchedulerSettings();
 		frame.setVisible(true);
 		loader.dispose(); //gets rid of gif
@@ -82,8 +80,5 @@ public class main {
 	public static SoftwareSecurity getBotSecurity() {
 		return botSecurity;
 	}
-
-
-
 
 }

@@ -26,6 +26,7 @@ import net.miginfocom.swing.MigLayout;
 
 public class SchedulerGUI extends JFrame {
 
+	private static final long serialVersionUID = 6854214767088924648L;
 	private SteelCheckBox switcher;
 	private JPanel contentPane;
 	private SchedulerSettings settings;
@@ -69,6 +70,8 @@ public class SchedulerGUI extends JFrame {
 
 		AbstractAction exit = new AbstractAction() {
 
+			private static final long serialVersionUID = -2709780000004833601L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
@@ -86,7 +89,7 @@ public class SchedulerGUI extends JFrame {
 		applyAndExitButton.addActionListener(exit);
 
 		pack();
-		SetCentered centerer = new SetCentered(this);
+		new SetCentered(this);
 		setVisible(true);
 
 	}

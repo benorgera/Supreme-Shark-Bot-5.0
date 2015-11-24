@@ -5,25 +5,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.Scanner;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import bot.Encrypter;
 import bot.SetCentered;
 
 
 public class LoadOrSaveGUI extends JFrame {
+
+	private static final long serialVersionUID = -2962417561685410071L;
 	private SettingsGUI settingsGUIObject;
 	private JFileChooser chooser;
 	private boolean loading;
@@ -81,7 +79,7 @@ public class LoadOrSaveGUI extends JFrame {
 
 			}
 		});
-		SetCentered centerer = new SetCentered(this);
+		new SetCentered(this);
 		setVisible(true);
 	}
 

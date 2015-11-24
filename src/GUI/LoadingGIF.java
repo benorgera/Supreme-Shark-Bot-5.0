@@ -1,26 +1,18 @@
 package GUI;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-
 import bot.SetCentered;
 import bot.main;
 
 public class LoadingGIF extends JFrame {
+
+	private static final long serialVersionUID = -1502854356352952988L;
 	private JLabel messageHolder;
 
 	public LoadingGIF(String message, String title) {
@@ -46,7 +38,7 @@ public class LoadingGIF extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(400, 300);
 		pack();
-		SetCentered centerer = new SetCentered(this);
+		new SetCentered(this);
 		setVisible(true);
 	}
 	

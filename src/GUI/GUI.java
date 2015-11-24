@@ -2,7 +2,6 @@ package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
@@ -22,28 +21,21 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
-
 import bot.ButtonColumn;
 import bot.Encrypter;
 import bot.Order;
 import bot.ProxyTester;
 import bot.SetCentered;
 import bot.main;
-
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Proxy;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
+
 
 public class GUI extends JFrame {
+
+	private static final long serialVersionUID = -2271100967580465591L;
 	private static boolean isPro; //true if pro
 	private static String thisVersionNumberAsString; //this copies version number
 	private JPanel contentPane;
@@ -73,6 +65,9 @@ public class GUI extends JFrame {
 
 
 		Action launchHelpAction = new AbstractAction() {
+
+			private static final long serialVersionUID = -8782259835901421375L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				launchHelp();
@@ -81,6 +76,9 @@ public class GUI extends JFrame {
 		};
 
 		Action launchSchedulerAction = new AbstractAction() {
+	
+			private static final long serialVersionUID = 4131971390457695810L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				launchScheduler();
@@ -105,9 +103,11 @@ public class GUI extends JFrame {
 
 		Action testProxiesAction = new AbstractAction() {
 
+			private static final long serialVersionUID = 4097381048444547842L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				textConsoleNewLine("Proxy test started");
+				textConsoleNewLine("\nProxy test started");
 				
 				for (Order o : main.getOrders()) {
 					ProxyTester tester = new ProxyTester(o, textConsoleArea);
@@ -124,6 +124,8 @@ public class GUI extends JFrame {
 		testAndDeactivatePanel.add(testProxies, BorderLayout.EAST);
 
 		Action deactivateLicenseAction = new AbstractAction() {
+
+			private static final long serialVersionUID = 1774086347779837678L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -208,7 +210,7 @@ public class GUI extends JFrame {
 
 		topButtonPanel.add(helpButton, BorderLayout.WEST);
 		helpButton.addActionListener(launchHelpAction);
-		SetCentered centerer = new SetCentered(this);
+		new SetCentered(this);
 
 	}
 
@@ -232,6 +234,9 @@ public class GUI extends JFrame {
 		JPanel tableHolder = new JPanel();
 
 		Action deleteOrderAction = new AbstractAction() {
+	
+			private static final long serialVersionUID = -7603248098132965886L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				deleteOrder();
@@ -254,6 +259,9 @@ public class GUI extends JFrame {
 
 
 		Action launchOrderSettings = new AbstractAction() {
+
+			private static final long serialVersionUID = -573938828841820363L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				launchOrderSettings();
@@ -286,6 +294,9 @@ public class GUI extends JFrame {
 
 
 		Action deleteOrAdd = new AbstractAction() {
+
+			private static final long serialVersionUID = -7584511112190398057L;
+
 			public void actionPerformed(ActionEvent e) {
 				JTable source = (JTable)e.getSource();
 				String buttonText = (String) source.getValueAt(Integer.valueOf(e.getActionCommand()), 6); //check if the row that was clicked was a delete or an addition
@@ -306,10 +317,10 @@ public class GUI extends JFrame {
 		};
 
 
-		ButtonColumn buttonColumn = new ButtonColumn(table, deleteOrAdd, 6); //makes actions column a button column
+	   new ButtonColumn(table, deleteOrAdd, 6); //makes actions column a button column
 
 		TableColumn JComboBoxColumn = table.getColumnModel().getColumn(1);
-		JComboBox comboBox = new JComboBox(new String[] {"jackets", "shirts", "tops and sweaters", "sweatshirts", "pants", "t-shirts", "hats", "bags", "accessories", "skate", "shoes", "shorts"});
+		JComboBox<String> comboBox = new JComboBox<String>(new String[] {"jackets", "shirts", "tops and sweaters", "sweatshirts", "pants", "t-shirts", "hats", "bags", "accessories", "skate", "shoes", "shorts"});
 		JComboBoxColumn.setCellEditor(new DefaultCellEditor(comboBox));
 
 
@@ -413,7 +424,7 @@ public class GUI extends JFrame {
 	private void launchScheduler() {
 		//instantiate new scheduler settings panel
 		System.out.println("Launched Scheduler");
-		SchedulerGUI scheduler = new SchedulerGUI();
+		new SchedulerGUI();
 	}
 
 	private void deleteOrder() {
@@ -498,7 +509,7 @@ public class GUI extends JFrame {
 
 					//add a link to upgrade in that joptionpane, or buttons to do so (an upgrade and a cancel button)
 				} else {
-					Order newOrder = new Order();
+					new Order();
 				}
 			} 
 		}
@@ -517,7 +528,7 @@ public class GUI extends JFrame {
 	private void processDeactivate() { //maybe have a prompt asking if they want to reactivate on windows or mac, because this current setup will give them their existing OS bot regardless
 		if (prompt("Deactivating license will disable the bot on this computer. You will be able to reactivate and redownload on any computer\nusing the key in the original email we sent you upon purchase. Are you sure you want to deactivate this license? ", "Are you sure you want to deactivate this license?") == 0) {	
 			if (main.getBotSecurity().deactivateLicense()) { //runs deactivate license from software security, which returns true if deactivated
-				JOptionPane.showMessageDialog(null,"License deactivated successfully! Your download link and activation key from your purchase\nconfirmation email have been reactivated. You may now reactivate the bot on any computer using those credentials. The bot will exit now.", "License Deactivated", 2);
+				JOptionPane.showMessageDialog(null,"License deactivated successfully! Your download link and activation key from your purchase confirmation email have\nbeen reactivated. You may now reactivate the bot on any computer using those credentials. The bot will exit now.", "License Deactivated", 2);
 				System.exit(0);
 			} else { //deactivation failed, could've been sparked by their already having 0 downloads in the db
 				JOptionPane.showMessageDialog(null, "Licence deactivation failed. Check your internet connection because deactivation requires internet connectivity. \nIf this problem persists, email us at team@supremesharkbot.com for a manual deactivation.", "Deactivation Failed", 0);
@@ -525,8 +536,11 @@ public class GUI extends JFrame {
 		}	
 	}
 	
-	public void textConsoleNewLine(String message) { //pushes new line to text consoel
-		textConsoleArea.setText(textConsoleArea.getText() + (textConsoleArea.getText() == "" ? "" : "\n") +message);
+	public void textConsoleNewLine(String message) { //pushes new line to text console
+		
+		message = textConsoleArea.getText().isEmpty() ? message.replace("\n","") : (textConsoleArea.getText() + "\n" + message); //if the field is empty, don't add a line break and remove all line breaks from message
+		
+		textConsoleArea.setText(message);
 	}
 
 

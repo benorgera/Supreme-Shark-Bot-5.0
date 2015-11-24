@@ -4,6 +4,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class MyDefaultTableModel extends DefaultTableModel {
     
+	private static final long serialVersionUID = -9147556184564598451L;
 	private boolean[][] editable_cells; // 2d array to represent rows and columns
 
     public MyDefaultTableModel(Object[] rows, int cols) { // constructor
