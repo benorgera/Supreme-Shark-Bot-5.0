@@ -11,6 +11,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
@@ -56,7 +57,7 @@ public class SchedulerGUI extends JFrame {
 		JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, dateFormat);
 
 		timeSpinner.setEditor(timeEditor);
-		
+
 		if (switcher.isSelected()) { //if the thing was enabled, what was the date
 			timeSpinner.setValue(settings.getEnableDate()); // will previously set date
 		} else { //it wasn't enabled, set it to the current date
@@ -76,13 +77,17 @@ public class SchedulerGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 
 				settings.setSelected(switcher.isSelected());
-				if (switcher.isSelected()) { //now that settings has the proper values
+				if (switcher.isSelected() && new Date().compareTo((Date) timeSpinner.getValue()) <= 0) { //now that settings has the proper values
 					setupScheduler();
-				} else {
+					System.out.println("Scheduled for an acceptable date, not less than or equal to the current date");
+				} else if (!switcher.isSelected() ){
 					unsetScheduler();
+				} else {
+					System.out.println("Scheduled for an unacceptable date, less than or equal to the current date");
+					JOptionPane.showMessageDialog(null, "Error: Bot cannot be scheduled to a time before or equal to the current time!");
+					return;
 				}
 				dispose();
-
 
 			}
 		};
@@ -99,11 +104,11 @@ public class SchedulerGUI extends JFrame {
 		for (Timer t: main.getTimerStack()) {
 			t.cancel();
 		}
-		
+
 		timer = new Timer();
-		
+
 		main.getTimerStack().push(timer);
-		
+
 		timer.schedule(new SchedulerEnabler(), enableDate);
 	}
 
