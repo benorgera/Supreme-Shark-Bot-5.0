@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon"/>
+    <title>Supreme Shark Bot</title>
+
+ <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://bootswatch.com/journal/bootstrap.min.css">
+
+    <!-- jQuery -->
+
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="/assets/css/landing.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+
+</head>
+
+<body >
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Supreme Shark Bot</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+       <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a href="/#about">About</a>
+                    </li>
+                    <li>
+                        <a href="/#features">Features</a>
+                    </li>
+                    <li>
+                        <a href="/#testimonials">Testimonials</a>
+                    </li>
+                    <li>
+                        <a href="/#purchase">Purchase</a>
+
+                    <li>
+                        <a href="/#social">Social</a>
+                    </li>
+        </ul>
+    </div>
+</div>
+</nav>
+
+
+
+<!-- Page Content -->
+<div class="container">
+<div class="page-header">
+  <h1>Contact</h1>
+</div>
+<!-- <div class="alert alert-danger" style="font-size: 150%">Page Not Found</div>
+<hr>
+</div> -->
+ <form>
+  <div class="form-group">
+    <label for="EmailAddress">Email Address</label>
+    <input type="email" class="form-control" id="email" placeholder="Email">
+  </div>
+  <div class="form-group">
+    <label for="Subject">Subject</label>
+    <input type="Subject" class="form-control" id="Subject" placeholder="Subject">
+  </div>
+  <div class="form-group">
+    <label for="Message">Message</label>
+    <textarea class="form-control" rows="5" id="msg" placeholder="Message"></textarea>
+    </div>
+    <br>
+      <a href="#top"><button type="button" class="btn btn-primary" data-dismiss="modal" id="submit">Send</button></a>
+  </form>
+</div>
+<br><br>
+
+
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="list-inline">
+                        <li>
+                            <a href="/#about">About</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="/#features">Features</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="/#testimonials">Testimonials</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>                        <li>
+                            <a href="/#purchase">Purchase</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li>
+                            <a href="/#">Back to Home</a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted small">&copy 2015 Supreme Shark Bot. All Rights Reserved.</p>
+                </div>
+            </div>
+
+<!-- Small modal -->
+
+        </div>
+    </footer>
+
+<!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="10" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Contact</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+  <div class="form-group">
+    <label for="EmailAddress">Email Address</label>
+    <input type="email" class="form-control" id="email" placeholder="Email">
+  </div>
+  <div class="form-group">
+    <label for="Subject">Subject</label>
+    <input type="Subject" class="form-control" id="Subject" placeholder="Subject">
+  </div>
+  <div class="form-group">
+    <label for="Message">Message</label>
+    <textarea class="form-control" rows="5" id="msg" placeholder="Message"></textarea>
+    </div>
+  </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a href="#top"><button type="button" class="btn btn-primary" data-dismiss="modal" id="submit">Send</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+
+<script>
+
+$(document).ready(function() {
+
+    $('#submit').click(function() {
+
+        var sub = $('#Subject').val(),
+            email = $('#email').val(),
+            msg = $('#msg').val();
+
+        console.log('Sending: ' + sub + ' ' + email + ' ' + msg);
+
+        if(sub && email && msg) {
+
+        $.post('/sendMail', { sub: sub, email: email, msg: msg });
+         alert('Message sent successfully!')
+
+        } else {
+
+            alert('Contact request wasn\'t sent because your failed to enter all inputs.')
+
+        }
+
+        $('#Subject').val('');
+        $('#email').val('');
+        $('#msg').val('');
+
+    })
+
+
+
+})
+
+</script>
+
+</html>
