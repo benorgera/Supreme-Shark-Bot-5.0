@@ -2,6 +2,7 @@ package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
@@ -21,12 +22,16 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
+
 import bot.ButtonColumn;
+import bot.Dispatcher;
 import bot.Encrypter;
 import bot.Order;
 import bot.ProxyTester;
 import bot.SetCentered;
+import bot.TaskProcessor;
 import bot.main;
+
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.io.IOException;
@@ -42,6 +47,9 @@ public class GUI extends JFrame {
 	private JTabbedPane orderTabHolder;
 	private int orderCount = 0;
 	private JTextArea textConsoleArea; //text console, reached by textConsoleNewLine
+	private JPanel HTMLConsolePanel; //html console panel
+	private JButton enableBotButton;
+
 	private final String[] headers = {"Keywords", "Category", "Color", "Size", "Early Link", "Status", "Actions"};
 	private final String[] newItemRow =  {"", "", "", "", "", "", "Delete Item"};
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
@@ -76,7 +84,7 @@ public class GUI extends JFrame {
 		};
 
 		Action launchSchedulerAction = new AbstractAction() {
-	
+
 			private static final long serialVersionUID = 4131971390457695810L;
 
 			@Override
@@ -95,7 +103,27 @@ public class GUI extends JFrame {
 		JPanel deactivateAndEnableButtonsPanel = new JPanel();
 		deactivateAndEnableButtonsPanel.setLayout(new BorderLayout(0,0));
 
-		JButton enableBotButton = new JButton("Enable Bot");
+		enableBotButton = new JButton("Enable Bot");
+
+		Action enableAction = new AbstractAction() {
+
+			private static final long serialVersionUID = 4097381048444547842L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if (enableBotButton.getText().equals("Enable Bot")) {
+					Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, HTMLConsolePanel);
+					d.deploy();
+				} else {
+					main.killWorkers();
+				}
+				toggleButton();
+
+			}
+		};
+		enableBotButton.addActionListener(enableAction);
+
 		JButton enableRestockMonitorButton = new JButton("Enable Restock Monitor");
 
 		JPanel testAndDeactivatePanel = new JPanel(new BorderLayout(0,0));
@@ -108,11 +136,11 @@ public class GUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				textConsoleNewLine("\nProxy test started");
-				
+
 				for (Order o : main.getOrders()) {
 					ProxyTester tester = new ProxyTester(o, textConsoleArea);
 					tester.execute();
-					
+
 				}
 
 			}
@@ -157,7 +185,7 @@ public class GUI extends JFrame {
 
 		JPanel textConsolePanel = new JPanel();
 
-		JPanel HTMLConsolePanel = new JPanel();
+		HTMLConsolePanel = new JPanel();
 
 		splitPane.setLeftComponent(textConsolePanel);
 		textConsolePanel.setLayout(new BorderLayout(0,0));
@@ -234,7 +262,7 @@ public class GUI extends JFrame {
 		JPanel tableHolder = new JPanel();
 
 		Action deleteOrderAction = new AbstractAction() {
-	
+
 			private static final long serialVersionUID = -7603248098132965886L;
 
 			@Override
@@ -317,7 +345,7 @@ public class GUI extends JFrame {
 		};
 
 
-	   new ButtonColumn(table, deleteOrAdd, 6); //makes actions column a button column
+		new ButtonColumn(table, deleteOrAdd, 6); //makes actions column a button column
 
 		TableColumn JComboBoxColumn = table.getColumnModel().getColumn(1);
 		JComboBox<String> comboBox = new JComboBox<String>(new String[] {"jackets", "shirts", "tops and sweaters", "sweatshirts", "pants", "t-shirts", "hats", "bags", "accessories", "skate", "shoes", "shorts"});
@@ -520,8 +548,10 @@ public class GUI extends JFrame {
 		return scheduledDateLabel;
 	}
 
-	public void setStarted() {
-		//sets enable button to abort
+	public void toggleButton() { //enable to abort and vice versa
+
+		enableBotButton.setText(enableBotButton.getText().equals("Enable Bot") ? "Abort Bot" : "Enable Bot");
+
 
 	}
 
@@ -535,11 +565,11 @@ public class GUI extends JFrame {
 			}
 		}	
 	}
-	
+
 	public void textConsoleNewLine(String message) { //pushes new line to text console
-		
+
 		message = textConsoleArea.getText().isEmpty() ? message.replace("\n","") : (textConsoleArea.getText() + "\n" + message); //if the field is empty, don't add a line break and remove all line breaks from message
-		
+
 		textConsoleArea.setText(message);
 	}
 
