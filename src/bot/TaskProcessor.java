@@ -36,7 +36,7 @@ public class TaskProcessor extends SwingWorker {
 
 	private void findLinks() { //dummy class for now, actual bot process should start here
 		while (!isCancelled()) { //you must check if cancelled in every loop!!!
-			display("<html><div>Hey</div></html>");
+			
 			print("Order " + order.getOrderNum() + " thread sleeping");
 			try {
 				Thread.sleep(1000);

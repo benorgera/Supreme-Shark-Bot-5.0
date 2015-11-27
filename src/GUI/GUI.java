@@ -2,6 +2,14 @@ package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+import java.awt.Dimension;
+
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
@@ -22,6 +30,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
+
 import bot.ButtonColumn;
 import bot.Dispatcher;
 import bot.Encrypter;
@@ -45,7 +54,6 @@ public class GUI extends JFrame {
 	private JTabbedPane orderTabHolder;
 	private int orderCount = 0;
 	private JTextArea textConsoleArea; //text console, reached by textConsoleNewLine
-	private JEditorPane htmlConsolePanel; //html console panel
 	private JButton enableBotButton;
 
 	private final String[] headers = {"Keywords", "Category", "Color", "Size", "Early Link", "Status", "Actions"};
@@ -111,12 +119,12 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 
 				if (enableBotButton.getText().equals("Enable Bot")) {
-					Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, htmlConsolePanel);
-					d.deploy();
+//					Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, htmlConsole); //launch bot
+//					d.deploy();
 				} else {
-					main.killWorkers();
+					main.killWorkers(); //abort bot
 				}
-				toggleButton();
+				toggleButton(); //set enable to abort and vice versa
 
 			}
 		};
@@ -183,8 +191,19 @@ public class GUI extends JFrame {
 
 		JPanel textConsolePanel = new JPanel();
 
-		htmlConsolePanel = new JEditorPane();
-
+		JPanel htmlConsolePanel = new JPanel();
+		
+		@SuppressWarnings("restriction")
+		JFXPanel jfxPanel = new JFXPanel();
+		htmlConsolePanel.setPreferredSize(new Dimension(300, 300));
+		
+		Platform.runLater(() -> {
+		    WebView webView = new WebView();
+		    jfxPanel.setScene(new Scene(webView));
+		    webView.getEngine().load("http://www.supremenewyork.com/shop/all");
+		});
+		
+		
 		splitPane.setLeftComponent(textConsolePanel);
 		textConsolePanel.setLayout(new BorderLayout(0,0));
 
@@ -194,16 +213,16 @@ public class GUI extends JFrame {
 		JScrollPane textConsoleScroller = new JScrollPane();
 		textConsolePanel.add(textConsoleScroller, BorderLayout.CENTER);
 
-		JScrollPane HTMLConsoleScroller = new JScrollPane();
-		htmlConsolePanel.add(HTMLConsoleScroller, BorderLayout.CENTER);
+		htmlConsolePanel.add(jfxPanel, BorderLayout.CENTER);
+
 
 		JLabel textConsole = new JLabel("Text Console:");
 		textConsolePanel.add(textConsole, BorderLayout.NORTH);
 		textConsole.setHorizontalAlignment(SwingConstants.CENTER);
 
-		JLabel HTMLConsole = new JLabel("HTML Console:");
-		htmlConsolePanel.add(HTMLConsole, BorderLayout.NORTH);
-		HTMLConsole.setHorizontalAlignment(SwingConstants.CENTER);
+		JLabel htmlConsole = new JLabel("HTML Console:");
+		htmlConsolePanel.add(htmlConsole, BorderLayout.NORTH);
+		htmlConsole.setHorizontalAlignment(SwingConstants.CENTER);
 
 		textConsoleArea = new JTextArea();
 		textConsoleArea.setRows(8);
