@@ -2,12 +2,12 @@ package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,14 +22,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
-
 import bot.ButtonColumn;
 import bot.Dispatcher;
 import bot.Encrypter;
 import bot.Order;
 import bot.ProxyTester;
 import bot.SetCentered;
-import bot.TaskProcessor;
 import bot.main;
 
 import java.awt.event.ActionEvent;
@@ -47,7 +45,7 @@ public class GUI extends JFrame {
 	private JTabbedPane orderTabHolder;
 	private int orderCount = 0;
 	private JTextArea textConsoleArea; //text console, reached by textConsoleNewLine
-	private JPanel HTMLConsolePanel; //html console panel
+	private JEditorPane htmlConsolePanel; //html console panel
 	private JButton enableBotButton;
 
 	private final String[] headers = {"Keywords", "Category", "Color", "Size", "Early Link", "Status", "Actions"};
@@ -113,7 +111,7 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 
 				if (enableBotButton.getText().equals("Enable Bot")) {
-					Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, HTMLConsolePanel);
+					Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, htmlConsolePanel);
 					d.deploy();
 				} else {
 					main.killWorkers();
@@ -185,26 +183,26 @@ public class GUI extends JFrame {
 
 		JPanel textConsolePanel = new JPanel();
 
-		HTMLConsolePanel = new JPanel();
+		htmlConsolePanel = new JEditorPane();
 
 		splitPane.setLeftComponent(textConsolePanel);
 		textConsolePanel.setLayout(new BorderLayout(0,0));
 
-		splitPane.setRightComponent(HTMLConsolePanel);
-		HTMLConsolePanel.setLayout(new BorderLayout(0,0));
+		splitPane.setRightComponent(htmlConsolePanel);
+		htmlConsolePanel.setLayout(new BorderLayout(0,0));
 
 		JScrollPane textConsoleScroller = new JScrollPane();
 		textConsolePanel.add(textConsoleScroller, BorderLayout.CENTER);
 
 		JScrollPane HTMLConsoleScroller = new JScrollPane();
-		HTMLConsolePanel.add(HTMLConsoleScroller, BorderLayout.CENTER);
+		htmlConsolePanel.add(HTMLConsoleScroller, BorderLayout.CENTER);
 
 		JLabel textConsole = new JLabel("Text Console:");
 		textConsolePanel.add(textConsole, BorderLayout.NORTH);
 		textConsole.setHorizontalAlignment(SwingConstants.CENTER);
 
 		JLabel HTMLConsole = new JLabel("HTML Console:");
-		HTMLConsolePanel.add(HTMLConsole, BorderLayout.NORTH);
+		htmlConsolePanel.add(HTMLConsole, BorderLayout.NORTH);
 		HTMLConsole.setHorizontalAlignment(SwingConstants.CENTER);
 
 		textConsoleArea = new JTextArea();

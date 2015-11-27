@@ -1,20 +1,17 @@
 package bot;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
+import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
 
 public class Dispatcher {
 	
 	private ArrayList<Order> orders;
 	private JTextArea txtConsole;
-	private JPanel htmlConsole;
+	private JEditorPane htmlConsole;
 	
-	
-	public Dispatcher(ArrayList<Order> orders, JTextArea txtConsole, JPanel htmlConsole) {
+	public Dispatcher(ArrayList<Order> orders, JTextArea txtConsole, JEditorPane htmlConsole) {
 		this.orders = orders;
 		this.txtConsole = txtConsole;
 		this.htmlConsole = htmlConsole;

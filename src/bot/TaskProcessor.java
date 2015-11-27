@@ -3,7 +3,7 @@ package bot;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.swing.JPanel;
+import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 
@@ -11,11 +11,11 @@ public class TaskProcessor extends SwingWorker {
 	
 	private Order order;
 	private JTextArea txtConsole;
-	private JPanel htmlConsole;
+	private JEditorPane htmlConsole;
 	
 	public final DateFormat dateFormat = new SimpleDateFormat("h:mm:ss a");
 	
-	public TaskProcessor(Order order, JTextArea txtConsole, JPanel htmlConsole) {
+	public TaskProcessor(Order order, JTextArea txtConsole, JEditorPane htmlConsole) {
 		this.order = order;
 		this.txtConsole = txtConsole;
 		this.htmlConsole = htmlConsole;
@@ -28,10 +28,15 @@ public class TaskProcessor extends SwingWorker {
 		txtConsole.setText(txtConsole.getText() + (txtConsole.getText().isEmpty() ? "" : "\n") + s + " (" + dateFormat.format(new Date()).toString() + ")");
 		System.out.println(s + " (" + dateFormat.format(new Date()).toString() + ")");
 	}
+	
+	private void display(String html) { //print to text console and to software console
+		htmlConsole.setText(html); //needs fixing, try java fx (fx also has browser built in, could replace firefox)
+		
+	}
 
 	private void findLinks() { //dummy class for now, actual bot process should start here
 		while (!isCancelled()) { //you must check if cancelled in every loop!!!
-			
+			display("<html><div>Hey</div></html>");
 			print("Order " + order.getOrderNum() + " thread sleeping");
 			try {
 				Thread.sleep(1000);
