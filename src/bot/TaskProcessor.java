@@ -1,21 +1,22 @@
 package bot;
 
 import java.text.DateFormat;
+import javafx.scene.web.WebView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 
-public class TaskProcessor extends SwingWorker {
+@SuppressWarnings("restriction")
+public class TaskProcessor extends SwingWorker<Object, Object> {
 	
 	private Order order;
 	private JTextArea txtConsole;
-	private JEditorPane htmlConsole;
+	private WebView htmlConsole;
 	
 	public final DateFormat dateFormat = new SimpleDateFormat("h:mm:ss a");
 	
-	public TaskProcessor(Order order, JTextArea txtConsole, JEditorPane htmlConsole) {
+	public TaskProcessor(Order order, JTextArea txtConsole, WebView htmlConsole) {
 		this.order = order;
 		this.txtConsole = txtConsole;
 		this.htmlConsole = htmlConsole;
@@ -30,7 +31,7 @@ public class TaskProcessor extends SwingWorker {
 	}
 	
 	private void display(String html) { //print to text console and to software console
-		htmlConsole.setText(html); //needs fixing, try java fx (fx also has browser built in, could replace firefox)
+		htmlConsole.getEngine().loadContent(html); //needs fixing, try java fx (fx also has browser built in, could replace firefox)
 		
 	}
 
@@ -45,6 +46,8 @@ public class TaskProcessor extends SwingWorker {
 				e.printStackTrace();
 			}
 		}
+		
+		if (isCancelled()) print("Order " + order.getOrderNum() + " thread aborted");
 		
 	}
 

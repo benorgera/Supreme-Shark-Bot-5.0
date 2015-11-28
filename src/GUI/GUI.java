@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 import javax.swing.AbstractAction;
@@ -15,7 +14,6 @@ import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,6 +26,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.text.DefaultCaret;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
 
@@ -44,7 +43,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.URI;
 
-
+@SuppressWarnings("restriction")
 public class GUI extends JFrame {
 
 	private static final long serialVersionUID = -2271100967580465591L;
@@ -60,9 +59,12 @@ public class GUI extends JFrame {
 	private final String[] newItemRow =  {"", "", "", "", "", "", "Delete Item"};
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
 	private TabChangeListener tabChange;
+	
+	private WebView webView;
 
 	private JLabel scheduledDateLabel = new JLabel(); //blank unless scheduler enabled
 
+	@SuppressWarnings("restriction")
 	public GUI(boolean isPro, double thisVersionNumber) {
 		GUI.isPro = isPro;
 		thisVersionNumberAsString = Double.toString(thisVersionNumber);
@@ -117,15 +119,7 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-				if (enableBotButton.getText().equals("Enable Bot")) {
-//					Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, htmlConsole); //launch bot
-//					d.deploy();
-				} else {
-					main.killWorkers(); //abort bot
-				}
-				toggleButton(); //set enable to abort and vice versa
-
+				processEnable();
 			}
 		};
 		enableBotButton.addActionListener(enableAction);
@@ -193,14 +187,15 @@ public class GUI extends JFrame {
 
 		JPanel htmlConsolePanel = new JPanel();
 		
-		@SuppressWarnings("restriction")
 		JFXPanel jfxPanel = new JFXPanel();
-		htmlConsolePanel.setPreferredSize(new Dimension(300, 300));
+
+		htmlConsolePanel.setPreferredSize(new Dimension(100, 100));
 		
 		Platform.runLater(() -> {
-		    WebView webView = new WebView();
+			webView = new WebView();
 		    jfxPanel.setScene(new Scene(webView));
 		    webView.getEngine().load("http://www.supremenewyork.com/shop/all");
+		    webView.setDisable(true); //make it read only
 		});
 		
 		
@@ -219,6 +214,26 @@ public class GUI extends JFrame {
 		JLabel textConsole = new JLabel("Text Console:");
 		textConsolePanel.add(textConsole, BorderLayout.NORTH);
 		textConsole.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		JPanel clearConsoleButtonPanel = new JPanel(new BorderLayout(0,0));
+		
+		JButton clearConsoleButton = new JButton("Clear Text Console");
+		
+		clearConsoleButtonPanel.add(clearConsoleButton, BorderLayout.EAST);
+		
+		Action clearConsole = new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				textConsoleArea.setText(null);
+				
+			}
+		};
+		
+		clearConsoleButton.addActionListener(clearConsole);
+		
+		textConsolePanel.add(clearConsoleButtonPanel, BorderLayout.SOUTH);
+		
 
 		JLabel htmlConsole = new JLabel("HTML Console:");
 		htmlConsolePanel.add(htmlConsole, BorderLayout.NORTH);
@@ -227,6 +242,11 @@ public class GUI extends JFrame {
 		textConsoleArea = new JTextArea();
 		textConsoleArea.setRows(8);
 		textConsoleArea.setEditable(false);
+		
+		
+		//makes textConsoleArea always scroll to bottom
+		DefaultCaret caret = (DefaultCaret)textConsoleArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 		textConsoleScroller.setViewportView(textConsoleArea);
 
@@ -588,6 +608,33 @@ public class GUI extends JFrame {
 		message = textConsoleArea.getText().isEmpty() ? message.replace("\n","") : (textConsoleArea.getText() + "\n" + message); //if the field is empty, don't add a line break and remove all line breaks from message
 
 		textConsoleArea.setText(message);
+	}
+	
+	private boolean configurationIsAcceptable() { //if too many proxy-less connections are made user is warned
+		int counter = 0;
+		for (Order o : main.getOrders()) {
+			if (o.getOrderSettings().getProxyAddress() == null) counter ++;
+		}
+		
+		return counter > 2 ? (prompt("More than 2 orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
+	}
+	
+	private void processEnable() { //processes enable action (called by scheduler and by button click)
+		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable()) {
+			Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, webView); //launch bot
+			d.deploy();
+		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
+			main.killWorkers(); //abort bot
+		} else {
+			return;  //dont do anything if the configuration is acceptable prompt failed (due to too many proxy-less connections)
+		}
+		toggleButton();
+	}
+	
+	public void enableRegardlessOfProxyReadinessOrALackThereof() { //called to enable bot, scheduler calls this to bypass any warnings
+		Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, webView); //launch bot
+		d.deploy();
+		toggleButton();
 	}
 
 

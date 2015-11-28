@@ -34,7 +34,7 @@ public class SettingsGUI extends JFrame {
 
 	private Object[] fieldsAsArray;
 
-	private JComboBox storeOption;
+	private JComboBox<String> storeOption;
 
 	private JPanel contentPane;
 	private final String r = "*";
