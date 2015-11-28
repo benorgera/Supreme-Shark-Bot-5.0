@@ -82,4 +82,8 @@ public class Order {
 		this.settingsButton.setText(newText);;
 	}
 	
+	public void clearItems() {
+		itemList.clear();
+	}
+	
 }

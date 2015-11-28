@@ -4,32 +4,31 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
-
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-
 import backend.Encrypter;
 import backend.OrderSettings;
 import backend.SetCentered;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.NumberFormat;
 import java.util.Arrays;
 
 import net.miginfocom.swing.MigLayout;
 
 public class SettingsGUI extends JFrame {
-	
+
 	private static final long serialVersionUID = 6264764193908764903L;
 
 	private Object[] fieldsAsArray;
@@ -39,8 +38,12 @@ public class SettingsGUI extends JFrame {
 	private JPanel contentPane;
 	private final String r = "*";
 	private final Color rC = Color.RED;
-	//address settings
 
+	//layouts
+	private MigLayout addressPanelLayout;
+	private MigLayout techPanelLayout;
+	
+	//address settings
 	private JTextField nameField;
 	private JTextField emailField;
 	private JTextField phoneField;
@@ -77,7 +80,7 @@ public class SettingsGUI extends JFrame {
 	private JTextField proxyPortField;
 	private JTextField proxyUserField;
 	private JTextField proxyPassField;
-	private JTextField refreshRateField;
+	private JFormattedTextField refreshRateField;
 	private JComboBox<String> checkoutTypeField;
 
 	private OrderSettings orderSettings;
@@ -211,7 +214,7 @@ public class SettingsGUI extends JFrame {
 				new LoadOrSaveGUI("load", encrypter);
 			}
 		});
-		
+
 		JButton saveCheckoutInfoButton = new JButton("Save Checkout Info To File");
 		saveCheckoutInfoButton.addActionListener(new ActionListener() {
 			@Override
@@ -272,8 +275,11 @@ public class SettingsGUI extends JFrame {
 
 		contentPane.add(mainPanelHolder);
 
-		techPanel.setLayout(new MigLayout("wrap 2"));
-		addressPanel.setLayout(new MigLayout("wrap 3", "[][][17.00]"));
+		techPanelLayout = new MigLayout("wrap 2");
+		addressPanelLayout = new MigLayout("wrap 3", "[][][17.00]");
+		
+		techPanel.setLayout(techPanelLayout);
+		addressPanel.setLayout(addressPanelLayout);
 		JLabel addressSettingsHeader = new JLabel("Address Settings:");
 		//		addressSettingsHeader.setHorizontalAlignment(1); //why wont this align the header label!!!!!!
 		addressPanel.add(addressSettingsHeader, "span");
@@ -402,16 +408,16 @@ public class SettingsGUI extends JFrame {
 		JLabel proxyHostAddressLabel = new JLabel("Proxy Address:");
 		JLabel proxyUserLabel = new JLabel("Username:");
 		JLabel proxyPassLabel = new JLabel("Password:");
-		
+
 		JLabel proxyPortLabel = new JLabel("Proxy Port:");
-		
+
 
 
 		techPanel.add(new JLabel("Proxy Settings:"), "span");
 		techPanel.add(Box.createRigidArea(new Dimension(0,10)), "span"); //spacer under header
 		techPanel.add(proxyHostAddressLabel);
 		techPanel.add(proxyAddressField);
-		
+
 		techPanel.add(proxyPortLabel);
 		techPanel.add(proxyPortField);
 
@@ -421,7 +427,7 @@ public class SettingsGUI extends JFrame {
 		techPanel.add(proxyPassLabel);
 		techPanel.add(proxyPassField);
 
-		JLabel refreshRateLabel = new JLabel("Refresh Rate:");
+		JLabel refreshRateLabel = new JLabel("Refresh Rate (milliseconds):");
 
 		JLabel checkoutTypeLabel = new JLabel("Checkout Type:");
 
@@ -574,7 +580,7 @@ public class SettingsGUI extends JFrame {
 	private void initializeTechFields() {
 		proxyAddressField = new JTextField();
 		proxyAddressField.setColumns(10);
-		
+
 		proxyPortField = new JTextField();
 		proxyPortField.setColumns(10);
 
@@ -584,7 +590,9 @@ public class SettingsGUI extends JFrame {
 		proxyPassField = new JTextField();
 		proxyPassField.setColumns(10);
 
-		refreshRateField = new JTextField();
+		NumberFormat integerFieldFormatter = NumberFormat.getIntegerInstance();
+		refreshRateField = new JFormattedTextField(integerFieldFormatter);
+		integerFieldFormatter.setMaximumFractionDigits(0);
 		refreshRateField.setColumns(10);
 
 		checkoutTypeField = new JComboBox<String>();
@@ -767,8 +775,8 @@ public class SettingsGUI extends JFrame {
 	}
 
 	private void saveAndExit() {
-		this.orderSettings.assignValuesFromFieldArray(fieldsAsArray);
-		dispose();
+			this.orderSettings.assignValuesFromFieldArray(fieldsAsArray);
+			dispose();
 	}
 
 	private void setFieldsAccordingToOrderSettings() {//gets order settings fields array and converts it to a checkout profile
@@ -809,6 +817,6 @@ public class SettingsGUI extends JFrame {
 		action1[0].actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
 
 	}
-	
+
 }
 

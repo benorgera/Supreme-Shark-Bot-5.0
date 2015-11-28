@@ -16,7 +16,7 @@ public class main {
 	private static SchedulerSettings schedulerSettings;
 	private static Stack<Timer> timerStack;
 	private final static double thisVersionNumber = 5.0;
-	private static ArrayList<SwingWorker> workers;
+	private static ArrayList<SwingWorker<Object, Object>> workers;
 
 	public static void main(String[] args) {
 
@@ -34,7 +34,7 @@ public class main {
 		
 		loader.passUI("Initializing bot interface");
 		orders = new ArrayList<Order>();
-		workers = new ArrayList<SwingWorker>();
+		workers = new ArrayList<SwingWorker<Object, Object>>();
 		timerStack = new Stack<Timer>();
 		frame = new GUI(botSecurity.getVersionIsPro(), botSecurity.getThisVersionNumber());
 		new Order();
@@ -86,12 +86,13 @@ public class main {
 		return botSecurity;
 	}
 	
-	public static void pushToWorkerArray(SwingWorker worker) {
+	public static void pushToWorkerArray(SwingWorker<Object, Object> worker) {
 		workers.add(worker);
 	}
 
 	public static void killWorkers() {
-		for (SwingWorker worker : workers) worker.cancel(true);
+		for (SwingWorker<Object, Object> worker : workers) worker.cancel(true);
+		workers.clear();
 	}
 	
 }

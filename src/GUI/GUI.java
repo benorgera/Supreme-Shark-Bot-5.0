@@ -3,12 +3,10 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
-
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
@@ -30,7 +28,6 @@ import javax.swing.table.TableModel;
 import javax.swing.text.DefaultCaret;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
-
 import executor.Dispatcher;
 import backend.ButtonColumn;
 import backend.Encrypter;
@@ -39,7 +36,6 @@ import backend.Order;
 import backend.ProxyTester;
 import backend.SetCentered;
 import backend.main;
-
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.io.IOException;
@@ -401,7 +397,7 @@ public class GUI extends JFrame {
 
 		addNewItemButtonRow(model); //adds new '+' row
 
-		System.out.println("Order "+orderCount+" added");
+		System.out.println("Order " + orderCount + " added");
 		Object [] arr = new Object[5];
 		arr[0] = orderCount;
 		arr[1] = table;
@@ -631,7 +627,7 @@ public class GUI extends JFrame {
 			main.killWorkers(); //abort bot
 			toggleButton();
 		} else {
-			return;  //dont do anything if the configuration is acceptable prompt failed (due to too many proxy-less connections)
+			 //dont do anything if the configuration is acceptable prompt failed (due to too many proxy-less connections)
 		}
 	}
 	
@@ -643,7 +639,10 @@ public class GUI extends JFrame {
 	}
 	
 	private void setItemInfoFromTable() { //converts table data into item objects
+		
 		for (Order o : main.getOrders()) { //for each order
+			o.clearItems(); //if bot was already enabled this clears the old items
+			
 			if (o.getTable().getCellEditor() != null) o.getTable().getCellEditor().stopCellEditing(); //saves values of cells being edited
 			for (int i = 0; i < o.getTable().getModel().getRowCount() - 1; i++) { //for each row (item)
 				TableModel model = o.getModel();
@@ -660,6 +659,7 @@ public class GUI extends JFrame {
 			}
 		}
 	}
+	
 
 
 }

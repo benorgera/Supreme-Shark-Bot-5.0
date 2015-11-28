@@ -1,12 +1,9 @@
 package backend;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 
@@ -22,7 +19,7 @@ public class ProxyTester extends SwingWorker<Object, Object> {
 		this.area = area;
 		this. o = o;
 	}
-	
+
 
 	@Override
 	protected Object doInBackground() throws Exception {
@@ -30,7 +27,6 @@ public class ProxyTester extends SwingWorker<Object, Object> {
 		System.out.println(Arrays.asList(o.getOrderSettings().getFieldValuesAsArray()));
 		System.out.println(o.getOrderSettings().getName());
 		try {
-			Proxy proxy;
 
 			long startTime = System.currentTimeMillis();
 			String proxyAddress = o.getOrderSettings().getProxyAddress();
@@ -38,20 +34,12 @@ public class ProxyTester extends SwingWorker<Object, Object> {
 			String proxyUser = o.getOrderSettings().getProxyUser();
 			String proxyPass = o.getOrderSettings().getProxytPass();
 
-			if (proxyPort != null && !proxyPort.isEmpty()) { //no port specified, 80 assumed
-				proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, Integer.parseInt(proxyPort)));
-				System.out.println("Order "+o.getOrderNum()+" proxy address: "+proxyAddress+" on port "+Integer.parseInt(proxyPort));
-			} else { //port specified
-				proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, 80));
-				System.out.println("Order "+o.getOrderNum()+" proxy address: "+proxyAddress+" on port 80 assumed because no port provided");
-			}
+			ProxyBuilder proxyBuilder = new ProxyBuilder();
+			
+			System.out.println("Order "+o.getOrderNum()+" proxy address: "+proxyAddress+" on port " + proxyPort == null ? 80 : proxyPort);
 
-			String userpass = proxyUser + ":" + proxyPass;
-			String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
-
-
-			URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxy);
-			con.setRequestProperty("Authorization", basicAuth);
+			URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxyBuilder.configure(proxyAddress, proxyPort));
+			proxyBuilder.addAuthorization(con, proxyUser, proxyPass);
 			con.connect();
 			con.getInputStream();
 			long endTime = System.currentTimeMillis();
@@ -68,12 +56,12 @@ public class ProxyTester extends SwingWorker<Object, Object> {
 			}
 
 		}
-		
+
 		return null;
-		
+
 
 	}
-	
+
 	@Override
 	protected void done() {
 		for (String s : results) area.setText(area.getText() +"\n"+s);
