@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 
 import java.awt.event.ActionEvent;
@@ -17,10 +17,10 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.WindowConstants;
 
-import bot.SchedulerEnabler;
-import bot.SchedulerSettings;
-import bot.SetCentered;
-import bot.main;
+import backend.SchedulerEnabler;
+import backend.SchedulerSettings;
+import backend.SetCentered;
+import backend.main;
 import eu.hansolo.custom.SteelCheckBox;
 import eu.hansolo.tools.ColorDef;
 import net.miginfocom.swing.MigLayout;

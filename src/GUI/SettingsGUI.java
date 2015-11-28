@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,9 +15,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import bot.Encrypter;
-import bot.OrderSettings;
-import bot.SetCentered;
+import backend.Encrypter;
+import backend.OrderSettings;
+import backend.SetCentered;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

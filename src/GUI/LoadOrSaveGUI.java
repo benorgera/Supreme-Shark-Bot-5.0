@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -10,13 +10,15 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Scanner;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import bot.Encrypter;
-import bot.SetCentered;
+
+import backend.Encrypter;
+import backend.SetCentered;
 
 
 public class LoadOrSaveGUI extends JFrame {

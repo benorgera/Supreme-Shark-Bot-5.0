@@ -1,14 +1,16 @@
-package GUI;
+package gui;
 
 import java.awt.BorderLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import bot.SetCentered;
-import bot.main;
+
+import backend.SetCentered;
+import backend.main;
 
 public class LoadingGIF extends JFrame {
 

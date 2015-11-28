@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
@@ -26,17 +26,19 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import javax.swing.text.DefaultCaret;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
 
-import bot.ButtonColumn;
-import bot.Dispatcher;
-import bot.Encrypter;
-import bot.Order;
-import bot.ProxyTester;
-import bot.SetCentered;
-import bot.main;
+import executor.Dispatcher;
+import backend.ButtonColumn;
+import backend.Encrypter;
+import backend.Item;
+import backend.Order;
+import backend.ProxyTester;
+import backend.SetCentered;
+import backend.main;
 
 import java.awt.event.ActionEvent;
 import java.awt.Color;
@@ -189,13 +191,14 @@ public class GUI extends JFrame {
 		
 		JFXPanel jfxPanel = new JFXPanel();
 
-		htmlConsolePanel.setPreferredSize(new Dimension(100, 100));
+		htmlConsolePanel.setPreferredSize(new Dimension(100, 150));
 		
 		Platform.runLater(() -> {
 			webView = new WebView();
+			webView.setZoom(.5);
 		    jfxPanel.setScene(new Scene(webView));
 		    webView.getEngine().load("http://www.supremenewyork.com/shop/all");
-		    webView.setDisable(true); //make it read only
+//		    webView.setDisable(true); //make it read only
 		});
 		
 		
@@ -223,6 +226,8 @@ public class GUI extends JFrame {
 		
 		Action clearConsole = new AbstractAction() {
 			
+			private static final long serialVersionUID = -573938828841820363L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				textConsoleArea.setText(null);
@@ -621,20 +626,39 @@ public class GUI extends JFrame {
 	
 	private void processEnable() { //processes enable action (called by scheduler and by button click)
 		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable()) {
-			Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, webView); //launch bot
-			d.deploy();
+			enableRegardlessOfProxyReadinessOrALackThereof();
 		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
 			main.killWorkers(); //abort bot
+			toggleButton();
 		} else {
 			return;  //dont do anything if the configuration is acceptable prompt failed (due to too many proxy-less connections)
 		}
-		toggleButton();
 	}
 	
 	public void enableRegardlessOfProxyReadinessOrALackThereof() { //called to enable bot, scheduler calls this to bypass any warnings
+		setItemInfoFromTable();
 		Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, webView); //launch bot
 		d.deploy();
 		toggleButton();
+	}
+	
+	private void setItemInfoFromTable() { //converts table data into item objects
+		for (Order o : main.getOrders()) { //for each order
+			if (o.getTable().getCellEditor() != null) o.getTable().getCellEditor().stopCellEditing(); //saves values of cells being edited
+			for (int i = 0; i < o.getTable().getModel().getRowCount() - 1; i++) { //for each row (item)
+				TableModel model = o.getModel();
+				Item item = new Item();
+				item.setItemNumber(i + 1);
+				item.setKeywords(((String) model.getValueAt(i, 0)).toLowerCase().split("\\s+"));
+				item.setCategory((String) model.getValueAt(i, 1));
+				item.setColor((String) model.getValueAt(i, 2));
+				item.setSize((String) model.getValueAt(i, 3));
+				item.setEarlyLink((String) model.getValueAt(i, 4));
+				o.addItem(item);
+				
+				System.out.println("\n\nOrder " + o.getOrderNum() + " " + item.toString());
+			}
+		}
 	}
 
 
