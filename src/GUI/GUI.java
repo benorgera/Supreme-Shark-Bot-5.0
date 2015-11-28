@@ -244,7 +244,7 @@ public class GUI extends JFrame {
 		textConsoleArea.setEditable(false);
 		
 		
-		//makes textConsoleArea always scroll to bottom
+		//makes textConsoleArea  always scroll to bottom
 		DefaultCaret caret = (DefaultCaret)textConsoleArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
