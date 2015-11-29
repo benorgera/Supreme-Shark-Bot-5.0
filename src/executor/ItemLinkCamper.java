@@ -1,51 +1,83 @@
 package executor;
 
-import javax.swing.SwingWorker;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import backend.Item;
-import backend.main;
 
-public class ItemLinkCamper extends SwingWorker<Object, Object> {
+public class ItemLinkCamper implements Runnable {
 
 	private Item item;
 	private LinkFinder linkFinder;
-	private int orderNumber;
 	private TaskProcessor processor;
-	
-	public ItemLinkCamper(Item item, LinkFinder linkFinder, int orderNumber, TaskProcessor processor) {
+
+	public ItemLinkCamper(Item item, LinkFinder linkFinder, TaskProcessor processor) {
 		this.item = item;
 		this.linkFinder = linkFinder;
-		this.orderNumber = orderNumber;
 		this.processor = processor;
-		main.pushToWorkerArray(this);
 		processor.setStatus(item.getItemNumber(), "Finding Link");
-		
 	}
-	
-	@Override
-	protected Object doInBackground() throws Exception {
-		while (!isCancelled()) {
-			
+
+
+	public void run() {
+
+		int count = 1;
+		while (!Thread.currentThread().isInterrupted()) {
+
+			processor.println("Item "+ item.getItemNumber() + " checked HTML " + count + " times");
+
+			count++;
+
+			waitForUpdate();
+
 			for (String keyword : item.getKeywords()) {
-				if (linkFinder.getMostRecentHTML().toLowerCase().contains(keyword) && !keyword.equals("")) {
-					if (pullLink()) {
-						System.out.println("Item " + item.getItemNumber() + " of Order " + orderNumber + " Link Found");
+				if (linkFinder.getMostRecentHTML().toLowerCase().contains(keyword) && !keyword.isEmpty()) {
+					if (pullLink(linkFinder.getMostRecentHTML().toLowerCase())) {
+						processor.println("Item " + item.getItemNumber() + " link found");
 						processor.setStatus(item.getItemNumber(), "Link Found");						
 						linkFinder.remove(item);
-						cancel(true);
+						
+						synchronized (linkFinder) { //notify link finder to check items remaining again (it might be sleeping and all links may have been found)
+							linkFinder.notify();
+						}
+						
+						Thread.currentThread().interrupt();
 					}
 				}
 			}
-			
+
 		}
-		return new Object();
 	}
 
-	private boolean pullLink() {
+	private boolean pullLink(String html) { //once its confirmed the item is up, pull the link and set it in item settings
+
+		ArrayList<String> possibilities = new ArrayList<String>(Arrays.asList(html.split("\"")));
+
+		Iterator<String> iterator = possibilities.iterator();
+
+		while (iterator.hasNext()) if (!iterator.next().contains("/shop/") || !iterator.next().contains(item.getCategory())) iterator.remove(); //remove all non-links
+
+		iterator = possibilities.iterator();
+
 		
+
+		System.out.println(possibilities);
+
 		return true;
 	}
-	
-	
+
+	private synchronized void waitForUpdate() {
+
+		try {
+			wait();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			e.printStackTrace();
+		}
+
+	}
+
+
 
 }

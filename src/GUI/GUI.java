@@ -57,7 +57,7 @@ public class GUI extends JFrame {
 	private final String[] newItemRow =  {"", "", "", "", "", "", "Delete Item"};
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
 	private TabChangeListener tabChange;
-	
+
 	private WebView webView;
 
 	private JLabel scheduledDateLabel = new JLabel(); //blank unless scheduler enabled
@@ -184,20 +184,20 @@ public class GUI extends JFrame {
 		JPanel textConsolePanel = new JPanel();
 
 		JPanel htmlConsolePanel = new JPanel();
-		
+
 		JFXPanel jfxPanel = new JFXPanel();
 
 		htmlConsolePanel.setPreferredSize(new Dimension(100, 150));
-		
+
 		Platform.runLater(() -> {
 			webView = new WebView();
 			webView.setZoom(.5);
-		    jfxPanel.setScene(new Scene(webView));
-		    webView.getEngine().load("http://www.supremenewyork.com/shop/all");
-//		    webView.setDisable(true); //make it read only
+			jfxPanel.setScene(new Scene(webView));
+			webView.getEngine().load("http://www.supremenewyork.com/shop/all");
+			//		    webView.setDisable(true); //make it read only
 		});
-		
-		
+
+
 		splitPane.setLeftComponent(textConsolePanel);
 		textConsolePanel.setLayout(new BorderLayout(0,0));
 
@@ -213,28 +213,28 @@ public class GUI extends JFrame {
 		JLabel textConsole = new JLabel("Text Console:");
 		textConsolePanel.add(textConsole, BorderLayout.NORTH);
 		textConsole.setHorizontalAlignment(SwingConstants.CENTER);
-		
+
 		JPanel clearConsoleButtonPanel = new JPanel(new BorderLayout(0,0));
-		
+
 		JButton clearConsoleButton = new JButton("Clear Text Console");
-		
+
 		clearConsoleButtonPanel.add(clearConsoleButton, BorderLayout.EAST);
-		
+
 		Action clearConsole = new AbstractAction() {
-			
+
 			private static final long serialVersionUID = -573938828841820363L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				textConsoleArea.setText(null);
-				
+
 			}
 		};
-		
+
 		clearConsoleButton.addActionListener(clearConsole);
-		
+
 		textConsolePanel.add(clearConsoleButtonPanel, BorderLayout.SOUTH);
-		
+
 
 		JLabel htmlConsole = new JLabel("HTML Console:");
 		htmlConsolePanel.add(htmlConsole, BorderLayout.NORTH);
@@ -243,8 +243,8 @@ public class GUI extends JFrame {
 		textConsoleArea = new JTextArea();
 		textConsoleArea.setRows(8);
 		textConsoleArea.setEditable(false);
-		
-		
+
+
 		//makes textConsoleArea  always scroll to bottom
 		DefaultCaret caret = (DefaultCaret)textConsoleArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
@@ -610,39 +610,40 @@ public class GUI extends JFrame {
 
 		textConsoleArea.setText(message);
 	}
-	
+
 	private boolean configurationIsAcceptable() { //if too many proxy-less connections are made user is warned
 		int counter = 0;
 		for (Order o : main.getOrders()) {
 			if (o.getOrderSettings().getProxyAddress() == null) counter ++;
 		}
-		
+
 		return counter > 2 ? (prompt("More than 2 orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
 	}
-	
+
 	private void processEnable() { //processes enable action (called by scheduler and by button click)
 		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable()) {
 			enableRegardlessOfProxyReadinessOrALackThereof();
 		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
-			main.killWorkers(); //abort bot
+			main.killThreads(); //abort bot
 			toggleButton();
+			abortStatuses();
 		} else {
-			 //dont do anything if the configuration is acceptable prompt failed (due to too many proxy-less connections)
+			//dont do anything if the configuration is acceptable prompt failed (due to too many proxy-less connections)
 		}
 	}
-	
+
 	public void enableRegardlessOfProxyReadinessOrALackThereof() { //called to enable bot, scheduler calls this to bypass any warnings
 		setItemInfoFromTable();
 		Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, webView); //launch bot
 		d.deploy();
 		toggleButton();
 	}
-	
+
 	private void setItemInfoFromTable() { //converts table data into item objects
-		
+
 		for (Order o : main.getOrders()) { //for each order
 			o.clearItems(); //if bot was already enabled this clears the old items
-			
+
 			if (o.getTable().getCellEditor() != null) o.getTable().getCellEditor().stopCellEditing(); //saves values of cells being edited
 			for (int i = 0; i < o.getTable().getModel().getRowCount() - 1; i++) { //for each row (item)
 				TableModel model = o.getModel();
@@ -654,12 +655,22 @@ public class GUI extends JFrame {
 				item.setSize((String) model.getValueAt(i, 3));
 				item.setEarlyLink((String) model.getValueAt(i, 4));
 				o.addItem(item);
-				
+
 				System.out.println("\n\nOrder " + o.getOrderNum() + " " + item.toString());
 			}
 		}
 	}
-	
+
+	private void abortStatuses() { //sets status of each item to abort following bot abortion
+
+		for (Order o : main.getOrders()) {
+			for (int i = 0; i < o.getModel().getRowCount(); i ++) {
+				o.getModel().setValueAt("Aborted", i, 5);
+			}
+		}
+
+	}
+
 
 
 }

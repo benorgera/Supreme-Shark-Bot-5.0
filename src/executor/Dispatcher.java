@@ -7,6 +7,7 @@ import javafx.scene.web.WebView;
 import javax.swing.JTextArea;
 
 import backend.Order;
+import backend.main;
 
 @SuppressWarnings("restriction")
 public class Dispatcher {
@@ -23,8 +24,10 @@ public class Dispatcher {
 
 	public void deploy() { //deploys new TaskProccessor thread for each order
 		for (Order o : orders) {
-			TaskProcessor p = new TaskProcessor(o, txtConsole, htmlConsole);
-			p.execute();
+			Thread thread = new Thread(new TaskProcessor(o, txtConsole, htmlConsole));
+			main.pushToWorkerArray(thread);
+			thread.start();
+			
 		}
 	}
 

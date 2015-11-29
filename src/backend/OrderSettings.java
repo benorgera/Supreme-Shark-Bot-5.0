@@ -30,7 +30,7 @@ public class OrderSettings {
 	private String[] fieldValuesAsArray;
 
 	public OrderSettings() {
-		initializeArrayOfValues(); //makes array of values in same order as checkout info
+		fieldValuesAsArray = new String [23];//makes array of values in same order as checkout info
 		initializeValues(); //initializes each string int the array
 	}
 
@@ -125,7 +125,7 @@ public class OrderSettings {
 		return refreshRate;
 	}
 	public void setRefreshRate(String refreshRate) {
-		this.refreshRate = refreshRate;
+		this.refreshRate = refreshRate.replace(",", ""); //remove commas from number
 	}
 	public String getProxyAddress() {
 		return proxyAddress;
@@ -142,7 +142,7 @@ public class OrderSettings {
 	public String getProxytPass() {
 		return proxyPass;
 	}
-	public void setProxytPass(String proxytPass) {
+	public void setProxyPass(String proxytPass) {
 		this.proxyPass = proxytPass;
 	}
 	public String getStore() {
@@ -194,33 +194,6 @@ public class OrderSettings {
 		return fieldValuesAsArray;
 	}
 
-	private void initializeArrayOfValues() { //makes array of values in same order as checkout info
-		fieldValuesAsArray = new String [23];
-		fieldValuesAsArray[0] = name;
-		fieldValuesAsArray[1] = email;
-		fieldValuesAsArray[2] = phone;
-		fieldValuesAsArray[3] = address1;
-		fieldValuesAsArray[4] = address2;
-		fieldValuesAsArray[5] = postalCode;
-		fieldValuesAsArray[6] = city;
-		fieldValuesAsArray[7] = stateAbbr;
-		fieldValuesAsArray[8] = country;
-		fieldValuesAsArray[9] = ccProvider;
-		fieldValuesAsArray[10] = ccNumber;
-		fieldValuesAsArray[11] = expMonth;
-		fieldValuesAsArray[12] = expYear;
-		fieldValuesAsArray[13] = cvv;
-		fieldValuesAsArray[14] = refreshRate;
-		fieldValuesAsArray[15] = null; //these are from the old checkout profiles (autoproccess/ disable images are deprecated)
-		fieldValuesAsArray[16] = null; //these are from the old checkout profiles (autoproccess/ disable images are deprecated)
-		fieldValuesAsArray[17] = address3;
-		fieldValuesAsArray[18] = proxyAddress;
-		fieldValuesAsArray[19] = proxyPort;
-		fieldValuesAsArray[20] = proxyUser;
-		fieldValuesAsArray[21] = proxyPass;
-		fieldValuesAsArray[22] = checkoutType;
-	}
-
 	private void initializeValues() {//initializes values in array
 		for (int i = 0; i < fieldValuesAsArray.length; i ++) {
 			fieldValuesAsArray[i] = "";
@@ -235,30 +208,30 @@ public class OrderSettings {
 		this.proxyPort = proxyPort;
 	}
 
-	private void storeValuesFromArray(String[] array) {
-		name = array[0];
-		email = array[1];
-		phone = array[2];
-		address1 = array[3];
-		address2 = array[4];
-		postalCode = array[5];
-		city = array[6];
-		stateAbbr = array[7];
-		country = array[8];
-		ccProvider = array[9];
-		ccNumber = array[10];
-		expMonth = array[11];
-		expYear = array[12];
-		cvv = array[13];
-		refreshRate = array[14];
+	private void storeValuesFromArray(String[] array) { //takes values from array and 
+		setName(array[0]);
+		setEmail(array[1]);
+		setPhone(array[2]);
+		setAddress1(array[3]);
+		setAddress2(array[4]);
+		setPostalCode(array[5]);
+		setCity(array[6]);
+		setStateAbbr(array[7]);
+		setCountry(array[8]);
+		setCcProvider(array[9]);
+		setCcNumber(array[10]);
+		setExpMonth(array[11]);
+		setExpYear(array[12]);
+		setCvv(array[13]);
+		setRefreshRate(array[14]);
 	    //15 is from the old checkout profiles (autoproccess/ disable images are deprecated)
 		//16 is from the old checkout profiles (autoproccess/ disable images are deprecated)
-		address3 = array[17];
-		proxyAddress = array[18];
-		proxyPort = array[19];
-		proxyUser = array[20];
-		proxyPass = array[21];
-		checkoutType = array[22];	
+		setAddress3(array[17]);
+		setProxyAddress(array[18]);
+		setProxyPort(array[19]);
+		setProxyUser(array[20]);
+		setProxyPass(array[21]);
+		setCheckoutType(array[22]);	
 		
 	}
 
