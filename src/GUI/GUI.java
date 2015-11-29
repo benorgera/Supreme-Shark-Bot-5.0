@@ -136,9 +136,7 @@ public class GUI extends JFrame {
 				textConsoleNewLine("\nProxy test started");
 
 				for (Order o : main.getOrders()) {
-					ProxyTester tester = new ProxyTester(o, textConsoleArea);
-					tester.execute();
-
+					(new Thread(new ProxyTester(o, textConsoleArea))).start();
 				}
 
 			}
@@ -386,7 +384,7 @@ public class GUI extends JFrame {
 		new ButtonColumn(table, deleteOrAdd, 6); //makes actions column a button column
 
 		TableColumn JComboBoxColumn = table.getColumnModel().getColumn(1);
-		JComboBox<String> comboBox = new JComboBox<String>(new String[] {"jackets", "shirts", "tops and sweaters", "sweatshirts", "pants", "t-shirts", "hats", "bags", "accessories", "skate", "shoes", "shorts"});
+		JComboBox<String> comboBox = new JComboBox<String>(new String[] {"jackets", "shirts", "tops-sweaters", "sweatshirts", "pants", "t-shirts", "hats", "bags", "accessories", "skate", "shoes", "shorts"});
 		JComboBoxColumn.setCellEditor(new DefaultCellEditor(comboBox));
 
 
@@ -617,7 +615,7 @@ public class GUI extends JFrame {
 			if (o.getOrderSettings().getProxyAddress() == null) counter ++;
 		}
 
-		return counter > 2 ? (prompt("More than 2 orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
+		return counter > 2 ? (prompt("More than two orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
 	}
 
 	private void processEnable() { //processes enable action (called by scheduler and by button click)

@@ -84,7 +84,7 @@ public class SchedulerGUI extends JFrame {
 					unsetScheduler();
 				} else {
 					System.out.println("Scheduled for an unacceptable date, less than or equal to the current date");
-					JOptionPane.showMessageDialog(null, "Error: Bot cannot be scheduled to a time before or equal to the current time!");
+					JOptionPane.showMessageDialog(null, "Error, bot cannot be scheduled to a time before or equal to the current time!");
 					return;
 				}
 				dispose();

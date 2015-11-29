@@ -49,6 +49,8 @@ public class LinkFinder  {
 		try {
 			mostRecentHTML = Jsoup.connect("http://www.supremenewyork.com/shop/all").get().html();
 
+			processor.println("HTTP connection made");
+			
 			notifyCampers(); 
 
 			processor.println("Items with links to be found: " + items.size());

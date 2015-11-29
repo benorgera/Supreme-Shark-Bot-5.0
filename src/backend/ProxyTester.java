@@ -8,7 +8,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 
 
-public class ProxyTester extends SwingWorker<Object, Object> {
+public class ProxyTester implements Runnable {
 
 	private ArrayList<String> results;
 	private Order o;
@@ -21,8 +21,7 @@ public class ProxyTester extends SwingWorker<Object, Object> {
 	}
 
 
-	@Override
-	protected Object doInBackground() throws Exception {
+	public void run() {
 		System.out.println("Order "+o.getOrderNum()+" proxy attempt\n\tAddress: "+o.getOrderSettings().getProxyAddress()+"\n\tPort: "+o.getOrderSettings().getProxyPort());
 		System.out.println(Arrays.asList(o.getOrderSettings().getFieldValuesAsArray()));
 		System.out.println(o.getOrderSettings().getName());
@@ -44,7 +43,7 @@ public class ProxyTester extends SwingWorker<Object, Object> {
 			con.getInputStream();
 			long endTime = System.currentTimeMillis();
 			System.out.println("Connection Time: "+(endTime-startTime));
-			results.add("Order "+o.getOrderNum()+" proxy initialized successfully\n\tTime to Supreme Server: "+(endTime-startTime)+" ms");
+			results.add("Order "+o.getOrderNum()+" proxy initialized successfully\n\tTime to Supreme Server: "+(endTime-startTime)+" milliseconds");
 		} catch (NullPointerException | IllegalArgumentException e) {
 			results.add("Order "+o.getOrderNum()+" proxy is not set in order settings");
 			e.printStackTrace();
@@ -56,18 +55,9 @@ public class ProxyTester extends SwingWorker<Object, Object> {
 			}
 
 		}
-
-		return null;
-
-
+		
+		for (String s : results) area.setText(area.getText() +"\n"+s); //notify user of results
 	}
-
-	@Override
-	protected void done() {
-		for (String s : results) area.setText(area.getText() +"\n"+s);
-	}
-
-
 
 
 }

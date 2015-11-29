@@ -32,7 +32,7 @@ public class TaskProcessor implements Runnable {
 	}
 
 	public void print(String s) { //print to system console and to software console
-		txtConsole.setText(txtConsole.getText() + (txtConsole.getText().isEmpty() ? "" : "\n") + s + " (" + dateFormat.format(new Date()).toString() + ")");
+		txtConsole.setText(txtConsole.getText() + (txtConsole.getText().isEmpty() ? "" : "\n") + "Order " + order.getOrderNum() + ": " + s + " (" + dateFormat.format(new Date()).toString() + ")");
 		println(s);
 	}
 
