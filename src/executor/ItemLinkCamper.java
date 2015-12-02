@@ -56,14 +56,22 @@ public class ItemLinkCamper implements Runnable {
 
 		Iterator<String> iterator = possibilities.iterator();
 
-		while (iterator.hasNext()) if (!iterator.next().contains("/shop/") || !iterator.next().contains(item.getCategory())) iterator.remove(); //remove all non-links
-
-		iterator = possibilities.iterator();
+		while (iterator.hasNext()) {String next = iterator.next(); if (!next.contains("/shop/") || !next.contains(item.getCategory())) iterator.remove();} //remove all non-links
 
 		
+		//tops and sweaters has something strange going on
+		
+		
+		iterator = possibilities.iterator();
+		
+		ArrayList<String> definites = new ArrayList<String>();
+		
+		while (iterator.hasNext()) {String next = iterator.next(); for (String keyword : item.getKeywords()) if (next.contains(keyword)) {definites.add(next); continue;} } //add links with keywords to definites
 
 		System.out.println(possibilities);
 
+		System.out.println(definites);
+		
 		return true;
 	}
 
@@ -73,7 +81,7 @@ public class ItemLinkCamper implements Runnable {
 			wait();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 
 	}

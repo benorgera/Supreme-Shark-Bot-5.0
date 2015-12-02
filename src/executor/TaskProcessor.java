@@ -53,7 +53,6 @@ public class TaskProcessor implements Runnable {
 		try { //if no refresh rate, make it 400
 			refreshRate = Integer.parseInt(order.getOrderSettings().getRefreshRate());
 		} catch (Exception e) {
-			e.printStackTrace();
 			refreshRate = 400;
 		}	
 
