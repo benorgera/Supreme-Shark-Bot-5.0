@@ -49,32 +49,24 @@ public class LinkFinder  {
 		try {
 			mostRecentHTML = Jsoup.connect("http://www.supremenewyork.com/shop/all").get().html();
 
-			processor.println("HTTP connection made");
+			processor.printSys("HTTP connection made");
 			
-			notifyCampers(); 
+			notifyCampers(); //let camping threads know new html has been found
 
-			processor.println("Items with links to be found: " + items.size());
+			processor.printSys("Items with links to be found: " + items.size());
 
-			if (items.isEmpty()) { //all items removed (meaning they were found)
-				processor.print("All item links found");
-				TaskProcessor.stage = Stage.ADD_TO_CART; //next stage
-				return;
-			} else {
-				synchronized (this) { //synchronized wait so it can be woken if more items found (to avoid a sleep during a period in which all links are found)
-					wait(refreshRate);
-				}
-			}
+			checkIfReady(); //check if all items found, if so move to next stage
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt(); //if thread interrupted (bot aborted), interrupt yourself
-			e.printStackTrace();
 		}
 
 
 	}
 
-	public void remove(Item i) { //removes item from item ArrayList (called by campers when they find their links
+	public void remove(Item i) { //removes item from item ArrayList (called by campers when they find their links)
 		items.remove(i);
 	}
 
@@ -90,6 +82,19 @@ public class LinkFinder  {
 
 	public int getItemNumber() {
 		return items.size();
+	}
+	
+	private void checkIfReady() throws InterruptedException { //check if all items found, if so move to next stage, errors thrown caught by try catch in findThem()
+		
+		if (items.isEmpty()) { //all items removed (meaning they were found)
+			processor.print("All item links found");
+			TaskProcessor.stage = Stage.ADD_TO_CART; //next stage
+			return;
+		} else {
+			synchronized (this) { //synchronized wait so it can be woken if more items found (to avoid a sleep during a period in which all links are found)
+				wait(refreshRate);
+			}
+		}
 	}
 
 

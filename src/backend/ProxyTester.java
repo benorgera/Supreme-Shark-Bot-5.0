@@ -46,7 +46,6 @@ public class ProxyTester implements Runnable {
 			results.add("Order "+o.getOrderNum()+" proxy initialized successfully\n\tTime to Supreme Server: "+(endTime-startTime)+" milliseconds");
 		} catch (NullPointerException | IllegalArgumentException e) {
 			results.add("Order "+o.getOrderNum()+" proxy is not set in order settings");
-			e.printStackTrace();
 		} catch (Exception w) {
 			if (w.getMessage().contains("503")) {
 				results.add("Order "+o.getOrderNum()+" proxy banned from Supreme Server, they returned a 503 error");

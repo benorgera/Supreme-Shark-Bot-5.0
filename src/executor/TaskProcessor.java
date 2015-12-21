@@ -33,14 +33,14 @@ public class TaskProcessor implements Runnable {
 
 	public void print(String s) { //print to system console and to software console
 		txtConsole.setText(txtConsole.getText() + (txtConsole.getText().isEmpty() ? "" : "\n") + "Order " + order.getOrderNum() + ": " + s + " (" + dateFormat.format(new Date()).toString() + ")");
-		println(s);
+		printSys(s);
 	}
 
-	public void println(String s) { //print just to system console
+	public void printSys(String s) { //print just to system console
 		System.out.println("Order " + order.getOrderNum() + ": " + s + " (" + dateFormat.format(new Date()).toString() + ")");
 	}
 
-	public void display(String html) { //print to text console and to software console
+	public void display(String html) { //display html
 		htmlConsole.getEngine().loadContent(html); //needs fixing, try java fx (fx also has browser built in, could replace firefox)
 
 	}
@@ -50,19 +50,20 @@ public class TaskProcessor implements Runnable {
 		stage = Stage.LINK_FINDING; //start at link finding
 
 		int refreshRate;
+		
 		try { //if no refresh rate, make it 400
 			refreshRate = Integer.parseInt(order.getOrderSettings().getRefreshRate());
 		} catch (Exception e) {
 			refreshRate = 400;
 		}	
 
-		println("Refresh Rate: " + refreshRate);
+		printSys("Refresh Rate: " + refreshRate);
 
 		LinkFinder linkFinder = new LinkFinder(order.getItems(), refreshRate, this); //new link finder
 
 		while (!Thread.currentThread().isInterrupted()) { //you must check if cancelled in every loop!!!
 			
-			println("Stage: " + stage.name());
+			printSys("Stage: " + stage.name());
 
 			switch (stage) {
 
