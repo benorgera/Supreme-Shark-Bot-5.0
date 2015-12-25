@@ -28,6 +28,8 @@ public class OrderSettings {
 	private String checkoutType;
 
 	private String[] fieldValuesAsArray;
+	
+	private boolean usingProxy = false;
 
 	public OrderSettings() {
 		fieldValuesAsArray = new String [23];//makes array of values in same order as checkout info
@@ -132,6 +134,7 @@ public class OrderSettings {
 	}
 	public void setProxyAddress(String proxyAddress) {
 		this.proxyAddress = proxyAddress;
+		setUsingProxy(!proxyAddress.isEmpty()); //if its empty, they're not using a proxy
 	}
 	public String getProxyUser() {
 		return proxyUser;
@@ -208,6 +211,13 @@ public class OrderSettings {
 		this.proxyPort = proxyPort;
 	}
 
+	public boolean isUsingProxy() {
+		return this.usingProxy;
+	}
+	
+	public void setUsingProxy(boolean isUsingProxy) {
+		this.usingProxy = isUsingProxy;
+	}
 	private void storeValuesFromArray(String[] array) { //takes values from array and 
 		setName(array[0]);
 		setEmail(array[1]);
@@ -234,5 +244,6 @@ public class OrderSettings {
 		setCheckoutType(array[22]);	
 		
 	}
+	
 
 }

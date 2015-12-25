@@ -801,7 +801,6 @@ public class SettingsGUI extends JFrame {
 		if (Arrays.asList(countriesUS).contains(line)) {
 			storeOption.setSelectedItem("US/CANADA");
 		} else if (Arrays.asList(countriesJP).contains(line)) {
-			System.out.println("yeah im jp");
 			storeOption.setSelectedItem("JAPAN");
 		} else if (Arrays.asList(countriesUK).contains(line)) {
 			storeOption.setSelectedItem("UK");

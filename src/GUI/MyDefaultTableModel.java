@@ -14,7 +14,7 @@ public class MyDefaultTableModel extends DefaultTableModel {
 
     @Override
     public boolean isCellEditable(int row, int column) { // custom isCellEditable function
-    	System.out.println("Cell at row " + row + " and column "+ column + (this.editable_cells[row][column] ? "is editable" : "isn't editable"));
+    	System.out.println("Cell at row " + row + " and column "+ column + (this.editable_cells[row][column] ? " is editable" : "isn't editable"));
         return this.editable_cells[row][column];
     }
 

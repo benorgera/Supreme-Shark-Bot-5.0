@@ -9,6 +9,8 @@ import java.util.Date;
 
 import javax.swing.JTextArea;
 
+import org.w3c.dom.html.HTMLCollection;
+
 import backend.Order;
 import backend.main;
 
@@ -19,6 +21,7 @@ public class TaskProcessor implements Runnable {
 	private JTextArea txtConsole;
 	public static Stage stage;
 	private WebView htmlConsole;
+	private HTTPConnector connector;
 
 	public final DateFormat dateFormat = new SimpleDateFormat("h:mm:ss a");
 
@@ -26,8 +29,11 @@ public class TaskProcessor implements Runnable {
 		this.order = order;
 		this.txtConsole = txtConsole;
 		this.htmlConsole = htmlConsole;
-
+		
+		connector = new HTTPConnector(order.getOrderSettings(), this);
 		print("Thread Initialized");
+		
+		
 
 	}
 
@@ -58,8 +64,8 @@ public class TaskProcessor implements Runnable {
 		}	
 
 		printSys("Refresh Rate: " + refreshRate);
-
-		LinkFinder linkFinder = new LinkFinder(order.getItems(), refreshRate, this); //new link finder
+		
+		LinkFinder linkFinder = new LinkFinder(order.getItems(), refreshRate, this, connector); //new link finder
 
 		while (!Thread.currentThread().isInterrupted()) { //you must check if cancelled in every loop!!!
 			
@@ -71,8 +77,9 @@ public class TaskProcessor implements Runnable {
 				linkFinder.findThem();	
 				break;
 			case ADD_TO_CART:
+				main.getGUI().abortStatuses();
+				main.getGUI().toggleButton();
 				main.killThreads();
-				break;
 			case CHECKOUT:
 				break;
 			}
@@ -99,7 +106,5 @@ public class TaskProcessor implements Runnable {
 	//you must check if cancelled in every loop, otherwise abort wont work (see line 33)!!!
 	//you must check if cancelled in every loop, otherwise abort wont work (see line 33)!!!
 	//you must check if cancelled in every loop, otherwise abort wont work (see line 33)!!!
-
-
 
 }

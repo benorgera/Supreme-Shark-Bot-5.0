@@ -1,27 +1,32 @@
-package backend;
+package executor;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URLConnection;
 
 public class ProxyBuilder {
-
-	public Proxy configure(String proxyAddress, String proxyPort) { //returns proxy object properly configured
-		Proxy proxy;
+	
+	private Proxy proxy;
+	private String proxyUser;
+	private String proxyPass;
+	
+	public ProxyBuilder(String proxyAddress, String proxyPort, String proxyUser, String proxyPass) { //returns proxy object properly configured
 		
 		if (proxyPort != null && !proxyPort.isEmpty()) { //no port specified, 80 assumed
 			proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, Integer.parseInt(proxyPort)));
 		} else { //port specified
 			proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyAddress, 80));
 		}
-		return proxy;
-
+		
+		this.proxyUser = proxyUser;
+		this.proxyPass = proxyPass;
 	}
+	
+	public Proxy getProxy() {return proxy;}
 
-	public URLConnection addAuthorization(URLConnection con, String proxyUser, String proxyPass) { //adds authorization (some proxies have login)
+	public void addAuthorization(URLConnection con) { //adds authorization (some proxies have login)
 		String userpass = proxyUser + ":" + proxyPass;
 		String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
 		con.addRequestProperty("Authorization", basicAuth);
-		return con;
 	}
 }

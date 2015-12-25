@@ -22,7 +22,7 @@ public class MyDefaultTableCellRenderer extends DefaultTableCellRenderer {
 			def.getTableCellRendererComponent(table, value, hasFocus, hasFocus, row, column);
 			
 			
-			//blue color scheme		
+//			//blue color scheme		
 //			if ((row & 1) == 1 && !hasFocus && !isSelected) {
 //				def.setBackground(new Color(238,245,252)); //if even row and not focused or selected make it striped light blue
 //			}

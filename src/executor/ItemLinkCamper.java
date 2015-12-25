@@ -1,11 +1,15 @@
 package executor;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import backend.Item;
 
@@ -14,6 +18,8 @@ public class ItemLinkCamper implements Runnable {
 	private Item item;
 	private LinkFinder linkFinder;
 	private TaskProcessor processor;
+
+	private ArrayList<String> previousConfirmation; //the last JOptionPane shown, if its the same as the one before we dont want to ask again
 
 	public ItemLinkCamper(Item item, LinkFinder linkFinder, TaskProcessor processor) {
 		this.item = item;
@@ -107,41 +113,58 @@ public class ItemLinkCamper implements Runnable {
 
 		for (String link : definites) if (link.contains(item.getColor())) colorCorrect.add(link);
 
-		if (colorCorrect.size() == 1) {
+		if (colorCorrect.size() == 1) { //only one link
+
 			item.setLink(formatLink(colorCorrect.get(0)));
-			processor.print("Item " + item.getItemNumber() + " Link: " + formatLink(colorCorrect.get(0)));
-			return true;
-		} else if (colorCorrect.size() == 0) {
+
+		} else if (colorCorrect.size() == 0 && definites.size() > 1) { //no links in color correct but others 
+
+			
 			int result = confirm(definites);
-			if (result == 0) return false;
-			String link;
-			try {
-				link = definites.get(result);
-			} catch (Exception e) {
-				link = definites.get(0);
-			}
-			item.setLink(formatLink(link));
+			if (result == definites.size() || result <= -1) return false; //they chose none or closed the dialog
+			item.setLink(formatLink(definites.get(result)));
+
+		} else if (colorCorrect.size() == 0 && definites.size() == 1) { //no links in color correct but one in definites
+
+			item.setLink(formatLink(definites.get(0)));
+
 		} else if (colorCorrect.size() > 1) {
+
 			int result = confirm(colorCorrect);
-			if (result == 0) return false;
-			String link;
-			try {
-				link = colorCorrect.get(result);
-			} catch (Exception e) {
-				link = colorCorrect.get(0);
-			}
-			item.setLink(formatLink(link));
+			if (result == colorCorrect.size() || result <= -1) return false; //they chose none or closed the dialog
+			item.setLink(formatLink(colorCorrect.get(result)));
+
+		} else {
+			//extract link like from the jordans
+			return false;
 		}
-		
-		return false; //the above if else must be checked
+
+		return true;
 
 	}
 
-	private int confirm(ArrayList<String> links) {
-		String first = links.get(0);
-		links.add(first);
-		links.set(0, "None");
-		return JOptionPane.showOptionDialog(null, "Which of these is the correct link for " + Arrays.asList(item.getKeywords()).toString() + " in color " + item.getColor() + "?", "Confirm Item " + item.getItemNumber(), 0, 3, null, links.toArray(), 0);
+	private int confirm(ArrayList<String> links) { //confirms that the 
+
+
+		if (links.equals(previousConfirmation)) return -1; //if we already asked about these links, dont ask again
+
+		previousConfirmation = links; //this was the previous confirmation
+
+		ArrayList<String> copy = new ArrayList<String>(links);
+
+		copy.add("None of the above");
+
+		for (int i = 0; i < copy.size();  i++)  copy.set(i, copy.get(i).replace(item.getCategory(), "").replaceFirst("/", "").replaceFirst("/", "").replaceFirst("/", "").replace("shop", ""));
+
+		JComboBox<Object> optionList = new JComboBox<Object>(copy.toArray());
+		
+		JPanel panel = new JPanel(new BorderLayout(0, 0));
+		panel.add(optionList, BorderLayout.SOUTH);
+		panel.add(new JLabel("Which of these is the correct link for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "' in color '" + item.getColor() + "'?"), BorderLayout.NORTH);
+		
+		JOptionPane.showMessageDialog(null, panel, "Confirm Item " + item.getItemNumber() + " Link", JOptionPane.QUESTION_MESSAGE);
+
+		return optionList.getSelectedIndex();
 	}
 
 	private synchronized void waitForUpdate() {//wait for notification of new html
@@ -154,14 +177,19 @@ public class ItemLinkCamper implements Runnable {
 
 	}
 
-	private String formatLink(String link) {
+	private String formatLink(String link) { //make sure the link is a complete URL
 		if (!link.contains("supremenewyork.com")) link = "supremenewyork.com" + link;
 
 		if (!link.contains("http://www.")) link = "http://www." + link;
 
+		processor.print("Item " + item.getItemNumber() + " Link: " + link);
+
 		return link;
 
 	}
+	
+	
+	//early link support, figure out "supreme schott shearling hooded coat" glitch
 
 
 

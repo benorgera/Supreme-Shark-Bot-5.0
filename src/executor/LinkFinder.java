@@ -1,9 +1,6 @@
 package executor;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
-import org.jsoup.Jsoup;
 
 import backend.Item;
 import backend.main;
@@ -13,17 +10,19 @@ public class LinkFinder  {
 	private ArrayList<Item> items;
 	private int refreshRate;
 	private TaskProcessor processor;
+	private HTTPConnector connector;
 
 	private String mostRecentHTML;
 
 	private ArrayList<ItemLinkCamper> campers; //stores campers to be used as monitors for synchronization
 
-	public LinkFinder(ArrayList<Item> items, int refreshRate, TaskProcessor processor) {
+	public LinkFinder(ArrayList<Item> items, int refreshRate, TaskProcessor processor, HTTPConnector connector) {
 		this.items = new ArrayList<Item>(); //make a copy of the items ArrayList, because this one will be cleared out as links are found (and you don't want to clear the real objects, they're needed later in the checkout process
 		this.items = items;
 		this.refreshRate = refreshRate;
 		this.mostRecentHTML = "";
 		this.processor = processor;
+		this.connector = connector;
 
 		campers = new ArrayList<ItemLinkCamper>();
 
@@ -47,18 +46,30 @@ public class LinkFinder  {
 	public void findThem() { //gets new html from site,
 
 		try {
-			mostRecentHTML = Jsoup.connect("http://www.supremenewyork.com/shop/all").get().html();
+			mostRecentHTML = connector.getHTMLString("http://www.supremenewyork.com/shop/all");
+
+
+//			URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxyBuilder.getProxy());
+//			proxyBuilder.addAuthorization(con);
+//			con.connect();
+//			con.getInputStream();
+//
+//			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//			String inputLine;
+//			while ((inputLine = in.readLine()) != null) mostRecentHTML += inputLine; //read html stream
+//			in.close();
+
+			//			mostRecentHTML = Jsoup.connect("http://www.supremenewyork.com/shop/all").get().html();
 
 			processor.printSys("HTTP connection made");
-			
+
 			notifyCampers(); //let camping threads know new html has been found
 
 			processor.printSys("Items with links to be found: " + items.size());
 
 			checkIfReady(); //check if all items found, if so move to next stage
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+
+	
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt(); //if thread interrupted (bot aborted), interrupt yourself
 		}
@@ -83,9 +94,9 @@ public class LinkFinder  {
 	public int getItemNumber() {
 		return items.size();
 	}
-	
+
 	private void checkIfReady() throws InterruptedException { //check if all items found, if so move to next stage, errors thrown caught by try catch in findThem()
-		
+
 		if (items.isEmpty()) { //all items removed (meaning they were found)
 			processor.print("All item links found");
 			TaskProcessor.stage = Stage.ADD_TO_CART; //next stage

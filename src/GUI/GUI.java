@@ -659,7 +659,7 @@ public class GUI extends JFrame {
 		}
 	}
 
-	private void abortStatuses() { //sets status of each item to abort following bot abortion
+	public void abortStatuses() { //sets status of each item to abort following bot abortion
 
 		for (Order o : main.getOrders()) {
 			for (int i = 0; i < o.getModel().getRowCount(); i ++) {
