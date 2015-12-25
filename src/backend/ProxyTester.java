@@ -1,9 +1,12 @@
 package backend;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.SynchronousQueue;
 
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
@@ -26,33 +29,39 @@ public class ProxyTester implements Runnable {
 
 
 	public void run() {
-		System.out.println("Order "+o.getOrderNum()+" proxy attempt\n\tAddress: "+o.getOrderSettings().getProxyAddress()+"\n\tPort: "+o.getOrderSettings().getProxyPort() == null || o.getOrderSettings().getProxyPort().isEmpty() ? 80 : o.getOrderSettings().getProxyPort());
-		
-		resNums = new ArrayList<Long>();
+
+		System.out.println("running");
 		results = new ArrayList<String>();
+		resNums = new ArrayList<Long>();
 		try {
-	
+			System.out.println("Order "+o.getOrderNum()+" proxy attempt\n\tAddress: "+o.getOrderSettings().getProxyAddress()+"\n\tPort: "+ (o.getOrderSettings().getProxyPort() == null || o.getOrderSettings().getProxyPort().isEmpty() ? "80" : o.getOrderSettings().getProxyPort()));
+
 			ProxyBuilder proxyBuilder = new ProxyBuilder(o.getOrderSettings().getProxyAddress(), o.getOrderSettings().getProxyPort(), o.getOrderSettings().getProxyUser(), o.getOrderSettings().getProxytPass());
 
-			System.out.println("Order "+o.getOrderNum()+" proxy address: "+o.getOrderSettings().getProxyAddress()+" on port " + o.getOrderSettings().getProxyPort() == null || o.getOrderSettings().getProxyPort().isEmpty() ? 80 : o.getOrderSettings().getProxyPort());
-
-			for (int i = 0; i < 10; i++) { //take average connection time
+			String html = "";
+			for (int i = 0; i < 5; i++) { //take average connection time
 				long startTime = System.currentTimeMillis();
-				
+
 				URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxyBuilder.getProxy());
 				proxyBuilder.addAuthorization(con);
 				con.connect();
 				con.getInputStream();
+				if (i == 0) { //only need to read the html once
+					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String inputLine = "";
+					while ((inputLine = in.readLine()) != null) html += inputLine; //read html stream
+					in.close();
+				}
 				long endTime = System.currentTimeMillis();
 				System.out.println("Connection Time: "+(endTime-startTime));
 				if (i != 0) resNums.add(endTime - startTime); //skip the first result, its an outlier
 			}
-			
+
 			long total = 0;
 			for (Long l : resNums) total += l;
 			long avg = total / resNums.size();
-			
-			results.add("Order "+o.getOrderNum()+" proxy initialized successfully\n\tAverage Connection Time to Supreme Server: " + avg + " milliseconds");
+
+			results.add("Order "+o.getOrderNum()+" proxy initialized successfully\n\tAverage Connection Time to Supreme Server: " + avg + " ms\n\tProxy Connects to " + (!html.contains("LDN") ? (html.contains("TYO") ? "Tokyo" : "NYC") : "London") + " Store");
 		} catch (NullPointerException | IllegalArgumentException e) {
 			results.add("Order "+o.getOrderNum()+" proxy is not set in order settings");
 		} catch (Exception w) {

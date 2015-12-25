@@ -23,17 +23,20 @@ public class HTTPConnector {
 
 	public String getHTMLString(String url) {
 		
+		System.out.println("URL: " + url);
+		
 		String mostRecentHTML = "";
 		try {
 			con = settings.isUsingProxy() ? new URL(url).openConnection(proxyBuilder.getProxy()) : new URL(url).openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
+			String inputLine = "";
 			while ((inputLine = in.readLine()) != null) mostRecentHTML += inputLine; //read html stream
 			in.close();
 			processor.printSys("Connection to Supreme" + (!settings.isUsingProxy() ? " Not " : " ") + "Using Proxy Successful");
 		} catch (IOException e) {
 			processor.print("Connection to Supreme failed");
 		}
+		System.out.println(mostRecentHTML);
 		return mostRecentHTML;
 	}
 }

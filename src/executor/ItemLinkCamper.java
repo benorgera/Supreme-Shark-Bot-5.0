@@ -113,6 +113,8 @@ public class ItemLinkCamper implements Runnable {
 
 		for (String link : definites) if (link.contains(item.getColor())) colorCorrect.add(link);
 
+		System.out.println(definites.toString());
+		
 		if (colorCorrect.size() == 1) { //only one link
 
 			item.setLink(formatLink(colorCorrect.get(0)));
