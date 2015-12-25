@@ -91,7 +91,6 @@ public class ItemLinkCamper implements Runnable {
 			}
 		} 
 
-
 		int max = 0;
 
 		for (String link : definites) {
@@ -111,7 +110,7 @@ public class ItemLinkCamper implements Runnable {
 
 		ArrayList<String> colorCorrect = new ArrayList<String>();
 
-		for (String link : definites) if (link.contains(item.getColor())) colorCorrect.add(link);
+		for (String link : definites) for (String color: item.getColor()) if (link.contains(color)) {colorCorrect.add(link); break;} //if it has the right color add it to the colorCorrect arraylist
 
 		System.out.println(definites.toString());
 		

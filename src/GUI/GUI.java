@@ -648,7 +648,7 @@ public class GUI extends JFrame {
 				item.setItemNumber(i + 1);
 				item.setKeywords(((String) model.getValueAt(i, 0)).toLowerCase().split("\\s+"));
 				item.setCategory((String) model.getValueAt(i, 1));
-				item.setColor((String) model.getValueAt(i, 2));
+				item.setColor(((String) model.getValueAt(i, 2)).toLowerCase().split("\\s+"));
 				item.setSize((String) model.getValueAt(i, 3));
 				item.setEarlyLink((String) model.getValueAt(i, 4));
 				o.addItem(item);

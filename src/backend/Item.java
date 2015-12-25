@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Item {
 	private String[] keywords;
-	private String color;
+	private String[] color;
 	private String category;
 	private String earlyLink;
 	private String size;
@@ -23,11 +23,11 @@ public class Item {
 		this.keywords = keywords;
 	}
 	
-	public String getColor() {
+	public String[] getColor() {
 		return color;
 	}
 	
-	public void setColor(String color) {
+	public void setColor(String[] color) {
 		this.color = color;
 	}
 	

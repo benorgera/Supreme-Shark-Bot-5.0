@@ -239,7 +239,7 @@ public class SettingsGUI extends JFrame {
 		addressPanelHolder.add(loadOrSaveCheckoutInfoButtonsPanel, BorderLayout.SOUTH);
 
 
-		JButton applyButton = new JButton("Apply");
+		JButton applyButton = new JButton("Apply and Exit");
 		applyButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -250,7 +250,7 @@ public class SettingsGUI extends JFrame {
 
 		});
 
-		JButton exitButton = new JButton("Exit");
+		JButton exitButton = new JButton("Cancel");
 		exitButton.addActionListener(new ActionListener() {
 
 			@Override
