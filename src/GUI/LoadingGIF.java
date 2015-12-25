@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import backend.SetCentered;
-import backend.main;
+import backend.Main;
 
 public class LoadingGIF extends JFrame {
 
@@ -28,7 +28,7 @@ public class LoadingGIF extends JFrame {
 		setUndecorated(true); //maybe, maybe not
 		
 		
-		contentPane.add(new JLabel(title+" "+main.getThisVersionNumber(), JLabel.CENTER), BorderLayout.NORTH);
+		contentPane.add(new JLabel(title+" "+Main.getThisVersionNumber(), JLabel.CENTER), BorderLayout.NORTH);
 		setResizable(false);
 		ImageIcon loading = new ImageIcon(LoadingGIF.class.getResource("ajax-loader.gif"));
 		messageHolder = new JLabel(message+"...", loading, JLabel.CENTER);

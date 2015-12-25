@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.text.NumberFormat;
 import java.util.Arrays;
-
 import net.miginfocom.swing.MigLayout;
 
 public class SettingsGUI extends JFrame {

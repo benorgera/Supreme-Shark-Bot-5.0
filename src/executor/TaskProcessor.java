@@ -1,18 +1,12 @@
 package executor;
 
 import java.text.DateFormat;
-
 import javafx.scene.web.WebView;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import javax.swing.JTextArea;
-
-import org.w3c.dom.html.HTMLCollection;
-
 import backend.Order;
-import backend.main;
+import backend.Main;
 
 @SuppressWarnings("restriction")
 public class TaskProcessor implements Runnable {
@@ -77,9 +71,8 @@ public class TaskProcessor implements Runnable {
 				linkFinder.findThem();	
 				break;
 			case ADD_TO_CART:
-				main.getGUI().abortStatuses();
-				main.getGUI().toggleButton();
-				main.killThreads();
+				Main.getGUI().toggleButton();
+				Main.killThreads();
 			case CHECKOUT:
 				break;
 			}

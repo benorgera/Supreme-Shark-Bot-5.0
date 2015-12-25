@@ -20,13 +20,13 @@ public class Order {
 		this.orderSettings = new OrderSettings(); //initialize the orderSettings
 		//initializes order
 		this.itemList = new ArrayList<Item>();
-	    Object[] arr = main.getGUI().newOrder(); //get order number and data
+	    Object[] arr = Main.getGUI().newOrder(); //get order number and data
 		this.setOrderNum((Integer) arr[0]); //assign order number
 		this.setData(arr[1], arr[2]); //assign data
 		this.deleteButton = (JButton) arr[3];
 		this.settingsButton = (JButton) arr[4];
-		main.pushToOrderList(this);
-		System.out.println(main.getOrdersListLength()+" is the size of the orders list");	
+		Main.pushToOrderList(this);
+		System.out.println(Main.getOrdersListLength()+" is the size of the orders list");	
 	}
 	
 	public void addItem(Item i) {

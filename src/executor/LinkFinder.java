@@ -3,7 +3,7 @@ package executor;
 import java.util.ArrayList;
 
 import backend.Item;
-import backend.main;
+import backend.Main;
 
 public class LinkFinder  {
 
@@ -31,7 +31,7 @@ public class LinkFinder  {
 			ItemLinkCamper camper = new ItemLinkCamper(i, this, processor); //make object
 
 			Thread thread = new Thread(camper); //make runnable
-			main.pushToWorkerArray(thread); //add runnable to 
+			Main.pushToWorkerArray(thread); //add runnable to 
 			campers.add(camper); //stores monitors for synchronization
 			thread.start(); //starts runnable
 		}
@@ -43,23 +43,9 @@ public class LinkFinder  {
 	}
 
 
-	public void findThem() { //gets new html from site,
-
+	public void findThem() { //gets new html from site
 		try {
 			mostRecentHTML = connector.getHTMLString("http://www.supremenewyork.com/shop/all");
-
-
-//			URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxyBuilder.getProxy());
-//			proxyBuilder.addAuthorization(con);
-//			con.connect();
-//			con.getInputStream();
-//
-//			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//			String inputLine;
-//			while ((inputLine = in.readLine()) != null) mostRecentHTML += inputLine; //read html stream
-//			in.close();
-
-			//			mostRecentHTML = Jsoup.connect("http://www.supremenewyork.com/shop/all").get().html();
 
 			processor.printSys("HTTP connection made");
 

@@ -20,7 +20,7 @@ import javax.swing.WindowConstants;
 import backend.SchedulerEnabler;
 import backend.SchedulerSettings;
 import backend.SetCentered;
-import backend.main;
+import backend.Main;
 import eu.hansolo.custom.SteelCheckBox;
 import eu.hansolo.tools.ColorDef;
 import net.miginfocom.swing.MigLayout;
@@ -49,7 +49,7 @@ public class SchedulerGUI extends JFrame {
 		switcher.setSelectedColor(ColorDef.GREEN);
 		switcher.setColored(true);
 		switcher.setText("Enable Scheduler?");
-		settings = main.getSchedulerSettings();
+		settings = Main.getSchedulerSettings();
 		switcher.setSelected(settings.isSelected()); //will show false if it hasnt been enabled
 		JButton applyAndExitButton = new JButton("Apply and Exit");
 
@@ -101,13 +101,13 @@ public class SchedulerGUI extends JFrame {
 
 	private void setupTimer(Date enableDate) throws ParseException { //sets timer to enable bot at scheduled time
 
-		for (Timer t: main.getTimerStack()) {
+		for (Timer t: Main.getTimerStack()) {
 			t.cancel();
 		}
 
 		timer = new Timer();
 
-		main.getTimerStack().push(timer);
+		Main.getTimerStack().push(timer);
 
 		timer.schedule(new SchedulerEnabler(), enableDate);
 	}
@@ -121,7 +121,7 @@ public class SchedulerGUI extends JFrame {
 			e1.printStackTrace(); //this error shouldnt be thrown
 		}
 
-		main.getGUI().getScheduledDateLabel().setText("Scheduled Date/Time: "+new SimpleDateFormat(dateFormat).format(settings.getEnableDate()));
+		Main.getGUI().getScheduledDateLabel().setText("Scheduled Date/Time: "+new SimpleDateFormat(dateFormat).format(settings.getEnableDate()));
 
 		setVisibleMainGUI(true);
 	}
@@ -132,7 +132,7 @@ public class SchedulerGUI extends JFrame {
 	}
 
 	private void setVisibleMainGUI(boolean val) {
-		main.getGUI().getScheduledDateLabel().setVisible(val);
+		Main.getGUI().getScheduledDateLabel().setVisible(val);
 
 	}
 

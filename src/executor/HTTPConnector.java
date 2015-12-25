@@ -34,9 +34,11 @@ public class HTTPConnector {
 			while ((inputLine = in.readLine()) != null) mostRecentHTML += inputLine; //read html stream
 			in.close();
 			processor.printSys("Connection to Supreme" + (!settings.isUsingProxy() ? " Not " : " ") + "Using Proxy Successful");
+		} catch (java.net.SocketTimeoutException e) {
+			processor.print("Connection to Supreme timed out");
 		} catch (IOException e) {
 			processor.print("Connection to Supreme failed");
-		}
+		} 
 		System.out.println(mostRecentHTML);
 		return mostRecentHTML;
 	}

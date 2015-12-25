@@ -10,16 +10,13 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Scanner;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import backend.Encrypter;
 import backend.SetCentered;
-
 
 public class LoadOrSaveGUI extends JFrame {
 
@@ -88,7 +85,9 @@ public class LoadOrSaveGUI extends JFrame {
 	private void processLoad(File selectedFile) {
 
 		try {
-			String content = new Scanner(selectedFile).useDelimiter("\\Z").next();
+			Scanner s = new Scanner(selectedFile);
+			String content = s.useDelimiter("\\Z").next();
+			s.close();
 			System.out.println(content);
 			settingsGUIObject.updateGUI(encrypterOrDecrypter.decrypt(content));
 			dispose();

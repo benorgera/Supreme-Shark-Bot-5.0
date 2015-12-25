@@ -35,7 +35,7 @@ import backend.Item;
 import backend.Order;
 import backend.ProxyTester;
 import backend.SetCentered;
-import backend.main;
+import backend.Main;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.io.IOException;
@@ -62,7 +62,6 @@ public class GUI extends JFrame {
 
 	private JLabel scheduledDateLabel = new JLabel(); //blank unless scheduler enabled
 
-	@SuppressWarnings("restriction")
 	public GUI(boolean isPro, double thisVersionNumber) {
 		GUI.isPro = isPro;
 		thisVersionNumberAsString = Double.toString(thisVersionNumber);
@@ -135,7 +134,7 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				textConsoleNewLine("\nProxy test started");
 
-				for (Order o : main.getOrders()) {
+				for (Order o : Main.getOrders()) {
 					(new Thread(new ProxyTester(o, textConsoleArea))).start();
 				}
 
@@ -407,7 +406,7 @@ public class GUI extends JFrame {
 	}
 
 	private void addItem() {
-		MyDefaultTableModel model = main.getOrders().get(getTabAsInt(null, null) - 1).getModel(); //get selected tab of pane and get its order and that orders tablemodel
+		MyDefaultTableModel model = Main.getOrders().get(getTabAsInt(null, null) - 1).getModel(); //get selected tab of pane and get its order and that orders tablemodel
 		int rows = model.getRowCount();
 		if (rows>=5 && !isPro) { //num is 5 because there's the row with the '+' button
 			JOptionPane.showMessageDialog(null, "Limit of 4 items reached, you must upgrade to pro for infinite items");
@@ -470,7 +469,7 @@ public class GUI extends JFrame {
 		//instantiate new order settings panel
 		System.out.println("Launch Order Settings");
 		SettingsGUI gui; 
-		Encrypter encrypter = new Encrypter(main.getActivationKey());
+		Encrypter encrypter = new Encrypter(Main.getActivationKey());
 
 		try {
 			encrypter.SetupEncrypter();
@@ -479,7 +478,7 @@ public class GUI extends JFrame {
 			System.out.println("Encrypter initialize failed, user won't be warned unless they try and encrypt or decrypt");
 		}
 
-		gui = new SettingsGUI(main.getOrders().get(getTabAsInt(null, null) - 1).getOrderSettings(), getTabAsInt(null, null), encrypter); //settings gui passed the encrypter which it will pass to the load or save gui
+		gui = new SettingsGUI(Main.getOrders().get(getTabAsInt(null, null) - 1).getOrderSettings(), getTabAsInt(null, null), encrypter); //settings gui passed the encrypter which it will pass to the load or save gui
 		System.out.println("GUI passed to Encrypter");
 		encrypter.setGUI(gui); //encrypter passed the gui which it will pass to the load or save GUI
 		System.out.println("Encrypter passed to GUI");
@@ -502,7 +501,7 @@ public class GUI extends JFrame {
 			//delete the order and set back the order count
 			orderTabHolder.removeChangeListener(tabChange); //remove tab listener so new order isnt addde if the + tab is selected once the previously selected tab dissppears
 			orderTabHolder.remove(order-1); //remove order from gui
-			main.removeFromOrderList(order-1); //remove order from orders arraylist
+			Main.removeFromOrderList(order-1); //remove order from orders arraylist
 			editOrderObjects(); //resets order numbers and buttons in order objects array following delete
 
 			if (getTabAsString(null, null).equals("+")) {
@@ -519,9 +518,9 @@ public class GUI extends JFrame {
 		for (int i = 0; i < orderTabHolder.getTabCount() - 1; i ++) {
 			if (getTabAsInt(i, null) != prev) {
 				orderTabHolder.setTitleAt(i, "Order "+prev); //reset tab names
-				main.getOrders().get(i).setDeleteButtonText("Delete Order "+prev); //reset delete button
-				main.getOrders().get(i).setSettingsButtonText("Order "+prev+" Settings"); //reset settings button
-				main.getOrders().get(i).setOrderNum(prev); //reset order numbers
+				Main.getOrders().get(i).setDeleteButtonText("Delete Order "+prev); //reset delete button
+				Main.getOrders().get(i).setSettingsButtonText("Order "+prev+" Settings"); //reset settings button
+				Main.getOrders().get(i).setOrderNum(prev); //reset order numbers
 			}
 			prev ++;
 		}
@@ -567,7 +566,7 @@ public class GUI extends JFrame {
 
 			if (getTabAsString(null, source).equals("+")) { //if tab changes and the tab clicked on is a '+', add a new order
 
-				if (main.getOrdersListLength() >= 1 && !isPro) {//they have regular version and have too many orders
+				if (Main.getOrdersListLength() >= 1 && !isPro) {//they have regular version and have too many orders
 					orderTabHolder.setSelectedIndex(orderTabHolder.getSelectedIndex()-1); //sets selected tab back one to avoid it being the '+'
 					JOptionPane.showMessageDialog(null, "Limit of one order has been reached, you must upgrade to pro for infinite orders");
 
@@ -593,7 +592,7 @@ public class GUI extends JFrame {
 
 	private void processDeactivate() { //maybe have a prompt asking if they want to reactivate on windows or mac, because this current setup will give them their existing OS bot regardless
 		if (prompt("Deactivating license will disable the bot on this computer. You will be able to reactivate and redownload on any computer\nusing the key in the original email we sent you upon purchase. Are you sure you want to deactivate this license? ", "Are you sure you want to deactivate this license?") == 0) {	
-			if (main.getBotSecurity().deactivateLicense()) { //runs deactivate license from software security, which returns true if deactivated
+			if (Main.getBotSecurity().deactivateLicense()) { //runs deactivate license from software security, which returns true if deactivated
 				JOptionPane.showMessageDialog(null,"License deactivated successfully! Your download link and activation key from your purchase confirmation email have\nbeen reactivated. You may now reactivate the bot on any computer using those credentials. The bot will exit now.", "License Deactivated", 2);
 				System.exit(0);
 			} else { //deactivation failed, could've been sparked by their already having 0 downloads in the db
@@ -611,7 +610,7 @@ public class GUI extends JFrame {
 
 	private boolean configurationIsAcceptable() { //if too many proxy-less connections are made user is warned
 		int counter = 0;
-		for (Order o : main.getOrders()) {
+		for (Order o : Main.getOrders()) {
 			if (o.getOrderSettings().getProxyAddress() == null) counter ++;
 		}
 
@@ -622,7 +621,7 @@ public class GUI extends JFrame {
 		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable()) {
 			enableRegardlessOfProxyReadinessOrALackThereof();
 		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
-			main.killThreads(); //abort bot
+			Main.killThreads(); //abort bot
 			toggleButton();
 			abortStatuses();
 		} else {
@@ -632,14 +631,14 @@ public class GUI extends JFrame {
 
 	public void enableRegardlessOfProxyReadinessOrALackThereof() { //called to enable bot, scheduler calls this to bypass any warnings
 		setItemInfoFromTable();
-		Dispatcher d = new Dispatcher(main.getOrders(), textConsoleArea, webView); //launch bot
+		Dispatcher d = new Dispatcher(Main.getOrders(), textConsoleArea, webView); //launch bot
 		d.deploy();
 		toggleButton();
 	}
 
 	private void setItemInfoFromTable() { //converts table data into item objects
 
-		for (Order o : main.getOrders()) { //for each order
+		for (Order o : Main.getOrders()) { //for each order
 			o.clearItems(); //if bot was already enabled this clears the old items
 
 			if (o.getTable().getCellEditor() != null) o.getTable().getCellEditor().stopCellEditing(); //saves values of cells being edited
@@ -661,7 +660,7 @@ public class GUI extends JFrame {
 
 	public void abortStatuses() { //sets status of each item to abort following bot abortion
 
-		for (Order o : main.getOrders()) {
+		for (Order o : Main.getOrders()) {
 			for (int i = 0; i < o.getModel().getRowCount(); i ++) {
 				o.getModel().setValueAt("Aborted", i, 5);
 			}

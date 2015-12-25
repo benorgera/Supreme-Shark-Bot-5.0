@@ -7,9 +7,9 @@ public class SchedulerEnabler extends TimerTask {
 	@Override
 	public void run() {
 		System.out.println("Scheduler Enabled");
-		main.getSchedulerSettings().setSelected(false); //turn off scheduler
-		main.getGUI().getScheduledDateLabel().setVisible(false);
-		main.getGUI().enableRegardlessOfProxyReadinessOrALackThereof();
+		Main.getSchedulerSettings().setSelected(false); //turn off scheduler
+		Main.getGUI().getScheduledDateLabel().setVisible(false);
+		Main.getGUI().enableRegardlessOfProxyReadinessOrALackThereof();
 		
 	}
 }

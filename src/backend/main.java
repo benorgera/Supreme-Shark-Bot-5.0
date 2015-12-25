@@ -2,14 +2,11 @@ package backend;
 
 import gui.GUI;
 import gui.LoadingGIF;
-
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.Timer;
 
-import javax.swing.SwingWorker;
-
-public class main {
+public class Main {
 	private static GUI frame;
 	private static SoftwareSecurity botSecurity;
 	private static ArrayList<Order> orders;
@@ -42,6 +39,7 @@ public class main {
 		frame.setVisible(true);
 		loader.dispose(); //gets rid of gif
 	}
+	
 	public static GUI getGUI() {
 		return frame;
 	}
@@ -72,12 +70,13 @@ public class main {
 	}
 
 	public static void setSchedulerSettings(SchedulerSettings schedulerSettings) {
-		main.schedulerSettings = schedulerSettings;
+		Main.schedulerSettings = schedulerSettings;
 	}
 
 	public static Stack<Timer> getTimerStack() {
 		return timerStack;
 	}
+	
 	public static double getThisVersionNumber() {
 		return thisVersionNumber;
 	}

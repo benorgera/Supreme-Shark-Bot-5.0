@@ -42,7 +42,7 @@ public class SoftwareSecurity {
 
 	public SoftwareSecurity(LoadingGIF loadingGIF) {
 		this.loadingGIF = loadingGIF; //passes loading gif jframe so that this class can update its text
-		this.thisVersionNumber = main.getThisVersionNumber(); //assign version number, stored in main class
+		this.thisVersionNumber = Main.getThisVersionNumber(); //assign version number, stored in main class
 
 	}
 
@@ -304,7 +304,7 @@ public class SoftwareSecurity {
 	}
 
 	public boolean deactivateLicense() { //called by GUI to deactivate license
-		JSONObject deactivateResponse = connectToServer("http://www.supremesharkbot.com:8080/deactivateLicense/?key="+main.getActivationKey());
+		JSONObject deactivateResponse = connectToServer("http://www.supremesharkbot.com:8080/deactivateLicense/?key="+Main.getActivationKey());
 		
 		if (deactivateResponse.getBoolean("success")) { //deactivated successfully, remove their license from computer
 			clearPrefsRoot();
