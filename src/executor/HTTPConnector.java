@@ -28,6 +28,7 @@ public class HTTPConnector {
 		String mostRecentHTML = "";
 		try {
 			con = settings.isUsingProxy() ? new URL(url).openConnection(proxyBuilder.getProxy()) : new URL(url).openConnection();
+			con.setConnectTimeout(8000); //timeout after 8 seconds
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine = "";
 			while ((inputLine = in.readLine()) != null) mostRecentHTML += inputLine; //read html stream

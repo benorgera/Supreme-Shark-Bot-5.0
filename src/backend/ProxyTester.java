@@ -5,12 +5,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.SynchronousQueue;
-
 import javax.swing.JTextArea;
-import javax.swing.SwingWorker;
-
 import executor.ProxyBuilder;
 
 
@@ -30,7 +25,6 @@ public class ProxyTester implements Runnable {
 
 	public void run() {
 
-		System.out.println("running");
 		results = new ArrayList<String>();
 		resNums = new ArrayList<Long>();
 		try {
@@ -44,6 +38,7 @@ public class ProxyTester implements Runnable {
 
 				URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxyBuilder.getProxy());
 				proxyBuilder.addAuthorization(con);
+				con.setConnectTimeout(8000); //set timeout to 8 seconds
 				con.connect();
 				con.getInputStream();
 				if (i == 0) { //only need to read the html once
@@ -64,6 +59,8 @@ public class ProxyTester implements Runnable {
 			results.add("Order "+o.getOrderNum()+" proxy initialized successfully\n\tAverage Connection Time to Supreme Server: " + avg + " ms\n\tProxy Connects to " + (!html.contains("LDN") ? (html.contains("TYO") ? "Tokyo" : "NYC") : "London") + " Store");
 		} catch (NullPointerException | IllegalArgumentException e) {
 			results.add("Order "+o.getOrderNum()+" proxy is not set in order settings");
+		} catch (java.net.SocketTimeoutException e) {
+			results.add("Order "+o.getOrderNum()+" proxy timed out");
 		} catch (Exception w) {
 			if (w.getMessage().contains("503")) {
 				results.add("Order "+o.getOrderNum()+" proxy banned from Supreme Server, they returned a 503 error");
