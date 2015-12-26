@@ -161,7 +161,7 @@ public class ItemLinkCamper implements Runnable {
 		
 		JPanel panel = new JPanel(new BorderLayout(0, 0));
 		panel.add(optionList, BorderLayout.SOUTH);
-		panel.add(new JLabel("Which of these is the correct link for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "' in color '" + item.getColor() + "'?"), BorderLayout.NORTH);
+		panel.add(new JLabel("Which of these is the correct link for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "' in color '" + Arrays.asList(item.getColor()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
 		
 		JOptionPane.showMessageDialog(null, panel, "Confirm Item " + item.getItemNumber() + " Link", JOptionPane.QUESTION_MESSAGE);
 
