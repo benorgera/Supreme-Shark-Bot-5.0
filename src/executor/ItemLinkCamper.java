@@ -20,7 +20,8 @@ public class ItemLinkCamper implements Runnable {
 	private TaskProcessor processor;
 
 	private ArrayList<String> previousConfirmation; //the last JOptionPane shown, if its the same as the one before we dont want to ask again
-
+	private int previousConfirmationNum = 0; //number of times the same confirmation has been shown
+	
 	public ItemLinkCamper(Item item, LinkFinder linkFinder, TaskProcessor processor) {
 		this.item = item;
 		this.linkFinder = linkFinder;
@@ -122,7 +123,7 @@ public class ItemLinkCamper implements Runnable {
 
 			
 			int result = confirm(definites);
-			if (result == definites.size() || result <= -1) return false; //they chose none or closed the dialog
+			if (result <= -1) return false; //they chose none or closed the dialog
 			item.setLink(formatLink(definites.get(result)));
 
 		} else if (colorCorrect.size() == 0 && definites.size() == 1) { //no links in color correct but one in definites
@@ -132,7 +133,7 @@ public class ItemLinkCamper implements Runnable {
 		} else if (colorCorrect.size() > 1) {
 
 			int result = confirm(colorCorrect);
-			if (result == colorCorrect.size() || result <= -1) return false; //they chose none or closed the dialog
+			if (result <= -1) return false; //they chose none or closed the dialog
 			item.setLink(formatLink(colorCorrect.get(result)));
 
 		} else {
@@ -147,25 +148,36 @@ public class ItemLinkCamper implements Runnable {
 	private int confirm(ArrayList<String> links) { //confirms that the 
 
 
-		if (links.equals(previousConfirmation)) return -1; //if we already asked about these links, dont ask again
+		if (links.equals(previousConfirmation)) { //count how many times we asked about these links
+			previousConfirmationNum++;
+		} else { //if its not the previous link, we've asked about it 0 times
+			previousConfirmationNum = 0; 
+		}
+		
+		if (previousConfirmationNum >= 2) return -1; //if we already asked about these links twice, dont ask again
+
 
 		previousConfirmation = links; //this was the previous confirmation
 
 		ArrayList<String> copy = new ArrayList<String>(links);
 
-		copy.add("None of the above");
+		if (!item.getCategory().isEmpty()) {
+			for (int i = 0; i < copy.size();  i++)  copy.set(i, copy.get(i).replace(item.getCategory(), "").replaceFirst("/", "").replaceFirst("/", "").replaceFirst("/", "").replace("shop", ""));
+		} else {
+			for (int i = 0; i < copy.size();  i++)  copy.set(i, copy.get(i).replaceFirst("/", "").replaceFirst("/", "").replace("shop", ""));
+		}
 
-		for (int i = 0; i < copy.size();  i++)  copy.set(i, copy.get(i).replace(item.getCategory(), "").replaceFirst("/", "").replaceFirst("/", "").replaceFirst("/", "").replace("shop", ""));
-
+		
 		JComboBox<Object> optionList = new JComboBox<Object>(copy.toArray());
 		
 		JPanel panel = new JPanel(new BorderLayout(0, 0));
 		panel.add(optionList, BorderLayout.SOUTH);
 		panel.add(new JLabel("Which of these is the correct link for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "' in color '" + Arrays.asList(item.getColor()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
 		
-		JOptionPane.showMessageDialog(null, panel, "Confirm Item " + item.getItemNumber() + " Link", JOptionPane.QUESTION_MESSAGE);
-
-		return optionList.getSelectedIndex();
+		if (JOptionPane.showOptionDialog(null, panel, "Confirm Item " + item.getItemNumber() + " Link", 0, 3, null, new String[]{"None of these", "Ok"}, 0) == 1) return optionList.getSelectedIndex(); //they chose ok, return which link was chosen
+			
+		return -1; //they chose none of the above
+				
 	}
 
 	private synchronized void waitForUpdate() {//wait for notification of new html
@@ -181,7 +193,9 @@ public class ItemLinkCamper implements Runnable {
 	private String formatLink(String link) { //make sure the link is a complete URL
 		if (!link.contains("supremenewyork.com")) link = "supremenewyork.com" + link;
 
-		if (!link.contains("http://www.")) link = "http://www." + link;
+		if (!link.contains("www.")) link = "www." + link;
+		
+		if (!link.contains("http://")) link = "http://" + link;
 
 		processor.print("Item " + item.getItemNumber() + " Link: " + link);
 
