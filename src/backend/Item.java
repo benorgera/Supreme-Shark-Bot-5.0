@@ -55,33 +55,6 @@ public class Item {
 		this.size = size;
 	}
 	
-//	public String[] getPotential() {
-//		return potential;
-//	}
-//	
-//	public void setPotential(String[] potential) {
-//		this.potential = potential;
-//	}
-//	
-//	public String[] getIncorrect() {
-//		return incorrect;
-//	}
-//	
-//	public void setIncorrect(String[] incorrect) {
-//		this.incorrect = incorrect;
-//	}
-//
-//	public boolean isUnsure() {
-//		return unsure;
-//	}
-//
-//	public void setUnsure(boolean unsure) {
-//		this.unsure = unsure;
-//	}
-	
-//	public Item() {	
-//		setUnsure(false);
-//	}
 
 	public String getLink() {
 		return link;
@@ -100,7 +73,7 @@ public class Item {
 	}
 	
 	public String toString() {
-		return "Item Number " + itemNumber + ":\n\nKeywords:\n\t" + Arrays.asList(keywords).toString() + "\nCategorylor:\n\t" + category + "\nColor:\n\t" + color + "\nSize:\n\t" + size + "\nEarly Link:\n\t" + earlyLink;
+		return "Item Number " + itemNumber + ":\n\nKeywords:\n\t" + Arrays.asList(keywords).toString() + "\nCategorylor:\n\t" + category + "\nColor:\n\t" + Arrays.asList(color).toString() + "\nSize:\n\t" + size + "\nEarly Link:\n\t" + earlyLink;
 	}
 	
 	

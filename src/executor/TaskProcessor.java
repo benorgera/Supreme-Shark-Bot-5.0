@@ -91,6 +91,13 @@ public class TaskProcessor implements Runnable {
 	public void setStatus(int itemNumber, String text) { //sets status of item in table
 		order.getModel().setValueAt(text, itemNumber - 1, 5);
 	}
+	
+	public void throwRunnableErrorPane(String message, String title) {
+		RunnableErrorPane pane = new RunnableErrorPane(message, "Order " + order.getOrderNum() + ": " + title);
+		Thread thread = new Thread(pane);
+		Main.pushToWorkerArray(thread);
+		thread.start();
+	}
 
 
 

@@ -28,7 +28,7 @@ public class LinkFinder  {
 
 		for (Item i : items) { //start all of the workers for each item
 
-			ItemLinkCamper camper = new ItemLinkCamper(i, this, processor); //make object
+			ItemLinkCamper camper = new ItemLinkCamper(i, this, connector, processor); //make object
 
 			Thread thread = new Thread(camper); //make runnable
 			Main.pushToWorkerArray(thread); //add runnable to 
@@ -93,8 +93,6 @@ public class LinkFinder  {
 			}
 		}
 	}
-
-
 
 
 }
