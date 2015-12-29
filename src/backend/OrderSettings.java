@@ -197,12 +197,10 @@ public class OrderSettings {
 		return fieldValuesAsArray;
 	}
 
-	private void initializeValues() {//initializes values in array
-		for (int i = 0; i < fieldValuesAsArray.length; i ++) {
-			fieldValuesAsArray[i] = "";
-		}
+	private void initializeValues() {//initializes values in array	
+		for (int i = 0; i < fieldValuesAsArray.length; i ++) fieldValuesAsArray[i] = (i != 14 ? "" : "400"); //set field blank, unless its refresh rate
 	}
-
+		
 	public String getProxyPort() {
 		return proxyPort;
 	}

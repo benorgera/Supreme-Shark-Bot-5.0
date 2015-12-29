@@ -53,7 +53,7 @@ public class GUI extends JFrame {
 	private JTextArea textConsoleArea; //text console, reached by textConsoleNewLine
 	private JButton enableBotButton;
 
-	private final String[] headers = {"Keywords", "Category", "Color", "Size", "Early Link", "Status", "Actions"};
+	private final String[] headers = {"Keywords", "Category", "Colors", "Size", "Early Link", "Status", "Actions"};
 	private final String[] newItemRow =  {"", "", "", "", "", "", "Delete Item"};
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
 	private TabChangeListener tabChange;
@@ -273,6 +273,7 @@ public class GUI extends JFrame {
 
 		topButtonPanel.add(helpButton, BorderLayout.WEST);
 		helpButton.addActionListener(launchHelpAction);
+		setSize(new Dimension(1050, 518));
 		new SetCentered(this);
 
 	}
@@ -610,9 +611,7 @@ public class GUI extends JFrame {
 
 	private boolean configurationIsAcceptable() { //if too many proxy-less connections are made user is warned
 		int counter = 0;
-		for (Order o : Main.getOrders()) {
-			if (o.getOrderSettings().getProxyAddress() == null) counter ++;
-		}
+		for (Order o : Main.getOrders()) if (!o.getOrderSettings().isUsingProxy()) counter ++;
 
 		return counter > 2 ? (prompt("More than two orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
 	}
@@ -660,12 +659,8 @@ public class GUI extends JFrame {
 
 	public void abortStatuses() { //sets status of each item to abort following bot abortion
 
-		for (Order o : Main.getOrders()) {
-			for (int i = 0; i < o.getModel().getRowCount(); i ++) {
-				o.getModel().setValueAt("Aborted", i, 5);
-			}
-		}
-
+		for (Order o : Main.getOrders()) for (int i = 0; i < o.getModel().getRowCount(); i ++) o.getModel().setValueAt("Aborted", i, 5);
+		
 	}
 
 

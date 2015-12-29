@@ -23,16 +23,21 @@ public class TaskProcessor implements Runnable {
 		this.order = order;
 		this.txtConsole = txtConsole;
 		this.htmlConsole = htmlConsole;
-		
+
 		connector = new HTTPConnector(order.getOrderSettings(), this);
 		print("Thread Initialized");
-		
-		
+
+
 
 	}
 
 	public void print(String s) { //print to system console and to software console
-		txtConsole.setText(txtConsole.getText() + (txtConsole.getText().isEmpty() ? "" : "\n") + "Order " + order.getOrderNum() + ": " + s + " (" + dateFormat.format(new Date()).toString() + ")");
+		try {
+			txtConsole.setText(txtConsole.getText() + (txtConsole.getText().isEmpty() ? "" : "\n") + "Order " + order.getOrderNum() + ": " + s + " (" + dateFormat.format(new Date()).toString() + ")");
+		} catch (java.lang.Error e) { //if the writelock couldn't be acquired (simultaneous writing occurred), retry
+			print(s);
+		}
+		
 		printSys(s);
 	}
 
@@ -50,7 +55,7 @@ public class TaskProcessor implements Runnable {
 		stage = Stage.LINK_FINDING; //start at link finding
 
 		int refreshRate;
-		
+
 		try { //if no refresh rate, make it 400
 			refreshRate = Integer.parseInt(order.getOrderSettings().getRefreshRate());
 		} catch (Exception e) {
@@ -58,11 +63,11 @@ public class TaskProcessor implements Runnable {
 		}	
 
 		printSys("Refresh Rate: " + refreshRate);
-		
+
 		LinkFinder linkFinder = new LinkFinder(order.getItems(), refreshRate, this, connector); //new link finder
 
 		while (!Thread.currentThread().isInterrupted()) { //you must check if cancelled in every loop!!!
-			
+
 			printSys("Stage: " + stage.name());
 
 			switch (stage) {
@@ -91,7 +96,7 @@ public class TaskProcessor implements Runnable {
 	public void setStatus(int itemNumber, String text) { //sets status of item in table
 		order.getModel().setValueAt(text, itemNumber - 1, 5);
 	}
-	
+
 	public void throwRunnableErrorPane(String message, String title) {
 		RunnableErrorPane pane = new RunnableErrorPane(message, "Order " + order.getOrderNum() + ": " + title);
 		Thread thread = new Thread(pane);

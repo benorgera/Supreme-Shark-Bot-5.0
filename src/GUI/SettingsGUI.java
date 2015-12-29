@@ -757,15 +757,14 @@ public class SettingsGUI extends JFrame {
 				System.out.println("Line was blank, field not manipulated");
 			} else if (fieldsAsArray[counter] instanceof JComboBox) { //set Jcombobox item
 
-				if (counter == 8) {//8th line of file is country
-					triggerStoreOptionActionListener(line); //sets ui to correct store based on the country, allowing the country to be selected properly (if this didnt happen the country field would have the wrong options and the country would always be US)
-				}
+				if (counter == 8) triggerStoreOptionActionListener(line); //sets ui to correct store based on the country, allowing the country to be selected properly (if this didnt happen the country field would have the wrong options and the country would always be US)
+		
 				((JComboBox<?>) fieldsAsArray[counter]).setSelectedItem(line);
 
 			} else { //set jtext field text
 
 				((JTextField) fieldsAsArray[counter]).setText(line);
-
+				
 			}
 			counter++;
 		}

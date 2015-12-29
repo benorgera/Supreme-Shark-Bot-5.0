@@ -39,7 +39,10 @@ public class ItemLinkCamper implements Runnable {
 
 		int count = 0;
 		while (!Thread.currentThread().isInterrupted()) {
-
+			count++;
+			
+			processor.setStatus(item.getItemNumber(), "Link Finding (" + count + " checks)");
+			
 			waitForUpdate();
 
 			if (!item.getEarlyLink().isEmpty()) if(checkEarlyLink()) terminate();
@@ -55,7 +58,6 @@ public class ItemLinkCamper implements Runnable {
 
 			if (shouldCheck) { //if a keyword was found, try and check the HTML again
 				checkHTML();
-				count++;
 				processor.printSys("Item "+ item.getItemNumber() + " checked HTML " + count + " times");
 			}
 
@@ -137,6 +139,9 @@ public class ItemLinkCamper implements Runnable {
 
 		if (JOptionPane.showOptionDialog(null, panel, "Confirm Item " + item.getItemNumber() + " Link", 0, 3, null, new String[]{"None of these", "Ok"}, 0) == 1) return optionList.getSelectedIndex(); //they chose ok, return which link was chosen
 
+		//maybe make the confirmation a runnable so this item can keep checking,  and then have it notify this thread once its answered
+		//and have it so if two confirmations are up at one time one is interrupted (because you dont want two prompts open)
+		
 		return -1; //they chose none of the above
 
 	}
@@ -169,37 +174,20 @@ public class ItemLinkCamper implements Runnable {
 
 		String link = item.getEarlyLink();
 
-		processor.printSys("Early Link Full URL: " + link);
+		processor.printSys("Item " + item.getItemNumber() + " Early Link Full URL: " + link);
 
-		String temp = link;
-		int i = 0;
-		while (temp.contains("/")) {temp = temp.replaceFirst("/", ""); i++;} //count slashed
+		int slashes = getNumberOfSlashes(link);
+		
+		if (slashes == 6) { //early link might contain colors
 
-		processor.printSys("Number of '/': " + i);
+			String linkPart = link.substring(0, link.lastIndexOf("/")); 
+			String colorPart = link.substring(link.lastIndexOf("/") + 1, link.length()); 
 
-		String[] parts = new String[2];
+			processor.printSys("Item " + item.getItemNumber() + " Two parts of link (item part and color part): " + linkPart + colorPart);
 
-		if (i == 6) { //early link might contain colors
-
-			parts[0] = link.substring(0, link.lastIndexOf("/"));
-			parts[1] = link.substring(link.lastIndexOf("/") + 1, link.length());
-
-			processor.printSys("Two parts of link (item part and color part): " + Arrays.asList(parts).toString());
-
-			if (!parts[1].isEmpty()) { //if the color part of the link isn't empty
-				String[] existingColors = item.getColor();
-				String[] newColors = parts[1].split("-");
-				System.out.println(Arrays.asList(newColors).toString());
-				String[] allColors = removeBlanks((String []) ArrayUtils.addAll(existingColors, newColors));
-				processor.printSys("New Colors Based On Early Link: " + Arrays.asList(allColors).toString());
-				item.setColor(allColors);
-				processor.printSys("New Early Link: " + parts[0]);
-				item.setEarlyLink(parts[0]);
-			} else {
-				processor.printSys("Early Link Didn't Contain Colors");
-			}
-
-		} else if (i == 5){ //early link contained no colors
+			if (!colorPart.isEmpty()) setColorsAndEarlyLinkFromEarlyLink(colorPart, linkPart);  //if the color part of the link isn't empty
+	
+		} else if (slashes == 5){ //early link contained no colors
 			processor.printSys("Early Link Didn't Contain Colors");
 		} else {
 			processor.print("Item " + item.getItemNumber() + ": Early Link Format Invalid");
@@ -214,7 +202,7 @@ public class ItemLinkCamper implements Runnable {
 		Object[] res = connector.chechEarlyLink(item.getEarlyLink());
 		if (!(boolean) res[0]) return false; //if it failed return
 
-		ArrayList<String> definites = new ArrayList<String>(getValidLinks((String) res[1]));
+		ArrayList<String> definites = new ArrayList<String>(getValidLinks((String) res[1])); //res[1] is the html
 
 		Iterator<String> iterator = definites.iterator();
 
@@ -261,7 +249,6 @@ public class ItemLinkCamper implements Runnable {
 
 		} else if (colorCorrect.size() == 0 && definites.size() > 1) { //no links in color correct but others 
 
-
 			int result = confirm(definites);
 			if (result <= -1) return false; //they chose none or closed the dialog
 			item.setLink(formatLink(definites.get(result), true));
@@ -298,13 +285,32 @@ public class ItemLinkCamper implements Runnable {
 	}
 
 	private String[] removeBlanks(String[] firstArray) { //removes blank elements from array
-		
+
 		ArrayList<String> list = new ArrayList<String>();
-		
+
 		for(String s : firstArray) if(s != null && s.length() > 0) list.add(s);
-		
+
 		return list.toArray(new String[list.size()]);
 
+	}
+	
+	private int getNumberOfSlashes(String link) {
+
+		int i = 0;
+		while (link.contains("/")) {link = link.replaceFirst("/", ""); i++;} //count slashes
+
+		processor.printSys("Item " + item.getItemNumber() + " Number of '/': " + i);
+		
+		return i;
+
+	}
+	
+	private void setColorsAndEarlyLinkFromEarlyLink(String colorPart, String linkPart) {
+		String[] allColors = removeBlanks((String []) ArrayUtils.addAll(item.getColor(), colorPart.split("-"))); //get colors at end of url (split by dashes)
+		processor.printSys("New Colors Based On Early Link: " + Arrays.asList(allColors).toString());
+		item.setColor(allColors);
+		processor.printSys("New Early Link: " + linkPart);
+		item.setEarlyLink(linkPart);
 	}
 
 }
