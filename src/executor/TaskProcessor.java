@@ -27,8 +27,6 @@ public class TaskProcessor implements Runnable {
 		connector = new HTTPConnector(order.getOrderSettings(), this);
 		print("Thread Initialized");
 
-
-
 	}
 
 	public void print(String s) { //print to system console and to software console

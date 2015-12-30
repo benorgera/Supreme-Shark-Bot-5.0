@@ -35,11 +35,8 @@ public class LoadOrSaveGUI extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setContentPane(contentPane);
 
-		if ("save".equals(type)) {
-			loading = false;
-		} else {
-			loading = true;
-		}
+		
+		loading = !"save".equals(type);
 
 		chooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt");
@@ -49,12 +46,8 @@ public class LoadOrSaveGUI extends JFrame {
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setFileFilter(filter);
 
-
-		if (loading) {
-			chooser.setDialogType(0);
-		} else {
-			chooser.setDialogType(1);
-		}
+		
+		chooser.setDialogType(loading ? 0 : 1);
 
 		contentPane.add(chooser, BorderLayout.CENTER);
 		pack();
@@ -72,7 +65,6 @@ public class LoadOrSaveGUI extends JFrame {
 				if (loading) {
 					processLoad(selection);
 				} else {
-					System.out.println("process save");
 					processSave(selection);
 				}
 
@@ -104,9 +96,7 @@ public class LoadOrSaveGUI extends JFrame {
 
 		try {
 
-			if (!selectedFile.getName().contains(".txt")) {
-				selectedFile = new File(selectedFile.getAbsolutePath()+".txt");
-			}
+			if (!selectedFile.getName().contains(".txt")) selectedFile = new File(selectedFile.getAbsolutePath()+".txt");
 
 			if (selectedFile.exists()) {
 				int res = JOptionPane.showOptionDialog(null, "The selected file already exists. Overwrite?", "File Exists", 0, 0, null, null, null);
