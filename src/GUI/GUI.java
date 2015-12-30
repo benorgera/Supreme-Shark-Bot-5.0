@@ -65,11 +65,7 @@ public class GUI extends JFrame {
 	public GUI(boolean isPro, double thisVersionNumber) {
 		GUI.isPro = isPro;
 		thisVersionNumberAsString = Double.toString(thisVersionNumber);
-		if (isPro) {
-			setTitle("Supreme Shark Bot "+thisVersionNumberAsString+" Pro");
-		} else {
-			setTitle("Supreme Shark Bot "+thisVersionNumberAsString);
-		}
+		setTitle("Supreme Shark Bot " + thisVersionNumberAsString + (isPro ? " Pro" : ""));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 926, 518);
 		contentPane = new JPanel();
@@ -348,14 +344,9 @@ public class GUI extends JFrame {
 		orderPanel.add(tableHolderScrollPane, BorderLayout.CENTER);
 		orderTabHolder.addTab("Order "+orderCount, orderPanel);
 
-		for (int i = 0; i < orderTabHolder.getTabCount(); i ++) {
-			//removes tab to add tab if new order being added
-			if (getTabAsString(i, null).equals("+")) {
-				orderTabHolder.removeTabAt(i);
-			}
-		}
+		for (int i = 0; i < orderTabHolder.getTabCount(); i ++) if (getTabAsString(i, null).equals("+")) orderTabHolder.removeTabAt(i); //removes tab to add tab if new order being added
+			
 		orderTabHolder.addTab("+", null);
-
 
 		Action deleteOrAdd = new AbstractAction() {
 
@@ -396,14 +387,8 @@ public class GUI extends JFrame {
 		addNewItemButtonRow(model); //adds new '+' row
 
 		System.out.println("Order " + orderCount + " added");
-		Object [] arr = new Object[5];
-		arr[0] = orderCount;
-		arr[1] = table;
-		arr[2] = model;
-		arr[3] = deleteOrderButton;
-		arr[4] = orderSettings;
 		repaint();
-		return arr; //informs order what number it is, and tells it the data
+		return new Object[]{orderCount, table, model, deleteOrderButton, orderSettings}; //informs order what number it is, and tells it the data
 	}
 
 	private void addItem() {
@@ -421,22 +406,16 @@ public class GUI extends JFrame {
 
 	private void setAllButOneUneditable(int row, MyDefaultTableModel model) {
 		//makes add new item row uneditable after delete item
-		for (int i = 0; i <= 4; i++) {
-			model.setCellEditable(row, i, false);
-		}
+		for (int i = 0; i <= 4; i++) model.setCellEditable(row, i, false);
+		
 	}
 
 	private void setAllEditable(int row, MyDefaultTableModel model) {
 
 		//sets every column in a row editable, except status column, called following new order or new item
-		System.out.println("setting all columns editable for row "+row);
-		for (int i = 0; i <= 6; i++) {
-			if (i == 5) { //its the status column
-				model.setCellEditable(row, i, false); //sets status column uneditable
-			} else {
-				model.setCellEditable(row, i, true); //allows button to be pressed and new item to be edited
-			}
-		}
+		System.out.println("Setting all columns editable for row "+row);
+		for (int i = 0; i <= 6; i++) model.setCellEditable(row, i, !(i == 5));
+		
 	}
 
 	private void addNewItemButtonRow(MyDefaultTableModel model) {
@@ -493,10 +472,12 @@ public class GUI extends JFrame {
 
 	private void deleteOrder() {
 		int order = getTabAsInt(null, null);
+		
 		if (order == 1 && orderTabHolder.getTabCount() == 2) { //only one order tab in tabbed pane
 			JOptionPane.showMessageDialog(null, "Order 1 cannot be deleted, only 1 order exists!");
 			return;
 		}
+		
 		System.out.println("Delete order "+order+" pending");
 		if (confirmAction("Order", order) == 0) { // show the joptionpane
 			//delete the order and set back the order count
@@ -505,9 +486,8 @@ public class GUI extends JFrame {
 			Main.removeFromOrderList(order-1); //remove order from orders arraylist
 			editOrderObjects(); //resets order numbers and buttons in order objects array following delete
 
-			if (getTabAsString(null, null).equals("+")) {
-				orderTabHolder.setSelectedIndex(orderTabHolder.getTabCount()-2); //deselect + tab if its selected following deletion
-			}
+			if (getTabAsString(null, null).equals("+")) orderTabHolder.setSelectedIndex(orderTabHolder.getTabCount()-2); //deselect + tab if its selected following deletion
+			
 			orderTabHolder.addChangeListener(tabChange); //re-add the change listener now that + deselected
 			orderCount--; //drop the order count
 
@@ -528,12 +508,8 @@ public class GUI extends JFrame {
 	}
 
 	private int confirmAction(String type, Integer order) { //calls prompt which prompts, called when order or item deleted
-		String message;
-		if (order == null) {
-			message = "delete the selected item?";
-		} else {
-			message = "delete Order "+order+"?";
-		}
+		String message = order == null ? "delete the selected item?" : "delete Order " + order + "?";
+
 		return prompt("Are you sure you want to "+message, "Confirm "+type+" Deletion");
 	}
 
@@ -543,18 +519,12 @@ public class GUI extends JFrame {
 
 	private String getTabAsString(Integer at, JTabbedPane source) { //get title of tab as String with only numbers or '+'
 
-		JTabbedPane tempTabbedPane;
-		if (source == null) {//they want the default pane
-			tempTabbedPane = orderTabHolder;
-		} else { // they wanted a specified pane
-			tempTabbedPane = source;
-		}
+		//null they want the order tab, otherwie they specified
+		JTabbedPane tempTabbedPane = source == null ? orderTabHolder : source;
 
-		if (at == null) { //the want the current tab
-			return tempTabbedPane.getTitleAt(orderTabHolder.getSelectedIndex()).replace("Order ", "").replace(" Settings","");
-		} else { //they specified a tab
-			return tempTabbedPane.getTitleAt(at).replace("Order ", "").replace(" Settings","");
-		}
+		//null they want the current tab, otherwise the want the specified tab
+		return at == null ? tempTabbedPane.getTitleAt(orderTabHolder.getSelectedIndex()).replace("Order ", "").replace(" Settings","") : tempTabbedPane.getTitleAt(at).replace("Order ", "").replace(" Settings","");
+	
 	}
 
 	private int getTabAsInt(Integer at, JTabbedPane source) {
@@ -587,8 +557,6 @@ public class GUI extends JFrame {
 	public void toggleButton() { //enable to abort and vice versa
 
 		enableBotButton.setText(enableBotButton.getText().equals("Enable Bot") ? "Abort Bot" : "Enable Bot");
-
-
 	}
 
 	private void processDeactivate() { //maybe have a prompt asking if they want to reactivate on windows or mac, because this current setup will give them their existing OS bot regardless
@@ -611,7 +579,7 @@ public class GUI extends JFrame {
 
 	private boolean configurationIsAcceptable() { //if too many proxy-less connections are made user is warned
 		int counter = 0;
-		for (Order o : Main.getOrders()) if (!o.getOrderSettings().isUsingProxy()) counter ++;
+		for (Order o : Main.getOrders()) if (!o.getOrderSettings().isUsingProxy()) counter++;
 
 		return counter > 2 ? (prompt("More than two orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
 	}
@@ -630,8 +598,7 @@ public class GUI extends JFrame {
 
 	public void enableRegardlessOfProxyReadinessOrALackThereof() { //called to enable bot, scheduler calls this to bypass any warnings
 		setItemInfoFromTable();
-		Dispatcher d = new Dispatcher(Main.getOrders(), textConsoleArea, webView); //launch bot
-		d.deploy();
+		new Dispatcher(Main.getOrders(), textConsoleArea, webView).deploy();; //launch bot
 		toggleButton();
 	}
 

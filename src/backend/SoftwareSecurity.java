@@ -74,9 +74,7 @@ public class SoftwareSecurity {
 		System.out.println("licenseStatusValue following server check: " + licenseStatusValue);
 
 		Object[] res = checkOutdated(); //array of boolean of if its outdated and JSON of version info
-		if ((Boolean) res[0]) {
-			updateSoftware((JSONObject) res[1]);
-		}
+		if ((Boolean) res[0]) updateSoftware((JSONObject) res[1]);
 
 	}
 
@@ -102,25 +100,14 @@ public class SoftwareSecurity {
 		returnValue[1] = newestVersionInfo;
 		double newestVersionNumber = newestVersionInfo.getDouble("version");
 
-		if (newestVersionNumber>thisVersionNumber) {// its outdated
-			System.out.println("newestVersionNumber: " + newestVersionNumber + " > " + "thisVersionNumber: " + thisVersionNumber);
-			returnValue[0] = true;
-		} else {
-			System.out.println("newestVersionNumber: " + newestVersionNumber + " <= " + "thisVersionNumber: " + thisVersionNumber);
-			returnValue[0] = false;
-		}
+		returnValue[0] = newestVersionNumber > thisVersionNumber;
+		System.out.println(newestVersionNumber > thisVersionNumber ? "newestVersionNumber: " + newestVersionNumber + " > " + "thisVersionNumber: " + thisVersionNumber : "newestVersionNumber: " + newestVersionNumber + " <= " + "thisVersionNumber: " + thisVersionNumber);
+		
 		return returnValue;
 	}
 
 	private botStatusEnum checkStatus() { //returns status of bot
-
-		if (bannedKeyValue) {
-			return botStatusEnum.BANNED;
-		} else if (enabledKeyValue) {
-			return botStatusEnum.ENABLED;
-		} else {
-			return botStatusEnum.UNENABLED;
-		}
+		return bannedKeyValue ? botStatusEnum.BANNED : (enabledKeyValue ? botStatusEnum.ENABLED : botStatusEnum.UNENABLED);
 	}
 
 	public void processStatus() {
@@ -128,11 +115,7 @@ public class SoftwareSecurity {
 			message("This license has been banned, exiting now", "Banned");
 			System.exit(0);
 		} else if (botStatusEnum.ENABLED.equals(checkStatus())) { //everything worked out, send them back to main
-
-			if (licenseStatusEnum.ERROR.equals(licenseStatusValue)) { //license status not determined
-				checkLicenseStatus();
-			}
-			return;
+			if (licenseStatusEnum.ERROR.equals(licenseStatusValue)) checkLicenseStatus(); //license status not determined
 		} else if (attemptActivation(getKeyFromUser())) { //needs to be activated, gets key then tries to activate
 			setActivated();
 		}
@@ -156,7 +139,7 @@ public class SoftwareSecurity {
 			if (null == keyRes) { //they clicked x or cancel to activaiton prompt
 				System.out.println("Activation Prompted Exited, Software Quitting");
 				System.exit(0);
-			} else if (!"".equals(keyRes)) { //the keyRes wasn't blank
+			} else if (!keyRes.isEmpty()) { //the keyRes wasn't blank
 				ready = true;
 				System.out.println("Activation Key Entered: " + keyRes);
 			}
@@ -168,7 +151,7 @@ public class SoftwareSecurity {
 
 		boolean res = connectToServer(makeActivationLink(userEnteredKey)).getBoolean("success");
 		System.out.println("Server Response to Activation: " + res);
-		if(res) {
+		if (res) {
 			message("Activated Successfully!", "Success");
 			activationKeyValue = userEnteredKey; //set the key so it can be accessed by setActivates
 			enabledKeyValue = true;
@@ -235,8 +218,7 @@ public class SoftwareSecurity {
 
 		//get ip
 		URL whatismyip = new URL("http://checkip.amazonaws.com");
-		BufferedReader in = new BufferedReader(new InputStreamReader(
-				whatismyip.openStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
 		InetAddress ip = InetAddress.getLocalHost();
 		ipAddress = ("External:'"  + in.readLine() + "',Host:" + ip.getHostAddress() + "'");
 
@@ -250,18 +232,13 @@ public class SoftwareSecurity {
 		macAddress = sb.toString();
 
 		//return the values as a string array
-		String[] ret = new String[2];
-		ret[0] = ipAddress;
-		ret[1] = macAddress;
-		return ret;
+		return new String[]{ipAddress, macAddress};
 	}
 
 	private boolean checkBanned() { //return true if it was banned
-		if ("yes".equals(connectToServer("http://supremesharkbot.com:8080/banned/?key=" + activationKeyValue).get("banned"))) {
-			return true;
-		} else {
-			return false;
-		}
+		
+		return "yes".equals(connectToServer("http://supremesharkbot.com:8080/banned/?key=" + activationKeyValue).get("banned"));
+
 	}
 
 	public boolean getVersionIsPro() {

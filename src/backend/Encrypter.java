@@ -28,12 +28,10 @@ public class Encrypter {
 	public void SetupEncrypter() throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException {
 		//errors handled in GUI try catch
 		System.out.println("Key for encrypter: "+key);
-		byte[] bytekey = null;
 
-		bytekey = key.getBytes("UTF-8");
+		byte[] bytekey = key.getBytes("UTF-8");
 
-		MessageDigest sha = null;
-		sha = MessageDigest.getInstance("SHA-1");
+		MessageDigest sha = MessageDigest.getInstance("SHA-1");
 
 		bytekey = sha.digest(bytekey);
 		bytekey = Arrays.copyOf(bytekey, 16); // use only first 128 bit
@@ -55,9 +53,8 @@ public class Encrypter {
 	
 	private String asHex(byte[] bytes) {
 		StringBuilder sb = new StringBuilder();
-		for (byte b : bytes) {
-			sb.append(String.format("%02X ", b));
-		}
+		for (byte b : bytes) sb.append(String.format("%02X ", b));
+		
 		return sb.toString();
 	}
 

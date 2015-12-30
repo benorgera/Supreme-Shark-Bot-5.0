@@ -62,12 +62,7 @@ public class ProxyTester implements Runnable {
 		} catch (java.net.SocketTimeoutException e) {
 			results.add("Order "+o.getOrderNum()+" proxy timed out");
 		} catch (Exception w) {
-			if (w.getMessage().contains("503")) {
-				results.add("Order "+o.getOrderNum()+" proxy banned from Supreme Server, they returned a 503 error");
-			} else {
-				results.add("Order "+o.getOrderNum()+" proxy failed");
-			}
-
+			results.add(w.getMessage().contains("503") ? "Order "+o.getOrderNum()+" proxy banned from Supreme Server, they returned a 503 error" : "Order "+o.getOrderNum()+" proxy failed");
 
 		}
 
