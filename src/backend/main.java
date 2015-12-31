@@ -22,7 +22,7 @@ public class Main {
 		botSecurity = new SoftwareSecurity(loader);
 		try {
 			botSecurity.initialize();
-			//			botSecurity.clearPrefsRoot(); //testing purposes only, should be removed
+//						botSecurity.clearPrefsRoot(); //testing purposes only, should be removed
 			botSecurity.processStatus();
 		} catch (Exception e) {
 			System.out.println("Unforeseen security error"); //this should never be thrown 
@@ -49,7 +49,7 @@ public class Main {
 	}
 
 	public static void removeFromOrderList(int index) {
-		System.out.println(orders.get(index).getOrderNum()+" was the order num of the deleted order");
+		System.out.println("Order " + orders.get(index).getOrderNum() + " deleted");
 		orders.remove(index);
 	}
 

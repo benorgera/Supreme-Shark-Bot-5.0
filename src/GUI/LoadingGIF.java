@@ -20,7 +20,7 @@ public class LoadingGIF extends JFrame {
 	public LoadingGIF(String message, String title) {
 
 		JPanel contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout(0,0));
+		contentPane.setLayout(new BorderLayout());
 		setContentPane(contentPane);
 
 		((JComponent) contentPane).setBorder(BorderFactory.createEmptyBorder(10,10,10,10));

@@ -109,13 +109,10 @@ public class ItemLinkCamper implements Runnable {
 	}
 
 	private int confirm(ArrayList<String> links) { //confirms that the 
-
 		
-		previousConfirmationNum = (links.equals(previousConfirmation) ? previousConfirmationNum++ : 0);
-
+		if (links.equals(previousConfirmation)) {previousConfirmationNum++;} else {previousConfirmationNum = 0;}
 
 		if (previousConfirmationNum >= 2) return -1; //if we already asked about these links twice, dont ask again
-
 
 		previousConfirmation = links; //this was the previous confirmation
 
@@ -132,7 +129,7 @@ public class ItemLinkCamper implements Runnable {
 
 		JPanel panel = new JPanel(new BorderLayout(0, 0));
 		panel.add(optionList, BorderLayout.SOUTH);
-		panel.add(new JLabel("Which of these is the correct link for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColor()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
+		panel.add(new JLabel("Which of these is the correct link for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
 
 		if (JOptionPane.showOptionDialog(null, panel, "Confirm Item " + item.getItemNumber() + " Link", 0, 3, null, new String[]{"None of these", "Ok"}, 0) == 1) return optionList.getSelectedIndex(); //they chose ok, return which link was chosen
 
@@ -232,7 +229,7 @@ public class ItemLinkCamper implements Runnable {
 
 		ArrayList<String> colorCorrect = new ArrayList<String>();
 
-		for (String link : definites) for (String color: item.getColor()) if (link.contains(color)) {colorCorrect.add(link); break;} //if it has the right color add it to the colorCorrect arraylist
+		for (String link : definites) for (String color: item.getColors()) if (link.contains(color)) {colorCorrect.add(link); break;} //if it has the right color add it to the colorCorrect arraylist
 
 		return colorCorrect;
 
@@ -303,9 +300,9 @@ public class ItemLinkCamper implements Runnable {
 	}
 	
 	private void setColorsAndEarlyLinkFromEarlyLink(String colorPart, String linkPart) {
-		String[] allColors = removeBlanks((String []) ArrayUtils.addAll(item.getColor(), colorPart.split("-"))); //get colors at end of url (split by dashes)
+		String[] allColors = removeBlanks((String []) ArrayUtils.addAll(item.getColors(), colorPart.split("-"))); //get colors at end of url (split by dashes)
 		processor.printSys("New Colors Based On Early Link: " + Arrays.asList(allColors).toString());
-		item.setColor(allColors);
+		item.setColors(allColors);
 		processor.printSys("New Early Link: " + linkPart);
 		item.setEarlyLink(linkPart);
 	}

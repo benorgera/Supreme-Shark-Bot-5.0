@@ -9,10 +9,7 @@ public class Item {
 	private String earlyLink;
 	private String size;
 	private int itemNumber;
-//	private String[] potential;
-//	private String[] incorrect;
-//	private boolean unsure;
-//	
+
 	private String link; //set by link finder once link is found
 	
 	public String[] getKeywords() {
@@ -23,11 +20,11 @@ public class Item {
 		this.keywords = keywords;
 	}
 	
-	public String[] getColor() {
+	public String[] getColors() {
 		return color;
 	}
 	
-	public void setColor(String[] color) {
+	public void setColors(String[] color) {
 		this.color = color;
 	}
 	

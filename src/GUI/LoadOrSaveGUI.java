@@ -31,7 +31,7 @@ public class LoadOrSaveGUI extends JFrame {
 		this.encrypterOrDecrypter = encrypter;
 		this.settingsGUIObject = encrypterOrDecrypter.getGUI();
 		contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout(0, 0));
+		contentPane.setLayout(new BorderLayout());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setContentPane(contentPane);
 

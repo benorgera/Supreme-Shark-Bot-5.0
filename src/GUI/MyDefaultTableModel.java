@@ -14,13 +14,13 @@ public class MyDefaultTableModel extends DefaultTableModel {
 
     @Override
     public boolean isCellEditable(int row, int column) { // custom isCellEditable function
-    	System.out.println("Cell at row " + row + " and column "+ column + (this.editable_cells[row][column] ? " is editable" : " isn't editable"));
+    	System.out.println("Cell at row " + row + " and column "+ column + (this.editable_cells[row][column] ? " is editable" : " is uneditable"));
         return this.editable_cells[row][column];
     }
 
     public void setCellEditable(int row, int col, boolean value) {
         this.editable_cells[row][col] = value; // set cell true/false
-        System.out.println("Cell at row " + row + " and column " + col + " is now editable " + value);
+        System.out.println("Cell at row " + row + " and column " + col + " is now" + (value ? " editable" : " uneditable"));
         this.fireTableCellUpdated(row, col);
     }
 }

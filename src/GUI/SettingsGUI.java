@@ -189,7 +189,7 @@ public class SettingsGUI extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
+		contentPane.setLayout(new BorderLayout());
 
 
 		initializeFields(); //initializes texfields and combo boxes whih are private
@@ -228,13 +228,13 @@ public class SettingsGUI extends JFrame {
 
 
 		JPanel loadOrSaveCheckoutInfoButtonsPanel = new JPanel();
-		loadOrSaveCheckoutInfoButtonsPanel.setLayout(new BorderLayout(0,0));
+		loadOrSaveCheckoutInfoButtonsPanel.setLayout(new BorderLayout());
 
 		loadOrSaveCheckoutInfoButtonsPanel.add(loadCheckoutInfoButtonPanel, BorderLayout.NORTH);
 		loadOrSaveCheckoutInfoButtonsPanel.add(saveCheckoutInfoButtonPanel, BorderLayout.SOUTH);
 
 		JPanel addressPanelHolder = new JPanel();
-		addressPanelHolder.setLayout(new BorderLayout(0,0));
+		addressPanelHolder.setLayout(new BorderLayout());
 		addressPanelHolder.add(addressPanel, BorderLayout.NORTH);
 		addressPanelHolder.add(loadOrSaveCheckoutInfoButtonsPanel, BorderLayout.SOUTH);
 
@@ -260,14 +260,14 @@ public class SettingsGUI extends JFrame {
 		});
 
 		JPanel applyOrExitButtonPanel = new JPanel();
-		applyOrExitButtonPanel.setLayout(new BorderLayout(0,0));
+		applyOrExitButtonPanel.setLayout(new BorderLayout());
 		applyOrExitButtonPanel.add(applyButton, BorderLayout.NORTH);
 		applyOrExitButtonPanel.add(exitButton, BorderLayout.SOUTH);
 
 		JPanel techPanel = new JPanel();
 
 		JPanel mainPanelHolder = new JPanel();
-		mainPanelHolder.setLayout(new BorderLayout(0,0));
+		mainPanelHolder.setLayout(new BorderLayout());
 		mainPanelHolder.add(techPanel, BorderLayout.EAST);
 		mainPanelHolder.add(addressPanelHolder, BorderLayout.WEST);
 		mainPanelHolder.add(applyOrExitButtonPanel, BorderLayout.SOUTH);

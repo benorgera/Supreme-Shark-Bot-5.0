@@ -27,16 +27,9 @@ public class Encrypter {
 	
 	public void SetupEncrypter() throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException {
 		//errors handled in GUI try catch
-		System.out.println("Key for encrypter: "+key);
+		System.out.println("Key for encrypter: " + key);
 
-		byte[] bytekey = key.getBytes("UTF-8");
-
-		MessageDigest sha = MessageDigest.getInstance("SHA-1");
-
-		bytekey = sha.digest(bytekey);
-		bytekey = Arrays.copyOf(bytekey, 16); // use only first 128 bit
-
-		secretKeySpec = new SecretKeySpec(bytekey, "AES");
+		secretKeySpec = new SecretKeySpec(Arrays.copyOf(MessageDigest.getInstance("SHA-1").digest(key.getBytes("UTF-8")), 16), "AES");
 
 		cipher = Cipher.getInstance("AES");
 	}
@@ -62,7 +55,7 @@ public class Encrypter {
 		s = s.replaceAll("\\s+","");
 		int len = s.length();
 		byte[] data = new byte[len / 2];
-		for (int i = 0; i < len; i += 2) data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i+1), 16));
+		for (int i = 0; i < len; i += 2) data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
 		
 		return data;
 	}
@@ -70,8 +63,7 @@ public class Encrypter {
 	public String encrypt(String content) {
 		try {
 			cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-			byte[] encrypted = cipher.doFinal((content).getBytes("UTF-8"));
-			return asHex(encrypted);
+			return asHex(cipher.doFinal((content).getBytes("UTF-8")));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "error";

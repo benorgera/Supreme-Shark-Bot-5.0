@@ -46,7 +46,6 @@ public class GUI extends JFrame {
 
 	private static final long serialVersionUID = -2271100967580465591L;
 	private static boolean isPro; //true if pro
-	private static String thisVersionNumberAsString; //this copies version number
 	private JPanel contentPane;
 	private JTabbedPane orderTabHolder;
 	private int orderCount = 0;
@@ -64,14 +63,11 @@ public class GUI extends JFrame {
 
 	public GUI(boolean isPro, double thisVersionNumber) {
 		GUI.isPro = isPro;
-		thisVersionNumberAsString = Double.toString(thisVersionNumber);
-		setTitle("Supreme Shark Bot " + thisVersionNumberAsString + (isPro ? " Pro" : ""));
+		setTitle("Supreme Shark Bot " + Double.toString(thisVersionNumber) + (isPro ? " Pro" : ""));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 926, 518);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
-
+		contentPane.setLayout(new BorderLayout());
 
 		Action launchHelpAction = new AbstractAction() {
 
@@ -95,14 +91,14 @@ public class GUI extends JFrame {
 		};
 
 		JPanel orderTabHolderHolder = new JPanel();
-		orderTabHolderHolder.setLayout(new BorderLayout(0,0));
+		orderTabHolderHolder.setLayout(new BorderLayout());
 		contentPane.add(orderTabHolderHolder, BorderLayout.CENTER);
 
 		orderTabHolder = new JTabbedPane(JTabbedPane.TOP);
 		orderTabHolderHolder.add(orderTabHolder, BorderLayout.CENTER);
 
 		JPanel deactivateAndEnableButtonsPanel = new JPanel();
-		deactivateAndEnableButtonsPanel.setLayout(new BorderLayout(0,0));
+		deactivateAndEnableButtonsPanel.setLayout(new BorderLayout());
 
 		enableBotButton = new JButton("Enable Bot");
 
@@ -117,9 +113,7 @@ public class GUI extends JFrame {
 		};
 		enableBotButton.addActionListener(enableAction);
 
-		JButton enableRestockMonitorButton = new JButton("Enable Restock Monitor");
-
-		JPanel testAndDeactivatePanel = new JPanel(new BorderLayout(0,0));
+		JPanel testAndDeactivatePanel = new JPanel(new BorderLayout());
 		JButton testProxies = new JButton("Test Proxies");
 
 		Action testProxiesAction = new AbstractAction() {
@@ -154,18 +148,13 @@ public class GUI extends JFrame {
 		};
 		deactivateLicense.addActionListener(deactivateLicenseAction);
 
-		JPanel enableButtonsPanel = new JPanel();
-		enableButtonsPanel.setLayout(new BorderLayout(0,0));
-		enableButtonsPanel.add(enableBotButton, BorderLayout.WEST);
-		enableButtonsPanel.add(enableRestockMonitorButton, BorderLayout.EAST);
-
 		deactivateAndEnableButtonsPanel.add(testAndDeactivatePanel, BorderLayout.WEST);
-		deactivateAndEnableButtonsPanel.add(enableButtonsPanel, BorderLayout.EAST);
+		deactivateAndEnableButtonsPanel.add(enableBotButton, BorderLayout.EAST);
 
 		orderTabHolder.addChangeListener(tabChange = new TabChangeListener());
 
 		JPanel splitPaneHolder = new JPanel();
-		splitPaneHolder.setLayout(new BorderLayout(0,0));
+		splitPaneHolder.setLayout(new BorderLayout());
 
 		JSplitPane splitPane = new JSplitPane();
 		splitPaneHolder.add(splitPane, BorderLayout.NORTH);
@@ -192,10 +181,10 @@ public class GUI extends JFrame {
 
 
 		splitPane.setLeftComponent(textConsolePanel);
-		textConsolePanel.setLayout(new BorderLayout(0,0));
+		textConsolePanel.setLayout(new BorderLayout());
 
 		splitPane.setRightComponent(htmlConsolePanel);
-		htmlConsolePanel.setLayout(new BorderLayout(0,0));
+		htmlConsolePanel.setLayout(new BorderLayout());
 
 		JScrollPane textConsoleScroller = new JScrollPane();
 		textConsolePanel.add(textConsoleScroller, BorderLayout.CENTER);
@@ -207,7 +196,7 @@ public class GUI extends JFrame {
 		textConsolePanel.add(textConsole, BorderLayout.NORTH);
 		textConsole.setHorizontalAlignment(SwingConstants.CENTER);
 
-		JPanel clearConsoleButtonPanel = new JPanel(new BorderLayout(0,0));
+		JPanel clearConsoleButtonPanel = new JPanel(new BorderLayout());
 
 		JButton clearConsoleButton = new JButton("Clear Text Console");
 
@@ -249,11 +238,11 @@ public class GUI extends JFrame {
 
 
 		JPanel topButtonPanel = new JPanel();
-		topButtonPanel.setLayout(new BorderLayout(0, 0));
+		topButtonPanel.setLayout(new BorderLayout());
 
 
 		JPanel schedulerHolderPanel = new JPanel();
-		schedulerHolderPanel.setLayout(new BorderLayout(0,0));
+		schedulerHolderPanel.setLayout(new BorderLayout());
 		scheduledDateLabel.setVisible(false);
 
 		JButton schedulerButton = new JButton("Scheduler Settings");
@@ -275,7 +264,7 @@ public class GUI extends JFrame {
 	}
 
 	public Object[] newOrder() {
-		//		//called by order to add new order to GUI
+		//	called by order to add new order to GUI
 		System.out.println("Start New Order");
 		orderCount++;
 		final MyDefaultTableModel model = new MyDefaultTableModel(headers,0); //custom table model which enable only certain cells be editable
@@ -288,7 +277,7 @@ public class GUI extends JFrame {
 		table.getTableHeader().setReorderingAllowed(false);
 
 		JPanel orderPanel = new JPanel();
-		orderPanel.setLayout(new BorderLayout(0, 0));
+		orderPanel.setLayout(new BorderLayout());
 
 		JScrollPane tableHolderScrollPane = new JScrollPane();
 		JPanel tableHolder = new JPanel();
@@ -304,13 +293,13 @@ public class GUI extends JFrame {
 			}
 		};
 
-		tableHolder.setLayout(new BorderLayout(0,0));
+		tableHolder.setLayout(new BorderLayout());
 		JButton deleteOrderButton = new JButton("Delete Order "+orderCount);
 		deleteOrderButton.addActionListener(deleteOrderAction);
 
 
 		JPanel buttonPanelHolder = new JPanel();//this block makes the delete order goto the southeast
-		buttonPanelHolder.setLayout(new BorderLayout(0,0));
+		buttonPanelHolder.setLayout(new BorderLayout());
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(deleteOrderButton);
 		buttonPanelHolder.add(buttonPanel, BorderLayout.EAST);
@@ -329,11 +318,11 @@ public class GUI extends JFrame {
 		};
 
 
-		JButton orderSettings = new JButton("Order "+orderCount+" Settings");
+		JButton orderSettings = new JButton("Order " + orderCount + " Settings");
 		orderSettings.addActionListener(launchOrderSettings);
 		orderSettingsButtonHolder.add(orderSettings);
 		buttonPanelHolder.add(orderSettingsButtonHolder, BorderLayout.WEST);
-		tableHolder.add(buttonPanelHolder, BorderLayout.SOUTH);
+		orderPanel.add(buttonPanelHolder, BorderLayout.SOUTH);
 
 
 		tableHolder.add(table.getTableHeader(), BorderLayout.NORTH);
@@ -353,18 +342,15 @@ public class GUI extends JFrame {
 			private static final long serialVersionUID = -7584511112190398057L;
 
 			public void actionPerformed(ActionEvent e) {
-				JTable source = (JTable)e.getSource();
-				String buttonText = (String) source.getValueAt(Integer.valueOf(e.getActionCommand()), 6); //check if the row that was clicked was a delete or an addition
-				System.out.println("Button text was "+buttonText);
+				String buttonText = (String) ((JTable)e.getSource()).getValueAt(Integer.valueOf(e.getActionCommand()), 6); //check if the row that was clicked was a delete or an addition
 				if (buttonText.contains("Delete") && ((DefaultTableModel) table.getModel()).getRowCount() != 2) {
 					//deletes row whose delete button was pressed
 					if (confirmAction("Item", null) == 0) { //shows JOptionPane
-						int deleteRow = Integer.valueOf(e.getActionCommand());
-						((DefaultTableModel) table.getModel()).removeRow(deleteRow);
+						((DefaultTableModel) table.getModel()).removeRow(Integer.valueOf(e.getActionCommand()));
 						setAllButOneUneditable(table.getModel().getRowCount()-1, model); //makes add new item row uneditable after delete item
 					}
 				} else if (((DefaultTableModel) table.getModel()).getRowCount() == 2 && buttonText.contains("Delete")) { //theyre trying to delete the only item
-					JOptionPane.showMessageDialog(null, "Item 1 cannot be deleted, only one item exists!");
+					JOptionPane.showMessageDialog(null, "Item 1 cannot be deleted, only 1 item exists!");
 				} else {
 					addItem();
 				}
@@ -378,11 +364,8 @@ public class GUI extends JFrame {
 		JComboBox<String> comboBox = new JComboBox<String>(new String[] {"jackets", "shirts", "tops-sweaters", "sweatshirts", "pants", "t-shirts", "hats", "bags", "accessories", "skate", "shoes", "shorts"});
 		JComboBoxColumn.setCellEditor(new DefaultCellEditor(comboBox));
 
-
-		int rows = model.getRowCount();
 		model.addRow(newItemRow);
-		System.out.println("table has "+rows+" row(s)");
-		setAllEditable(rows, model);  //allows button to be pressed and new item to be edited
+		setAllEditable(model.getRowCount() - 1, model);  //allows button to be pressed and new item to be edited
 
 		addNewItemButtonRow(model); //adds new '+' row
 
@@ -394,7 +377,7 @@ public class GUI extends JFrame {
 	private void addItem() {
 		MyDefaultTableModel model = Main.getOrders().get(getTabAsInt(null, null) - 1).getModel(); //get selected tab of pane and get its order and that orders tablemodel
 		int rows = model.getRowCount();
-		if (rows>=5 && !isPro) { //num is 5 because there's the row with the '+' button
+		if (rows >= 5 && !isPro) { //num is 5 because there's the row with the '+' button
 			JOptionPane.showMessageDialog(null, "Limit of 4 items reached, you must upgrade to pro for infinite items");
 		} else {
 			model.addRow(newItemRow); 
@@ -614,7 +597,7 @@ public class GUI extends JFrame {
 				item.setItemNumber(i + 1);
 				item.setKeywords(((String) model.getValueAt(i, 0)).toLowerCase().split("\\s+"));
 				item.setCategory((String) model.getValueAt(i, 1));
-				item.setColor(((String) model.getValueAt(i, 2)).toLowerCase().split("\\s+"));
+				item.setColors(((String) model.getValueAt(i, 2)).toLowerCase().split("\\s+"));
 				item.setSize((String) model.getValueAt(i, 3));
 				item.setEarlyLink((String) model.getValueAt(i, 4));
 				o.addItem(item);
