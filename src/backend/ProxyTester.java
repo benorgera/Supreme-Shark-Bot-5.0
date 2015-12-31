@@ -63,7 +63,6 @@ public class ProxyTester implements Runnable {
 			results.add("Order "+o.getOrderNum()+" proxy timed out");
 		} catch (Exception w) {
 			results.add(w.getMessage().contains("503") ? "Order "+o.getOrderNum()+" proxy banned from Supreme Server, they returned a 503 error" : "Order "+o.getOrderNum()+" proxy failed");
-
 		}
 
 		for (String s : results) area.setText(area.getText() +"\n"+s); //notify user of results

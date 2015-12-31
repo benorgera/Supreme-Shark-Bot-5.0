@@ -58,11 +58,7 @@ public class SchedulerGUI extends JFrame {
 
 		timeSpinner.setEditor(timeEditor);
 
-		if (switcher.isSelected()) { //if the thing was enabled, what was the date
-			timeSpinner.setValue(settings.getEnableDate()); // will previously set date
-		} else { //it wasn't enabled, set it to the current date
-			timeSpinner.setValue(new Date());
-		}
+		timeSpinner.setValue(switcher.isSelected() ? settings.getEnableDate() : new Date());
 
 		contentPane.add(dateTimeLabel);
 		contentPane.add(timeSpinner);
@@ -100,10 +96,8 @@ public class SchedulerGUI extends JFrame {
 	}
 
 	private void setupTimer(Date enableDate) throws ParseException { //sets timer to enable bot at scheduled time
-
-		for (Timer t: Main.getTimerStack()) {
-			t.cancel();
-		}
+		
+		cancelTimers();
 
 		timer = new Timer();
 
@@ -127,6 +121,7 @@ public class SchedulerGUI extends JFrame {
 	}
 
 	private void unsetScheduler() {
+		cancelTimers();
 		setVisibleMainGUI(false);
 		settings.setEnableDate(new Date());
 	}
@@ -134,6 +129,10 @@ public class SchedulerGUI extends JFrame {
 	private void setVisibleMainGUI(boolean val) {
 		Main.getGUI().getScheduledDateLabel().setVisible(val);
 
+	}
+	
+	private void cancelTimers() {
+		for (Timer t: Main.getTimerStack()) t.cancel();
 	}
 
 }

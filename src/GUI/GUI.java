@@ -588,7 +588,7 @@ public class GUI extends JFrame {
 		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable()) {
 			enableRegardlessOfProxyReadinessOrALackThereof();
 		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
-			Main.killThreads(); //abort bot
+			Main.interruptThreads(); //abort bot
 			toggleButton();
 			abortStatuses();
 		} else {
@@ -598,7 +598,7 @@ public class GUI extends JFrame {
 
 	public void enableRegardlessOfProxyReadinessOrALackThereof() { //called to enable bot, scheduler calls this to bypass any warnings
 		setItemInfoFromTable();
-		new Dispatcher(Main.getOrders(), textConsoleArea, webView).deploy();; //launch bot
+		new Dispatcher(Main.getOrders(), textConsoleArea, webView).deploy(); //launch bot
 		toggleButton();
 	}
 

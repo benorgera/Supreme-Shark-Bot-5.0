@@ -25,7 +25,7 @@ public class TaskProcessor implements Runnable {
 		this.htmlConsole = htmlConsole;
 
 		connector = new HTTPConnector(order.getOrderSettings(), this);
-		print("Thread Initialized");
+		print("Thread Initialized"); 
 
 	}
 
@@ -75,7 +75,7 @@ public class TaskProcessor implements Runnable {
 				break;
 			case ADD_TO_CART:
 				Main.getGUI().toggleButton();
-				Main.killThreads();
+				Main.interruptThreads();
 			case CHECKOUT:
 				break;
 			}
@@ -96,8 +96,7 @@ public class TaskProcessor implements Runnable {
 	}
 
 	public void throwRunnableErrorPane(String message, String title) {
-		RunnableErrorPane pane = new RunnableErrorPane(message, "Order " + order.getOrderNum() + ": " + title);
-		Thread thread = new Thread(pane);
+		Thread thread = new Thread(new RunnableErrorPane(message, "Order " + order.getOrderNum() + ": " + title));
 		Main.pushToWorkerArray(thread);
 		thread.start();
 	}
@@ -110,4 +109,4 @@ public class TaskProcessor implements Runnable {
 	//you must check if cancelled in every loop, otherwise abort wont work (see line 33)!!!
 	//you must check if cancelled in every loop, otherwise abort wont work (see line 33)!!!
 
-}
+} 

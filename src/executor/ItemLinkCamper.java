@@ -110,12 +110,9 @@ public class ItemLinkCamper implements Runnable {
 
 	private int confirm(ArrayList<String> links) { //confirms that the 
 
+		
+		previousConfirmationNum = (links.equals(previousConfirmation) ? previousConfirmationNum++ : 0);
 
-		if (links.equals(previousConfirmation)) { //count how many times we asked about these links
-			previousConfirmationNum++;
-		} else { //if its not the previous link, we've asked about it 0 times
-			previousConfirmationNum = 0; 
-		}
 
 		if (previousConfirmationNum >= 2) return -1; //if we already asked about these links twice, dont ask again
 
@@ -187,11 +184,11 @@ public class ItemLinkCamper implements Runnable {
 
 			if (!colorPart.isEmpty()) setColorsAndEarlyLinkFromEarlyLink(colorPart, linkPart);  //if the color part of the link isn't empty
 	
-		} else if (slashes == 5){ //early link contained no colors
+		} else if (slashes == 5) { //early link contained no colors
 			processor.printSys("Early Link Didn't Contain Colors");
 		} else {
 			processor.print("Item " + item.getItemNumber() + ": Early Link Format Invalid");
-			processor.throwRunnableErrorPane("Early Link: '" + link + "' is invalid and could not be processed. It has been removed to prevent erratic and unpredictable results.", "Item " + item.getItemNumber() + ": Early Link Format Invalid");
+			processor.throwRunnableErrorPane("Early Link: '" + link + "' is invalid and could not be processed. It will not be used to prevent erratic and unpredictable results.", "Item " + item.getItemNumber() + ": Early Link Format Invalid");
 			item.setEarlyLink("");
 		}
 
@@ -288,7 +285,7 @@ public class ItemLinkCamper implements Runnable {
 
 		ArrayList<String> list = new ArrayList<String>();
 
-		for(String s : firstArray) if(s != null && s.length() > 0) list.add(s);
+		for(String s : firstArray) if (s != null && s.length() > 0) list.add(s);
 
 		return list.toArray(new String[list.size()]);
 

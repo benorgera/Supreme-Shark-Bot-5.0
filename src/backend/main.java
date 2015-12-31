@@ -17,9 +17,9 @@ public class Main {
 
 	public static void main(String[] args) {
 
-	LoadingGIF loader = new LoadingGIF("Initializing Supreme Shark Bot", "Supreme Shark Bot"); //starts loading gif
+		LoadingGIF loader = new LoadingGIF("Initializing Supreme Shark Bot", "Supreme Shark Bot"); //starts loading gif
 
-	botSecurity = new SoftwareSecurity(loader);
+		botSecurity = new SoftwareSecurity(loader);
 		try {
 			botSecurity.initialize();
 			//			botSecurity.clearPrefsRoot(); //testing purposes only, should be removed
@@ -28,7 +28,7 @@ public class Main {
 			System.out.println("Unforeseen security error"); //this should never be thrown 
 			e.printStackTrace();
 		}
-		
+
 		loader.passUI("Initializing bot interface");
 		orders = new ArrayList<Order>();
 		threads = new ArrayList<Thread>();
@@ -39,7 +39,7 @@ public class Main {
 		frame.setVisible(true);
 		loader.dispose(); //gets rid of gif
 	}
-	
+
 	public static GUI getGUI() {
 		return frame;
 	}
@@ -76,22 +76,22 @@ public class Main {
 	public static Stack<Timer> getTimerStack() {
 		return timerStack;
 	}
-	
+
 	public static double getThisVersionNumber() {
 		return thisVersionNumber;
 	}
-	
+
 	public static SoftwareSecurity getBotSecurity() {
 		return botSecurity;
 	}
-	
+
 	public static void pushToWorkerArray(Thread thread) {
 		threads.add(thread);
 	}
 
-	public static void killThreads() {
+	public static void interruptThreads() {
 		for (Thread t : threads) t.interrupt();
 		threads.clear();
 	}
-	
+
 }

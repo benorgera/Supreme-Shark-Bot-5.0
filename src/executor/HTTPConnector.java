@@ -53,7 +53,7 @@ public class HTTPConnector {
 			String location = con.getHeaderField("Location");
 			processor.printSys("Response Code: " + con.getResponseCode() + ", Early Link Redirected to: " + location);
 			mostRecentHTML =  connectionToString(con);
-			success = location == null;
+			success = location == null; //if the redirect location was null, this worked
 		} catch (MalformedURLException e) {
 			success = false;
 		} catch (IOException e) {

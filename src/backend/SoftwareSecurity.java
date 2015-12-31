@@ -88,22 +88,18 @@ public class SoftwareSecurity {
 	private void updateSoftware(JSONObject JSON) {
 		System.out.println("Updating software");
 		//future things pulled from JSON must be added to the blank list of json keys`
-
+		//this json object will contain info about the new version
 
 	}
 
 	private Object[] checkOutdated() { //returns [true, JSON from version script on server] or [false, JSON from version script on server] 
 
-		Object[] returnValue = new Object[2];
-
 		JSONObject newestVersionInfo = connectToServer("http://www.supremesharkbot.com:8080/version/");
-		returnValue[1] = newestVersionInfo;
 		double newestVersionNumber = newestVersionInfo.getDouble("version");
 
-		returnValue[0] = newestVersionNumber > thisVersionNumber;
 		System.out.println(newestVersionNumber > thisVersionNumber ? "newestVersionNumber: " + newestVersionNumber + " > " + "thisVersionNumber: " + thisVersionNumber : "newestVersionNumber: " + newestVersionNumber + " <= " + "thisVersionNumber: " + thisVersionNumber);
 		
-		return returnValue;
+		return new Object[]{newestVersionNumber > thisVersionNumber, newestVersionInfo};
 	}
 
 	private botStatusEnum checkStatus() { //returns status of bot
@@ -136,7 +132,7 @@ public class SoftwareSecurity {
 		while (!ready) {
 			keyRes = JOptionPane.showInputDialog(null, "Enter Activation Key (Requires Internet Connection):", "Activate Supreme Shark Bot", 3);
 
-			if (null == keyRes) { //they clicked x or cancel to activaiton prompt
+			if (null == keyRes) { //they clicked x or cancel to activation prompt
 				System.out.println("Activation Prompted Exited, Software Quitting");
 				System.exit(0);
 			} else if (!keyRes.isEmpty()) { //the keyRes wasn't blank
@@ -150,6 +146,7 @@ public class SoftwareSecurity {
 	private boolean attemptActivation(String userEnteredKey) {
 
 		boolean res = connectToServer(makeActivationLink(userEnteredKey)).getBoolean("success");
+		
 		System.out.println("Server Response to Activation: " + res);
 		if (res) {
 			message("Activated Successfully!", "Success");
@@ -186,23 +183,18 @@ public class SoftwareSecurity {
 
 	private JSONObject connectToServer(String site) { //every call to this method must add to the blankjsonobjectmadetoavoiderrors if it calls a new json key
 		try {
-			URL url = new URL(site);
-			URLConnection con = url.openConnection();
+			URLConnection con = new URL(site).openConnection();
 			con.setConnectTimeout(timeoutMS);
 			con.setReadTimeout(timeoutMS);
 			InputStream in = con.getInputStream();
 			String encoding = con.getContentEncoding();
-			encoding = encoding == null ? "UTF-8" : encoding;
-			String body = IOUtils.toString(in, encoding);
-			JSONObject obj = new JSONObject(body); 
 			System.out.println("Server connection successful, returning JSON from server");
-			return obj;
+			return new JSONObject(IOUtils.toString(in, encoding == null ? "UTF-8" : encoding));
 		} catch (Exception e) {
 			System.out.println("Error during server connection: " + e.getMessage());
 		}
 		
 		
-		System.out.println("Because connection failed returning default JSON");
 		JSONObject blankJSONObjectMadeToAvoidErrors = new JSONObject(); //returns json object with values expected to avoid org.jsonexception
 		blankJSONObjectMadeToAvoidErrors.put("banned", "no");
 		blankJSONObjectMadeToAvoidErrors.put("version", 0.1);
@@ -217,18 +209,13 @@ public class SoftwareSecurity {
 		String ipAddress;
 
 		//get ip
-		URL whatismyip = new URL("http://checkip.amazonaws.com");
-		BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-		InetAddress ip = InetAddress.getLocalHost();
-		ipAddress = ("External:'"  + in.readLine() + "',Host:" + ip.getHostAddress() + "'");
+		ipAddress = ("External:'"  + new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream())).readLine() + "',Host:" + InetAddress.getLocalHost().getHostAddress() + "'");
 
 		//get mac
-		NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-		byte[] mac = network.getHardwareAddress();
+		byte[] mac = NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress();
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < mac.length; i++) {
-			sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));        
-		}
+		for (int i = 0; i < mac.length; i++) sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));        
+		
 		macAddress = sb.toString();
 
 		//return the values as a string array
@@ -236,17 +223,11 @@ public class SoftwareSecurity {
 	}
 
 	private boolean checkBanned() { //return true if it was banned
-		
 		return "yes".equals(connectToServer("http://supremesharkbot.com:8080/banned/?key=" + activationKeyValue).get("banned"));
-
 	}
 
 	public boolean getVersionIsPro() {
-		if (licenseStatusEnum.PRO.equals(licenseStatusValue)) {
-			return true;
-		} else {
-			return false;
-		}
+		return licenseStatusEnum.PRO.equals(licenseStatusValue);
 	}
 
 	public double getThisVersionNumber() {
@@ -281,9 +262,8 @@ public class SoftwareSecurity {
 	}
 
 	public boolean deactivateLicense() { //called by GUI to deactivate license
-		JSONObject deactivateResponse = connectToServer("http://www.supremesharkbot.com:8080/deactivateLicense/?key="+Main.getActivationKey());
 		
-		if (deactivateResponse.getBoolean("success")) { //deactivated successfully, remove their license from computer
+		if (connectToServer("http://www.supremesharkbot.com:8080/deactivateLicense/?key=" + Main.getActivationKey()).getBoolean("success")) { //deactivated successfully, remove their license from computer
 			clearPrefsRoot();
 			return true;
 		} else {
