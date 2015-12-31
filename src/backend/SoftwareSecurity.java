@@ -155,17 +155,15 @@ public class SoftwareSecurity {
 			return true;
 		} else if (!res) {
 			message("Activation Failed! Activation key invalid or already used", "Activation Failed");
-			System.exit(0);
-			return false;
 		} else {
 			message("Unable to connect to activation server", "Connection Failed");
-			System.exit(0);
-			return false;
 		}
+		System.exit(0);
+		return false;
 	}
 
-	private String makeActivationLink(String enteredKeyRes) {
-		String enteredKey = enteredKeyRes;
+	private String makeActivationLink(String enteredKey) {
+
 		String macAddress = "unreachable";
 		String ipAddress = "unreachable";
 

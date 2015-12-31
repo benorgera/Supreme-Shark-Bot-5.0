@@ -41,7 +41,7 @@ public class SettingsGUI extends JFrame {
 	//layouts
 	private MigLayout addressPanelLayout;
 	private MigLayout techPanelLayout;
-	
+
 	//address settings
 	private JTextField nameField;
 	private JTextField emailField;
@@ -245,7 +245,6 @@ public class SettingsGUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveAndExit();
-
 			}
 
 		});
@@ -276,7 +275,7 @@ public class SettingsGUI extends JFrame {
 
 		techPanelLayout = new MigLayout("wrap 2");
 		addressPanelLayout = new MigLayout("wrap 3", "[][][17.00]");
-		
+
 		techPanel.setLayout(techPanelLayout);
 		addressPanel.setLayout(addressPanelLayout);
 		JLabel addressSettingsHeader = new JLabel("Address Settings:");
@@ -471,7 +470,6 @@ public class SettingsGUI extends JFrame {
 		fieldsAsArray[20] = proxyUserField;
 		fieldsAsArray[21] = proxyPassField;
 		fieldsAsArray[22] = checkoutTypeField;
-
 	}
 
 	private void setReqsJP() {
@@ -651,14 +649,8 @@ public class SettingsGUI extends JFrame {
 		countryField.addActionListener (new ActionListener () {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (countryField.getSelectedItem().equals("CANADA")) {
-					stateAbbrLabel.setText("Municipality:");
-					System.out.println("Canada so municipality");
-				} else if (countryField.getSelectedItem().equals("USA")) {
-					stateAbbrLabel.setText("State Abbreviation (2 letters):");
-					System.out.println("USA so state");
-				}
-
+				//if CANADA its municipality, USA its state
+				stateAbbrLabel.setText(countryField.getSelectedItem().equals("CANADA") ? "Municipality:" : (countryField.getSelectedItem().equals("USA") ? "State Abbreviation (2 letters):" : stateAbbrLabel.getText()));
 			}
 		});
 
@@ -758,13 +750,13 @@ public class SettingsGUI extends JFrame {
 			} else if (fieldsAsArray[counter] instanceof JComboBox) { //set Jcombobox item
 
 				if (counter == 8) triggerStoreOptionActionListener(line); //sets ui to correct store based on the country, allowing the country to be selected properly (if this didnt happen the country field would have the wrong options and the country would always be US)
-		
+
 				((JComboBox<?>) fieldsAsArray[counter]).setSelectedItem(line);
 
 			} else { //set jtext field text
 
 				((JTextField) fieldsAsArray[counter]).setText(line);
-				
+
 			}
 			counter++;
 		}
@@ -773,8 +765,8 @@ public class SettingsGUI extends JFrame {
 	}
 
 	private void saveAndExit() {
-			this.orderSettings.assignValuesFromFieldArray(fieldsAsArray);
-			dispose();
+		this.orderSettings.assignValuesFromFieldArray(fieldsAsArray);
+		dispose();
 	}
 
 	private void setFieldsAccordingToOrderSettings() {//gets order settings fields array and converts it to a checkout profile

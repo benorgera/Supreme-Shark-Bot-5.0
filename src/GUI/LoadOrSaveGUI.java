@@ -98,14 +98,9 @@ public class LoadOrSaveGUI extends JFrame {
 
 			if (!selectedFile.getName().contains(".txt")) selectedFile = new File(selectedFile.getAbsolutePath()+".txt");
 
-			if (selectedFile.exists()) {
-				int res = JOptionPane.showOptionDialog(null, "The selected file already exists. Overwrite?", "File Exists", 0, 0, null, null, null);
-
-				if (res == 1) {
+			if (selectedFile.exists() && JOptionPane.showOptionDialog(null, "The selected file already exists. Overwrite?", "File Exists", 0, 0, null, null, null) == 1) {
 					dispose();
 					return;
-				}
-
 			}
 			
 			//write the file, pull the values, encrypt them and then write
