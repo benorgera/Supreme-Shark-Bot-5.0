@@ -26,7 +26,7 @@ public class Order {
 		this.deleteButton = (JButton) arr[3];
 		this.settingsButton = (JButton) arr[4];
 		Main.pushToOrderList(this);
-		System.out.println(Main.getOrdersListLength()+" is the size of the orders list");	
+		System.out.println(Main.getOrdersListLength() + " Orders Exist");	
 	}
 	
 	public void addItem(Item i) {
@@ -79,7 +79,7 @@ public class Order {
 	}
 
 	public void setSettingsButtonText(String newText) {
-		this.settingsButton.setText(newText);;
+		this.settingsButton.setText(newText);
 	}
 	
 	public void clearItems() {

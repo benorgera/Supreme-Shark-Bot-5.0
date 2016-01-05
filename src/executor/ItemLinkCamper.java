@@ -101,11 +101,7 @@ public class ItemLinkCamper implements Runnable {
 			if (keywordNums < max) iterator.remove(); //if less than max keywords found, remove link
 		}
 
-		ArrayList<String> colorCorrect = getColorCorrect(definites);
-
-		return processArrayLists(definites, colorCorrect);
-
-
+		return processArrayLists(definites, getColorCorrect(definites));
 	}
 
 	private int confirm(ArrayList<String> links) { //confirms that the 
@@ -282,7 +278,7 @@ public class ItemLinkCamper implements Runnable {
 
 		ArrayList<String> list = new ArrayList<String>();
 
-		for(String s : firstArray) if (s != null && s.length() > 0) list.add(s);
+		for (String s : firstArray) if (s != null && s.length() > 0) list.add(s);
 
 		return list.toArray(new String[list.size()]);
 

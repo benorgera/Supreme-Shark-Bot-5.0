@@ -52,6 +52,7 @@ public class GUI extends JFrame {
 	private JTextArea textConsoleArea; //text console, reached by textConsoleNewLine
 	private JButton enableBotButton;
 
+	private final String[] comboBoxOptions = {"jackets", "shirts", "tops-sweaters", "sweatshirts", "pants", "t-shirts", "hats", "bags", "accessories", "skate", "shoes", "shorts"};
 	private final String[] headers = {"Keywords", "Category", "Colors", "Size", "Early Link", "Status", "Actions"};
 	private final String[] newItemRow =  {"", "", "", "", "", "", "Delete Item"};
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
@@ -124,9 +125,7 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				textConsoleNewLine("\nProxy test started");
 
-				for (Order o : Main.getOrders()) {
-					(new Thread(new ProxyTester(o, textConsoleArea))).start();
-				}
+				for (Order o : Main.getOrders()) new Thread(new ProxyTester(o, textConsoleArea)).start();
 
 			}
 		};
@@ -360,9 +359,7 @@ public class GUI extends JFrame {
 
 		new ButtonColumn(table, deleteOrAdd, 6); //makes actions column a button column
 
-		TableColumn JComboBoxColumn = table.getColumnModel().getColumn(1);
-		JComboBox<String> comboBox = new JComboBox<String>(new String[] {"jackets", "shirts", "tops-sweaters", "sweatshirts", "pants", "t-shirts", "hats", "bags", "accessories", "skate", "shoes", "shorts"});
-		JComboBoxColumn.setCellEditor(new DefaultCellEditor(comboBox));
+		table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox<String>(comboBoxOptions)));
 
 		model.addRow(newItemRow);
 		setAllEditable(model.getRowCount() - 1, model);  //allows button to be pressed and new item to be edited

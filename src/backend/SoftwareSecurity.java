@@ -1,7 +1,6 @@
 package backend;
 
 import gui.LoadingGIF;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,9 +10,7 @@ import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.prefs.Preferences;
-
 import javax.swing.JOptionPane;
-
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 

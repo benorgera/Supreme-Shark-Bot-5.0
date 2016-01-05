@@ -35,7 +35,6 @@ public class LoadOrSaveGUI extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setContentPane(contentPane);
 
-		
 		loading = !"save".equals(type);
 
 		chooser = new JFileChooser();
@@ -62,12 +61,7 @@ public class LoadOrSaveGUI extends JFrame {
 				}
 
 				File selection = chooser.getSelectedFile();
-				if (loading) {
-					processLoad(selection);
-				} else {
-					processSave(selection);
-				}
-
+				if (loading) processLoad(selection); else processSave(selection);
 			}
 		});
 		new SetCentered(this);

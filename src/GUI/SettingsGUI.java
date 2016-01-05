@@ -658,11 +658,7 @@ public class SettingsGUI extends JFrame {
 		ccProviderField.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (ccProviderField.getSelectedItem().equals("代金引換")) {
-					setCheckoutPayOnDeliveryStatus(false, null);
-				} else {
-					setCheckoutPayOnDeliveryStatus(true, r);
-				}
+				setCheckoutPayOnDeliveryStatus(!ccProviderField.getSelectedItem().equals("代金引換"), ccProviderField.getSelectedItem().equals("代金引換") ? null : r);
 			}
 		});
 
@@ -717,9 +713,8 @@ public class SettingsGUI extends JFrame {
 
 			}
 
-			if (counter != 22) { //this must be the array length - 1
-				returnString = returnString.concat("\n");
-			}
+			if (counter != 22)  returnString = returnString.concat("\n"); //this must be the array length - 1
+			
 		}
 
 		System.out.println("Checkout File Before Encryption:\n" + returnString);
@@ -729,8 +724,7 @@ public class SettingsGUI extends JFrame {
 	public void updateGUI(String newContent) throws HeadlessException, IOException {
 		//errors handled by try catch in processLoad method of LoadOrSaveGUI
 		System.out.println(newContent);
-		BufferedReader bufReader = new BufferedReader(new StringReader(newContent));
-		iterateThroughCheckoutProfile(bufReader);
+		iterateThroughCheckoutProfile(new BufferedReader(new StringReader(newContent)));
 
 	}
 
@@ -770,18 +764,13 @@ public class SettingsGUI extends JFrame {
 	}
 
 	private void setFieldsAccordingToOrderSettings() {//gets order settings fields array and converts it to a checkout profile
-		Object[] formValuesFromOrderSettings = this.orderSettings.getFieldValuesAsArray();
 		String valuesAsCheckoutFile = "";
-		for (Object values : formValuesFromOrderSettings) {
-			valuesAsCheckoutFile = valuesAsCheckoutFile.concat(values+"\n");
-		}
-
+		for (Object values : this.orderSettings.getFieldValuesAsArray()) valuesAsCheckoutFile += (values+"\n");
 
 		System.out.println("\nFields from Order Settings:\n"+valuesAsCheckoutFile);
-		BufferedReader reader = new BufferedReader(new StringReader(valuesAsCheckoutFile));
 
 		try { //this should never ever throw an error, java just requires the try catch
-			iterateThroughCheckoutProfile(reader);
+			iterateThroughCheckoutProfile(new BufferedReader(new StringReader(valuesAsCheckoutFile)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
@@ -795,15 +784,12 @@ public class SettingsGUI extends JFrame {
 		} else if (Arrays.asList(countriesUK).contains(line)) {
 			storeOption.setSelectedItem("UK");
 		}
-		ActionListener[] action = storeOption.getActionListeners();
-		action[0].actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null)); //trigger store change
+		storeOption.getActionListeners()[0].actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null)); //trigger store change
 	}
 
 	private void triggerOddballActionListeners() {//triggers cc provider and country action listeners, in case the checkout form requires changes which those listeners account for
-		ActionListener[] action = ccProviderField.getActionListeners();
-		ActionListener[] action1 = countryField.getActionListeners();
-		action[0].actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
-		action1[0].actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+		ccProviderField.getActionListeners()[0].actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+		countryField.getActionListeners()[0].actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
 
 	}
 

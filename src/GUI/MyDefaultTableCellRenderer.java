@@ -14,7 +14,7 @@ public class MyDefaultTableCellRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
 
-		if (table.getModel().getRowCount() == row+1) {
+		if (table.getModel().getRowCount() == row + 1) {
 			setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.WHITE));
 			return this;
 		} else {
@@ -23,12 +23,10 @@ public class MyDefaultTableCellRenderer extends DefaultTableCellRenderer {
 			
 			
 //			//blue color scheme		
-//			if ((row & 1) == 1 && !hasFocus && !isSelected) {
-//				def.setBackground(new Color(238,245,252)); //if even row and not focused or selected make it striped light blue
-//			}
-//			if (isSelected) {
-//				def.setBackground(new Color(119,214,249)); // if selected make row medium blue
-//			}
+//			if ((row & 1) == 1 && !hasFocus && !isSelected) def.setBackground(new Color(238,245,252)); //if even row and not focused or selected make it striped light blue
+//			
+//			if (isSelected) def.setBackground(new Color(119,214,249)); // if selected make row medium blue
+//			
 //			if (hasFocus) {
 //				def.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLUE)); // if has focus make border dark blue
 //				def.setBackground(Color.WHITE); //set the focused cell's background to white
@@ -39,12 +37,10 @@ public class MyDefaultTableCellRenderer extends DefaultTableCellRenderer {
 			
 			
 			//red color scheme
-			if ((row & 1) == 1 && !hasFocus && !isSelected) {
-				def.setBackground(new Color(245,245,245)); //(red color scheme)
-			}
-			if (isSelected) {
-				def.setBackground(new Color(255,220,220)); 
-			}
+			if ((row & 1) == 1 && !hasFocus && !isSelected) def.setBackground(new Color(245,245,245));
+			
+			if (isSelected) def.setBackground(new Color(255,220,220)); 
+			
 			if (hasFocus) {
 				def.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(255,112,112))); 
 				def.setBackground(Color.WHITE); //set the focused cell's background to white

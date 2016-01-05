@@ -26,8 +26,7 @@ public class Dispatcher {
 		for (Order o : orders) {
 			Thread thread = new Thread(new TaskProcessor(o, txtConsole, htmlConsole));
 			Main.pushToWorkerArray(thread);
-			thread.start();
-			
+			thread.start();		
 		}
 	}
 
