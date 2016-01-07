@@ -17,8 +17,7 @@ public class LinkFinder  {
 	private ArrayList<ItemLinkCamper> campers; //stores campers to be used as monitors for synchronization
 
 	public LinkFinder(ArrayList<Item> items, int refreshRate, TaskProcessor processor, HTTPConnector connector) {
-		this.items = new ArrayList<Item>(); //make a copy of the items ArrayList, because this one will be cleared out as links are found (and you don't want to clear the real objects, they're needed later in the checkout process
-		this.items = items;
+		this.items = new ArrayList<Item>(items); //make a copy of the items ArrayList, because this one will be cleared out as links are found (and you don't want to clear the real objects, they're needed later in the checkout process
 		this.refreshRate = refreshRate;
 		this.mostRecentHTML = "";
 		this.processor = processor;
@@ -85,7 +84,7 @@ public class LinkFinder  {
 
 		if (items.isEmpty()) { //all items removed (meaning they were found)
 			processor.print("All item links found");
-			TaskProcessor.stage = Stage.ADD_TO_CART; //next stage
+			processor.stage = Stage.ADD_TO_CART; //next stage
 		} else {
 			synchronized (this) { //synchronized wait so it can be woken if more items found (to avoid a sleep during a period in which all links are found)
 				wait(refreshRate);

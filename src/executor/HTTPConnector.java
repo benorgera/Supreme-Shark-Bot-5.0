@@ -19,6 +19,7 @@ public class HTTPConnector {
 	private ProxyBuilder proxyBuilder;
 	private OrderSettings settings;
 	private TaskProcessor processor;
+	private String cookies;
 
 	public HTTPConnector(OrderSettings settings, TaskProcessor processor) {
 		this.proxyBuilder = settings.isUsingProxy() ? new ProxyBuilder(settings.getProxyAddress(), settings.getProxyPort(), settings.getProxyUser(), settings.getProxytPass()) : null;
@@ -68,16 +69,21 @@ public class HTTPConnector {
 		return new Object[]{success, mostRecentHTML};
 	}
 
-	public String atcPost(Item item) {
-		
+	public String atcPost(Item item) { //returns 
 
-		
+
+
 		try {
 			String urlParameters = item.getAtcParameters();
-			String itemLink = item.getLink();
-			String xCSRFToken = item.getAuthenticityToken();
 			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 			int postDataLength = postData.length;
+			
+			//utf8, size, auth token, add-to-cart
+
+		
+			String itemLink = item.getLink();
+			String xCSRFToken = item.getAuthenticityToken();
+			
 			URL url = new URL(item.getAtcLink());
 
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();           
@@ -96,33 +102,37 @@ public class HTTPConnector {
 			conn.setRequestProperty("Referer", itemLink);
 			conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
 			conn.setRequestProperty("Accept-Language", "en-US,en;q=0.8");
-			
-//			POST /shop/169443/add HTTP/1.1
-//			Host: www.supremenewyork.com
-//			Connection: keep-alive
-//			Content-Length: 114
-//			Accept: */*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript
-//			Origin: http://www.supremenewyork.com
-//			X-CSRF-Token: j/3WH4FuSfPEDw9GkzSmeYrH14VZrcI1S1KXJO+24/8=
-//			X-Requested-With: XMLHttpRequest
-//			User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36
-//			Content-Type: application/x-www-form-urlencoded; charset=UTF-8
-//			Referer: http://www.supremenewyork.com/shop/pants/eat-me-sweatshort
-//			Accept-Encoding: gzip, deflate
-//			Accept-Language: en-US,en;q=0.8
-//
-//			utf8=%E2%9C%93&authenticity_token=RWvrnsyge9GlIfS5rX63S5p%2B5J%2Bcd6hecMFnhZ9XjQk%3D&size=28959&commit=add+to+cart
-			
+			setCookies(conn);
+
+			//			POST /shop/169443/add HTTP/1.1
+			//			Host: www.supremenewyork.com
+			//			Connection: keep-alive
+			//			Content-Length: 114
+			//			Accept: */*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript
+			//			Origin: http://www.supremenewyork.com
+			//			X-CSRF-Token: j/3WH4FuSfPEDw9GkzSmeYrH14VZrcI1S1KXJO+24/8=
+			//			X-Requested-With: XMLHttpRequest
+			//			User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36
+			//			Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+			//			Referer: http://www.supremenewyork.com/shop/pants/eat-me-sweatshort
+			//			Accept-Encoding: gzip, deflate
+			//			Accept-Language: en-US,en;q=0.8
+			//
+			//			utf8=%E2%9C%93&authenticity_token=RWvrnsyge9GlIfS5rX63S5p%2B5J%2Bcd6hecMFnhZ9XjQk%3D&size=28959&commit=add+to+cart
+
 
 			conn.setUseCaches(false);
 			DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
 			wr.write(postData);
-		
-			conn.connect();
+
+			storeCookies(conn);
+
+			String html = connectionToString(conn);
 			
-			
-			return connectionToString(conn);
-			
+			conn.disconnect();
+
+			return html;
+
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -130,7 +140,8 @@ public class HTTPConnector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-				
+
+
 		return null;
 
 	}
@@ -143,4 +154,22 @@ public class HTTPConnector {
 		in.close();
 		return mostRecentHTML;
 	}
+
+	private void addCookie(String cookie) {
+		processor.printSys("New Cookie: " + cookie);
+		this.cookies += "; " + cookie;
+	}
+	
+	private void storeCookies(URLConnection conn) {
+		String headerName = null;
+		for (int i=1; (headerName = conn.getHeaderFieldKey(i)) != null; i++) if (headerName.equals("Set-Cookie")) addCookie(conn.getHeaderField(i));               
+	}
+	
+	private void setCookies(URLConnection conn) {
+		if (cookies == null) return;
+		
+		conn.setRequestProperty("Cookie", cookies);
+		processor.printSys("Cookies Set: " + cookies);
+	}
+
 }

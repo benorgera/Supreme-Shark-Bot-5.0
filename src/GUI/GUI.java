@@ -3,10 +3,12 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
+
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
@@ -23,11 +25,11 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.text.DefaultCaret;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
+
 import executor.Dispatcher;
 import backend.ButtonColumn;
 import backend.Encrypter;
@@ -36,14 +38,18 @@ import backend.Order;
 import backend.ProxyTester;
 import backend.SetCentered;
 import backend.Main;
+
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Date;
 
 @SuppressWarnings("restriction")
 public class GUI extends JFrame {
 
+	private Date enableDate;
+	
 	private static final long serialVersionUID = -2271100967580465591L;
 	private static boolean isPro; //true if pro
 	private JPanel contentPane;
@@ -536,6 +542,8 @@ public class GUI extends JFrame {
 
 	public void toggleButton() { //enable to abort and vice versa
 
+		System.out.println(new Date().getTime() - enableDate.getTime());
+		
 		enableBotButton.setText(enableBotButton.getText().equals("Enable Bot") ? "Abort Bot" : "Enable Bot");
 	}
 
@@ -566,6 +574,9 @@ public class GUI extends JFrame {
 
 	private void processEnable() { //processes enable action (called by scheduler and by button click)
 		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable()) {
+			
+			enableDate = new Date();
+			
 			enableRegardlessOfProxyReadinessOrALackThereof();
 		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
 			Main.interruptThreads(); //abort bot
@@ -604,10 +615,10 @@ public class GUI extends JFrame {
 		}
 	}
 
-	public void abortStatuses() { //sets status of each item to abort following bot abortion
+	private void abortStatuses() { //sets status of each item to abort following bot abortion
 
 		for (Order o : Main.getOrders()) for (int i = 0; i < o.getModel().getRowCount(); i ++) o.getModel().setValueAt("Aborted", i, 5);
-		
+	
 	}
 
 

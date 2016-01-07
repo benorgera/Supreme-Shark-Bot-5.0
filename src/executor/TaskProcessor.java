@@ -13,7 +13,7 @@ public class TaskProcessor implements Runnable {
 
 	private Order order;
 	private JTextArea txtConsole;
-	public static Stage stage;
+	public Stage stage;
 	private WebView htmlConsole;
 	private HTTPConnector connector;
 
@@ -58,11 +58,14 @@ public class TaskProcessor implements Runnable {
 			refreshRate = Integer.parseInt(order.getOrderSettings().getRefreshRate());
 		} catch (Exception e) {
 			refreshRate = 400;
+			order.getOrderSettings().setRefreshRate("400");
 		}	
 
 		printSys("Refresh Rate: " + refreshRate);
 
 		LinkFinder linkFinder = new LinkFinder(order.getItems(), refreshRate, this, connector); //new link finder
+		
+		AddToCart atc = new AddToCart(order, this, connector);
 
 		while (!Thread.currentThread().isInterrupted()) { //you must check if cancelled in every loop!!!
 
@@ -74,9 +77,11 @@ public class TaskProcessor implements Runnable {
 				linkFinder.findThem();	
 				break;
 			case ADD_TO_CART:
+				atc.addThem();
+				break;
+			case CHECKOUT:
 				Main.getGUI().toggleButton();
 				Main.interruptThreads();
-			case CHECKOUT:
 				break;
 			}
 

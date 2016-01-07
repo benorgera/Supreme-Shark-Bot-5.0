@@ -15,7 +15,7 @@ public class Order {
 	private JButton deleteButton;
 	private JButton settingsButton;
 	private OrderSettings orderSettings;
-	
+
 	public Order() {
 		this.orderSettings = new OrderSettings(); //initialize the orderSettings
 		//initializes order
@@ -85,5 +85,6 @@ public class Order {
 	public void clearItems() {
 		itemList.clear();
 	}
+
 	
 }
