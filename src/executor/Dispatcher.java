@@ -1,11 +1,8 @@
 package executor;
 
 import java.util.ArrayList;
-
 import javafx.scene.web.WebView;
-
 import javax.swing.JTextArea;
-
 import backend.Order;
 import backend.Main;
 

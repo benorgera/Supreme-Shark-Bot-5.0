@@ -5,12 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
 import org.apache.commons.lang3.ArrayUtils;
 
 import backend.Item;
@@ -45,7 +43,7 @@ public class ItemLinkCamper implements Runnable {
 			
 			waitForUpdate();
 
-			if (!item.getEarlyLink().isEmpty()) if(checkEarlyLink()) terminate();
+			if (!item.getEarlyLink().isEmpty()) if (checkEarlyLink()) terminate();
 
 			boolean shouldCheck = false;
 

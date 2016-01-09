@@ -1,9 +1,7 @@
 package backend;
 
 import gui.MyDefaultTableModel;
-
 import java.util.ArrayList;
-
 import javax.swing.JButton;
 import javax.swing.JTable;
 

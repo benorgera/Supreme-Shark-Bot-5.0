@@ -1,12 +1,10 @@
 package gui;
 
-
 import java.awt.event.ActionEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
-
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.WindowConstants;
-
 import backend.SchedulerEnabler;
 import backend.SchedulerSettings;
 import backend.SetCentered;

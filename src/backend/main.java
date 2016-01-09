@@ -28,6 +28,8 @@ public class Main {
 			System.out.println("Unforeseen security error"); //this should never be thrown 
 			e.printStackTrace();
 		}
+		
+
 
 		loader.passUI("Initializing bot interface");
 		orders = new ArrayList<Order>();

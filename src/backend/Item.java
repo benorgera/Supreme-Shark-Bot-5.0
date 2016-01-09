@@ -16,8 +16,6 @@ public class Item {
 	private String atcParameters;
 	private String link; //set by link finder once link is found
 	
-	private boolean isPrepared = false;
-	
 	
 	public String[] getKeywords() {
 		return keywords;
@@ -102,14 +100,6 @@ public class Item {
 
 	public void setAuthenticityToken(String authenticityToken) {
 		this.authenticityToken = authenticityToken;
-	}
-
-	public boolean isPrepared() {
-		return isPrepared;
-	}
-
-	public void setPrepared(boolean isPrepared) {
-		this.isPrepared = isPrepared;
 	}
 
 	public String getDocumentHTML() {

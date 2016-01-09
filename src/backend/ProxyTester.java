@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import javax.swing.JTextArea;
 import executor.ProxyBuilder;
 
-
 public class ProxyTester implements Runnable {
 
 	private ArrayList<String> results;
@@ -39,6 +38,7 @@ public class ProxyTester implements Runnable {
 				URLConnection con = new URL("http://www.supremenewyork.com/shop/all").openConnection(proxyBuilder.getProxy());
 				proxyBuilder.addAuthorization(con);
 				con.setConnectTimeout(8000); //set timeout to 8 seconds
+				con.setReadTimeout(8000);
 				con.connect();
 				con.getInputStream();
 				if (i == 0) { //only need to read the html once
