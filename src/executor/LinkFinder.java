@@ -11,22 +11,25 @@ public class LinkFinder  {
 	private TaskProcessor processor;
 	private HTTPConnector connector;
 
+	private int orderNumber;
+	
 	private String mostRecentHTML;
 
 	private ArrayList<ItemLinkCamper> campers; //stores campers to be used as monitors for synchronization
 
-	public LinkFinder(ArrayList<Item> items, int refreshRate, TaskProcessor processor, HTTPConnector connector) {
+	public LinkFinder(ArrayList<Item> items, int refreshRate, TaskProcessor processor, HTTPConnector connector, int orderNumber) {
 		this.items = new ArrayList<Item>(items); //make a copy of the items ArrayList, because this one will be cleared out as links are found (and you don't want to clear the real objects, they're needed later in the checkout process
 		this.refreshRate = refreshRate;
 		this.mostRecentHTML = "";
 		this.processor = processor;
 		this.connector = connector;
+		this.orderNumber = orderNumber;
 
 		campers = new ArrayList<ItemLinkCamper>();
 
 		for (Item i : items) { //start all of the workers for each item
 
-			ItemLinkCamper camper = new ItemLinkCamper(i, this, connector, processor); //make object
+			ItemLinkCamper camper = new ItemLinkCamper(i, this, connector, processor, orderNumber); //make object
 
 			Thread thread = new Thread(camper); //make runnable
 			Main.pushToWorkerArray(thread); //add runnable to 

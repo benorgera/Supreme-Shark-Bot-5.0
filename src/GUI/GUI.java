@@ -3,10 +3,10 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.scene.web.WebView;
+//import javafx.application.Platform;
+//import javafx.embed.swing.JFXPanel;
+//import javafx.scene.Scene;
+//import javafx.scene.web.WebView;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
@@ -61,7 +61,7 @@ public class GUI extends JFrame {
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
 	private TabChangeListener tabChange;
 
-	private WebView webView;
+//	private WebView webView;
 
 	private JLabel scheduledDateLabel = new JLabel(); //blank unless scheduler enabled
 
@@ -169,17 +169,17 @@ public class GUI extends JFrame {
 
 		JPanel htmlConsolePanel = new JPanel();
 
-		JFXPanel jfxPanel = new JFXPanel();
+//		JFXPanel jfxPanel = new JFXPanel();
 
 		htmlConsolePanel.setPreferredSize(new Dimension(100, 150));
 
-		Platform.runLater(() -> {
-			webView = new WebView();
-			webView.setZoom(.5);
-			jfxPanel.setScene(new Scene(webView));
-			webView.getEngine().load("http://www.supremenewyork.com/shop/all");
-			//		    webView.setDisable(true); //make it read only
-		});
+//		Platform.runLater(() -> {
+//			webView = new WebView();
+//			webView.setZoom(.5);
+//			jfxPanel.setScene(new Scene(webView));
+//			webView.getEngine().load("http://www.supremenewyork.com/shop/all");
+//			//		    webView.setDisable(true); //make it read only
+//		});
 
 
 		splitPane.setLeftComponent(textConsolePanel);
@@ -191,7 +191,7 @@ public class GUI extends JFrame {
 		JScrollPane textConsoleScroller = new JScrollPane();
 		textConsolePanel.add(textConsoleScroller, BorderLayout.CENTER);
 
-		htmlConsolePanel.add(jfxPanel, BorderLayout.CENTER);
+//		htmlConsolePanel.add(jfxPanel, BorderLayout.CENTER);
 
 
 		JLabel textConsole = new JLabel("Text Console:");
@@ -586,7 +586,8 @@ public class GUI extends JFrame {
 
 	public void enableRegardlessOfProxyReadinessOrALackThereof() { //called to enable bot, scheduler calls this to bypass any warnings
 		setItemInfoFromTable();
-		new Dispatcher(Main.getOrders(), textConsoleArea, webView).deploy(); //launch bot
+//		new Dispatcher(Main.getOrders(), textConsoleArea, webView).deploy(); //launch bot
+		new Dispatcher(Main.getOrders(), textConsoleArea, null).deploy(); //launch bot
 		toggleButton();
 	}
 
@@ -617,7 +618,5 @@ public class GUI extends JFrame {
 		for (Order o : Main.getOrders()) for (int i = 0; i < o.getModel().getRowCount(); i ++) o.getModel().setValueAt("Aborted", i, 5);
 	
 	}
-
-
 
 }

@@ -63,7 +63,7 @@ public class TaskProcessor implements Runnable {
 
 		printSys("Refresh Rate: " + refreshRate);
 
-		LinkFinder linkFinder = new LinkFinder(order.getItems(), refreshRate, this, connector); //new link finder
+		LinkFinder linkFinder = new LinkFinder(order.getItems(), refreshRate, this, connector, order.getOrderNum()); //new link finder
 		
 		AddToCart atc = new AddToCart(order, this, connector);
 
@@ -80,9 +80,7 @@ public class TaskProcessor implements Runnable {
 				atc.addThem();
 				break;
 			case CHECKOUT:
-				Main.getGUI().toggleButton();
-				Main.interruptThreads();
-				break;
+				Thread.currentThread().interrupt();
 			}
 
 		}

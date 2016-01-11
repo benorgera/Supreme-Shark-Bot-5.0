@@ -86,6 +86,7 @@ public class HTTPConnector {
 
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();           
 			con.setDoOutput(true);
+			con.setUseCaches(false);
 			con.setConnectTimeout(8000); //timeout after 8 seconds
 			con.setReadTimeout(8000);
 			con.setInstanceFollowRedirects(false);
@@ -121,7 +122,6 @@ public class HTTPConnector {
 			//			utf8=%E2%9C%93&authenticity_token=RWvrnsyge9GlIfS5rX63S5p%2B5J%2Bcd6hecMFnhZ9XjQk%3D&size=28959&commit=add+to+cart
 
 
-			con.setUseCaches(false);
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.write(postData);
 
@@ -156,20 +156,20 @@ public class HTTPConnector {
 		if (cookies.contains(cookie)) return; //we have this exact cookie
 
 		String newCookieName = cookie.split("=")[0];
-		if (cookies.contains(newCookieName)) { //we have a cookie with the same name as the new cookie, swap them
-			replaceCookies(newCookieName);
-		}
+		if (cookies.contains(newCookieName)) replaceCookies(newCookieName);  //we have a cookie with the same name as the new cookie, swap them
+		
 		processor.printSys("New Cookie: " + cookie);
 		cookies += (cookie + "; "); //add the new cookie followed by a semicolon
 	}
 
 	private void storeCookies(URLConnection con) { //iterates through headers, adding new cookie
 		String headerName = null;
-		for (int i=1; (headerName = con.getHeaderFieldKey(i)) != null; i++) if (headerName.equals("Set-Cookie")) addCookie(con.getHeaderField(i));               
+		
+		for (int i = 1; (headerName = con.getHeaderFieldKey(i)) != null; i++) if (headerName.equals("Set-Cookie")) addCookie(con.getHeaderField(i));               
 	}
 
 	private void setCookies(URLConnection conn) { //add stored cookies to new URLConnection
-		if (cookies.isEmpty()) return;
+		if (cookies.isEmpty()) {conn.setRequestProperty("Cookie", ""); return;}
 
 		conn.setRequestProperty("Cookie", cookies);
 		processor.printSys("Cookies Set: " + cookies);
@@ -188,7 +188,7 @@ public class HTTPConnector {
 
 		cookies = "";
 
-		for (String s : cookiesAsArray) cookies += (s + "; "); //rebuild cookie string
+		for (String s : cookiesAsArray) if (!s.isEmpty()) cookies += (s + "; "); //rebuild cookie string with non blank cookies
 		
 
 	}

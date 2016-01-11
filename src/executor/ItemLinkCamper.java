@@ -20,14 +20,17 @@ public class ItemLinkCamper implements Runnable {
 	private TaskProcessor processor;
 	private HTTPConnector connector;
 
+	private int orderNumber;
+	
 	private ArrayList<String> previousConfirmation; //the last JOptionPane shown, if its the same as the one before we dont want to ask again
 	private int previousConfirmationNum = 0; //number of times the same confirmation has been shown
 
-	public ItemLinkCamper(Item item, LinkFinder linkFinder, HTTPConnector connector, TaskProcessor processor) {
+	public ItemLinkCamper(Item item, LinkFinder linkFinder, HTTPConnector connector, TaskProcessor processor, int orderNumber) {
 		this.item = item;
 		this.linkFinder = linkFinder;
 		this.processor = processor;
 		this.connector = connector;
+		this.orderNumber = orderNumber;
 		processor.setStatus(item.getItemNumber(), "Finding Link");
 		if (!item.getEarlyLink().isEmpty()) formatEarlyLink();
 	}
@@ -125,7 +128,7 @@ public class ItemLinkCamper implements Runnable {
 		panel.add(optionList, BorderLayout.SOUTH);
 		panel.add(new JLabel("Which of these is the correct link for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
 
-		if (JOptionPane.showOptionDialog(null, panel, "Confirm Item " + item.getItemNumber() + " Link", 0, 3, null, new String[]{"None of these", "Ok"}, 0) == 1) return optionList.getSelectedIndex(); //they chose ok, return which link was chosen
+		if (JOptionPane.showOptionDialog(null, panel, "Confirm Order " + orderNumber + " Item " + item.getItemNumber() + " Link", 0, 3, null, new String[]{"None of these", "Ok"}, 0) == 1) return optionList.getSelectedIndex(); //they chose ok, return which link was chosen
 
 		//maybe make the confirmation a runnable so this item can keep checking,  and then have it notify this thread once its answered
 		//and have it so if two confirmations are up at one time one is interrupted (because you dont want two prompts open)
