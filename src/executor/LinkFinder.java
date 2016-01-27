@@ -11,8 +11,6 @@ public class LinkFinder  {
 	private TaskProcessor processor;
 	private HTTPConnector connector;
 
-	private int orderNumber;
-	
 	private String mostRecentHTML;
 
 	private ArrayList<ItemLinkCamper> campers; //stores campers to be used as monitors for synchronization
@@ -23,8 +21,6 @@ public class LinkFinder  {
 		this.mostRecentHTML = "";
 		this.processor = processor;
 		this.connector = connector;
-		this.orderNumber = orderNumber;
-
 		campers = new ArrayList<ItemLinkCamper>();
 
 		for (Item i : items) { //start all of the workers for each item

@@ -121,8 +121,6 @@ public class AddToCart {
 			}
 		}
 		
-		
-		//prompt user
 
 		JComboBox<Object> optionList = new JComboBox<Object>(sizeTexts);
 

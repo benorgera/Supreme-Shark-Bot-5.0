@@ -34,8 +34,6 @@ public class MyDefaultTableCellRenderer extends DefaultTableCellRenderer {
 //				def.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY)); //if no focus make border gray
 //			}
 			
-			
-			
 			//red color scheme
 			if ((row & 1) == 1 && !hasFocus && !isSelected) def.setBackground(new Color(245,245,245));
 			

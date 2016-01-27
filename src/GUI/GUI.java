@@ -138,6 +138,7 @@ public class GUI extends JFrame {
 		testAndDeactivatePanel.add(deactivateLicense, BorderLayout.WEST);
 		testAndDeactivatePanel.add(testProxies, BorderLayout.EAST);
 
+		
 		Action deactivateLicenseAction = new AbstractAction() {
 
 			private static final long serialVersionUID = 1774086347779837678L;

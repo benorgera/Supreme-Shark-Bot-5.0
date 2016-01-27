@@ -190,7 +190,6 @@ public class HTTPConnector {
 
 		for (String s : cookiesAsArray) if (!s.isEmpty()) cookies += (s + "; "); //rebuild cookie string with non blank cookies
 		
-
 	}
 }
 

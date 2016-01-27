@@ -20,7 +20,7 @@ public class SoftwareSecurity {
 	private final String enabledKeyToken = "supremeSharkBotEnabled";
 	private final String bannedKeyToken = "supremeSharkBotBanned";
 	private final String licenseStatusToken = "supremeSharkBotVersionStatusToken"; //build storage of pro vs regular
-	private final int timeoutMS = 4000;
+	private final int timeoutMS = 2000;
 	private LoadingGIF loadingGIF;
 	private final double thisVersionNumber; //version number, value is blank, upon initialize pulled from main class 
 
@@ -52,6 +52,7 @@ public class SoftwareSecurity {
 		loadingGIF.passUI("Checking license activity");
 		bannedKeyValue = prefs.getBoolean(bannedKeyToken, false); //sets banned value, banned is false upon failure
 		System.out.println("bannedKeyValue from storage: " + bannedKeyValue);
+		
 		if (checkBanned()) { //it was banned
 			prefs.putBoolean(bannedKeyToken, true);
 			System.out.println("License was banned");
@@ -148,8 +149,7 @@ public class SoftwareSecurity {
 		if (res) {
 			message("Activated Successfully!", "Success");
 			activationKeyValue = userEnteredKey; //set the key so it can be accessed by setActivates
-			enabledKeyValue = true;
-			return true;
+			return (enabledKeyValue = true);
 		} else if (!res) {
 			message("Activation Failed! Activation key invalid or already used", "Activation Failed");
 		} else {
@@ -257,12 +257,8 @@ public class SoftwareSecurity {
 	}
 
 	public boolean deactivateLicense() { //called by GUI to deactivate license
-		
-		if (connectToServer("http://www.supremesharkbot.com:8080/deactivateLicense/?key=" + Main.getActivationKey()).getBoolean("success")) { //deactivated successfully, remove their license from computer
-			clearPrefsRoot();
-			return true;
-		} else {
-			return false;
-		}
+		boolean res = connectToServer("http://www.supremesharkbot.com:8080/deactivateLicense/?key=" + Main.getActivationKey()).getBoolean("success");
+		if (res) clearPrefsRoot();  //deactivated successfully, remove their license from computer
+		return res;
 	}
 }
