@@ -11,6 +11,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -60,6 +61,8 @@ public class GUI extends JFrame {
 	private final String[] newItemRow =  {"", "", "", "", "", "", "Delete Item"};
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
 	private TabChangeListener tabChange;
+	
+	private boolean techMessagesEnabled = false;
 
 //	private WebView webView;
 
@@ -112,7 +115,7 @@ public class GUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				processEnable();
+				processEnableOrAbort();
 			}
 		};
 		enableBotButton.addActionListener(enableAction);
@@ -202,6 +205,10 @@ public class GUI extends JFrame {
 		JPanel clearConsoleButtonPanel = new JPanel(new BorderLayout());
 
 		JButton clearConsoleButton = new JButton("Clear Text Console");
+		
+		JCheckBox enableTechMessagesCheckbox = new JCheckBox("Enable Technical Messages");
+		
+		clearConsoleButtonPanel.add(enableTechMessagesCheckbox, BorderLayout.WEST);
 
 		clearConsoleButtonPanel.add(clearConsoleButton, BorderLayout.EAST);
 
@@ -217,6 +224,19 @@ public class GUI extends JFrame {
 		};
 
 		clearConsoleButton.addActionListener(clearConsole);
+		
+		Action enableTechMessages = new AbstractAction() {
+
+			private static final long serialVersionUID = 3515543695745849483L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				techMessagesEnabled = ((JCheckBox) e.getSource()).isSelected();
+			}
+			
+		};
+		
+		enableTechMessagesCheckbox.addActionListener(enableTechMessages);
 
 		textConsolePanel.add(clearConsoleButtonPanel, BorderLayout.SOUTH);
 
@@ -463,6 +483,7 @@ public class GUI extends JFrame {
 		}
 		
 		System.out.println("Delete order "+order+" pending");
+		
 		if (confirmAction("Order", order) == 0) { // show the joptionpane
 			//delete the order and set back the order count
 			orderTabHolder.removeChangeListener(tabChange); //remove tab listener so new order isnt addde if the + tab is selected once the previously selected tab dissppears
@@ -487,14 +508,14 @@ public class GUI extends JFrame {
 				Main.getOrders().get(i).setSettingsButtonText("Order "+prev+" Settings"); //reset settings button
 				Main.getOrders().get(i).setOrderNum(prev); //reset order numbers
 			}
-			prev ++;
+			prev++;
 		}
 	}
 
 	private int confirmAction(String type, Integer order) { //calls prompt which prompts, called when order or item deleted
 		String message = order == null ? "delete the selected item?" : "delete Order " + order + "?";
 
-		return prompt("Are you sure you want to "+message, "Confirm "+type+" Deletion");
+		return prompt("Are you sure you want to " + message, "Confirm " + type + " Deletion");
 	}
 
 	private int prompt(String message, String title) { //called by confirm action, also called upon license deactivation
@@ -539,9 +560,6 @@ public class GUI extends JFrame {
 	}
 
 	public void toggleButton() { //enable to abort and vice versa
-
-		System.out.println(new Date().getTime() - enableDate.getTime());
-		
 		enableBotButton.setText(enableBotButton.getText().equals("Enable Bot") ? "Abort Bot" : "Enable Bot");
 	}
 
@@ -570,14 +588,12 @@ public class GUI extends JFrame {
 		return counter > 2 ? (prompt("More than two orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
 	}
 
-	private void processEnable() { //processes enable action (called by scheduler and by button click)
+	private void processEnableOrAbort() { //processes enable/ abort action (called by scheduler and by button click)
 		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable()) {
-			
-			enableDate = new Date();
-			
 			enableRegardlessOfProxyReadinessOrALackThereof();
 		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
 			Main.interruptThreads(); //abort bot
+			System.out.println("Process Time: " + (new Date().getTime() - enableDate.getTime()) + " milliseconds"); //only 
 			toggleButton();
 			abortStatuses();
 		} else {
@@ -586,10 +602,11 @@ public class GUI extends JFrame {
 	}
 
 	public void enableRegardlessOfProxyReadinessOrALackThereof() { //called to enable bot, scheduler calls this to bypass any warnings
+		enableDate = new Date();
 		setItemInfoFromTable();
 //		new Dispatcher(Main.getOrders(), textConsoleArea, webView).deploy(); //launch bot
-		new Dispatcher(Main.getOrders(), textConsoleArea, null).deploy(); //launch bot
 		toggleButton();
+		new Dispatcher(Main.getOrders(), textConsoleArea, null).deploy(); //launch bot
 	}
 
 	private void setItemInfoFromTable() { //converts table data into item objects
@@ -619,5 +636,10 @@ public class GUI extends JFrame {
 		for (Order o : Main.getOrders()) for (int i = 0; i < o.getModel().getRowCount(); i ++) o.getModel().setValueAt("Aborted", i, 5);
 	
 	}
+
+	public boolean areTechMessagesEnabled() { //tells processor whether it should print tech messages
+		return techMessagesEnabled;
+	}
+
 
 }

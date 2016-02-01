@@ -36,16 +36,19 @@ public class TaskProcessor implements Runnable {
 			print(s);
 		}
 		
-		printSys(s);
+		System.out.println("Order " + order.getOrderNum() + ": " + s + " (" + dateFormat.format(new Date()).toString() + ")");
 	}
 
 	public void printSys(String s) { //print just to system console
-		System.out.println("Order " + order.getOrderNum() + ": " + s + " (" + dateFormat.format(new Date()).toString() + ")");
+		if (Main.getGUI().areTechMessagesEnabled()) {
+			print(s);
+		} else {
+			System.out.println("Order " + order.getOrderNum() + ": " + s + " (" + dateFormat.format(new Date()).toString() + ")");
+		}
 	}
 
 	public void display(String html) { //display html
 		htmlConsole.getEngine().loadContent(html); //needs fixing, try java fx (fx also has browser built in, could replace firefox)
-
 	}
 
 	private void loop() { //main loop of software
