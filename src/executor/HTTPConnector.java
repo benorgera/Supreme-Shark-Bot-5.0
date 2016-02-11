@@ -78,13 +78,10 @@ public class HTTPConnector {
 
 			//utf8, size, auth token, add-to-cart
 
-
 			String itemLink = item.getLink();
 			String xCSRFToken = item.getAuthenticityToken();
 
-			URL url = new URL(item.getAtcLink());
-
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();           
+			HttpURLConnection con = (HttpURLConnection) new URL(item.getAtcLink()).openConnection();           
 			con.setDoOutput(true);
 			con.setUseCaches(false);
 			con.setConnectTimeout(8000); //timeout after 8 seconds
@@ -121,9 +118,7 @@ public class HTTPConnector {
 			//
 			//			utf8=%E2%9C%93&authenticity_token=RWvrnsyge9GlIfS5rX63S5p%2B5J%2Bcd6hecMFnhZ9XjQk%3D&size=28959&commit=add+to+cart
 
-
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.write(postData);
+			new DataOutputStream(con.getOutputStream()).write(postData); //send the post
 
 			storeCookies(con);
 

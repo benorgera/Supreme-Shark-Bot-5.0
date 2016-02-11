@@ -191,6 +191,7 @@ public class ItemLinkCamper implements Runnable {
 	private boolean checkEarlyLink() { 
 
 		Object[] res = connector.chechEarlyLink(item.getEarlyLink());
+		
 		if (!(boolean) res[0]) return false; //if it failed return
 
 		ArrayList<String> definites = new ArrayList<String>(getValidLinks((String) res[1])); //res[1] is the html
@@ -199,9 +200,7 @@ public class ItemLinkCamper implements Runnable {
 
 		while (iterator.hasNext()) if (!formatLink(iterator.next(), false).contains(item.getEarlyLink())) iterator.remove(); //remove all the non early link links
 
-		ArrayList<String> colorCorrect = new ArrayList<>(getColorCorrect(definites));
-
-		return processArrayLists(definites, colorCorrect);
+		return processArrayLists(definites, new ArrayList<>(getColorCorrect(definites)));
 
 	}
 
@@ -279,7 +278,7 @@ public class ItemLinkCamper implements Runnable {
 
 		ArrayList<String> list = new ArrayList<String>();
 
-		for (String s : firstArray) if (s != null && s.length() > 0) list.add(s);
+		for (String s : firstArray) if (!s.isEmpty()) list.add(s);
 
 		return list.toArray(new String[list.size()]);
 
