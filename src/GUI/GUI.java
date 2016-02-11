@@ -370,7 +370,7 @@ public class GUI extends JFrame {
 					//deletes row whose delete button was pressed
 					if (confirmAction("Item", null) == 0) { //shows JOptionPane
 						((DefaultTableModel) table.getModel()).removeRow(Integer.valueOf(e.getActionCommand()));
-						setAllButOneUneditable(table.getModel().getRowCount()-1, model); //makes add new item row uneditable after delete item
+						setAllButOneUneditable(table.getModel().getRowCount() - 1, model); //makes add new item row uneditable after delete item
 					}
 				} else if (((DefaultTableModel) table.getModel()).getRowCount() == 2 && buttonText.contains("Delete")) { //theyre trying to delete the only item
 					JOptionPane.showMessageDialog(null, "Item 1 cannot be deleted, only 1 item exists!");
@@ -482,16 +482,16 @@ public class GUI extends JFrame {
 			return;
 		}
 		
-		System.out.println("Delete order "+order+" pending");
+		System.out.println("Delete order " + order + " pending");
 		
 		if (confirmAction("Order", order) == 0) { // show the joptionpane
 			//delete the order and set back the order count
 			orderTabHolder.removeChangeListener(tabChange); //remove tab listener so new order isnt addde if the + tab is selected once the previously selected tab dissppears
-			orderTabHolder.remove(order-1); //remove order from gui
-			Main.removeFromOrderList(order-1); //remove order from orders arraylist
+			orderTabHolder.remove(order - 1); //remove order from gui
+			Main.removeFromOrderList(order - 1); //remove order from orders arraylist
 			editOrderObjects(); //resets order numbers and buttons in order objects array following delete
 
-			if (getTabAsString(null, null).equals("+")) orderTabHolder.setSelectedIndex(orderTabHolder.getTabCount()-2); //deselect + tab if its selected following deletion
+			if (getTabAsString(null, null).equals("+")) orderTabHolder.setSelectedIndex(orderTabHolder.getTabCount() - 2); //deselect + tab if its selected following deletion
 			
 			orderTabHolder.addChangeListener(tabChange); //re-add the change listener now that + deselected
 			orderCount--; //drop the order count
@@ -504,8 +504,8 @@ public class GUI extends JFrame {
 		for (int i = 0; i < orderTabHolder.getTabCount() - 1; i ++) {
 			if (getTabAsInt(i, null) != prev) {
 				orderTabHolder.setTitleAt(i, "Order "+prev); //reset tab names
-				Main.getOrders().get(i).setDeleteButtonText("Delete Order "+prev); //reset delete button
-				Main.getOrders().get(i).setSettingsButtonText("Order "+prev+" Settings"); //reset settings button
+				Main.getOrders().get(i).setDeleteButtonText("Delete Order " + prev); //reset delete button
+				Main.getOrders().get(i).setSettingsButtonText("Order " + prev + "Settings"); //reset settings button
 				Main.getOrders().get(i).setOrderNum(prev); //reset order numbers
 			}
 			prev++;
@@ -519,7 +519,7 @@ public class GUI extends JFrame {
 	}
 
 	private int prompt(String message, String title) { //called by confirm action, also called upon license deactivation
-		return JOptionPane.showOptionDialog(null,message, title, 0, 0, null, null, 0);
+		return JOptionPane.showOptionDialog(null, message, title, 0, 0, null, null, 0);
 	}
 
 	private String getTabAsString(Integer at, JTabbedPane source) { //get title of tab as String with only numbers or '+'
