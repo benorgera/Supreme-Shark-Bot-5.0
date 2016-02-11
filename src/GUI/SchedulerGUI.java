@@ -46,6 +46,7 @@ public class SchedulerGUI extends JFrame {
 		switcher.setSelectedColor(ColorDef.GREEN);
 		switcher.setColored(true);
 		switcher.setText("Enable Scheduler?");
+		switcher.setRised(true);
 		settings = Main.getSchedulerSettings();
 		switcher.setSelected(settings.isSelected()); //will show false if it hasnt been enabled
 		JButton applyAndExitButton = new JButton("Apply and Exit");
