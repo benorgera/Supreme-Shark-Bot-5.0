@@ -23,9 +23,8 @@ public class Checkout {
 	
 		prepCheckout();
 		
-		if (connector.checkoutPost(order.getOrderSettings())) {
-			processResponse();
-		}
+		if (connector.checkoutPost(order.getOrderSettings())) processResponse(); //if we successfully posted the checkout form, process the server response to see
+		
 		
 	}
 	
