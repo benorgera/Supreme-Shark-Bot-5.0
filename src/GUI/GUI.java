@@ -374,7 +374,7 @@ public class GUI extends JFrame {
 					}
 				} else if (((DefaultTableModel) table.getModel()).getRowCount() == 2 && buttonText.contains("Delete")) { //theyre trying to delete the only item
 					JOptionPane.showMessageDialog(null, "Item 1 cannot be deleted, only 1 item exists!");
-				} else {
+				} else { //they're adding an item
 					addItem();
 				}
 			}
@@ -398,6 +398,7 @@ public class GUI extends JFrame {
 	private void addItem() {
 		MyDefaultTableModel model = Main.getOrders().get(getTabAsInt(null, null) - 1).getModel(); //get selected tab of pane and get its order and that orders tablemodel
 		int rows = model.getRowCount();
+		
 		if (rows >= 5 && !isPro) { //num is 5 because there's the row with the '+' button
 			JOptionPane.showMessageDialog(null, "Limit of 4 items reached, you must upgrade to pro for infinite items");
 		} else {
@@ -417,7 +418,7 @@ public class GUI extends JFrame {
 	private void setAllEditable(int row, MyDefaultTableModel model) {
 
 		//sets every column in a row editable, except status column, called following new order or new item
-		System.out.println("Setting all columns editable for row "+row);
+		System.out.println("Setting all columns editable for row " + row);
 		for (int i = 0; i <= 6; i++) model.setCellEditable(row, i, !(i == 5));
 		
 	}
@@ -431,7 +432,7 @@ public class GUI extends JFrame {
 
 	private void launchHelp() {//launches tutorial in default browser
 		String url = "http://www.supremesharkbot.com:8080/tutorial.pdf";
-		if (Desktop.isDesktopSupported()){
+		if (Desktop.isDesktopSupported()) {
 			Desktop desktop = Desktop.getDesktop();
 			try {
 				desktop.browse(new URI(url));
@@ -503,7 +504,7 @@ public class GUI extends JFrame {
 		int prev = 1;
 		for (int i = 0; i < orderTabHolder.getTabCount() - 1; i ++) {
 			if (getTabAsInt(i, null) != prev) {
-				orderTabHolder.setTitleAt(i, "Order "+prev); //reset tab names
+				orderTabHolder.setTitleAt(i, "Order " + prev); //reset tab names
 				Main.getOrders().get(i).setDeleteButtonText("Delete Order " + prev); //reset delete button
 				Main.getOrders().get(i).setSettingsButtonText("Order " + prev + "Settings"); //reset settings button
 				Main.getOrders().get(i).setOrderNum(prev); //reset order numbers

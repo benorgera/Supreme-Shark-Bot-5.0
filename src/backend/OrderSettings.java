@@ -30,6 +30,12 @@ public class OrderSettings {
 	private String[] fieldValuesAsArray;
 	
 	private boolean usingProxy = false;
+	
+	
+	//technical data
+	
+	private String postParameters;
+	private String checkoutHTMLResponse;
 
 	public OrderSettings() {
 		fieldValuesAsArray = new String [23];//makes array of values in same order as checkout info
@@ -241,6 +247,22 @@ public class OrderSettings {
 		setProxyPass(array[21]);
 		setCheckoutType(array[22]);	
 		
+	}
+
+	public String getPostParameters() {
+		return postParameters;
+	}
+
+	public void setPostParameters(String postParameters) {
+		this.postParameters = postParameters;
+	}
+
+	public String getCheckoutHTMLResponse() {
+		return checkoutHTMLResponse;
+	}
+
+	public void setCheckoutHTMLResponse(String checkoutHTMLResponse) {
+		this.checkoutHTMLResponse = checkoutHTMLResponse;
 	}
 	
 

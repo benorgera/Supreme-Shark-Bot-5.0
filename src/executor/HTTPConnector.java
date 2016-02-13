@@ -69,7 +69,7 @@ public class HTTPConnector {
 		return new Object[]{success, mostRecentHTML};
 	}
 
-	public boolean atcPost(Item item) { //returns 
+	public boolean atcPost(Item item) { //returns true if added to cart successfully
 
 		try {
 			String urlParameters = item.getAtcParameters();
@@ -185,6 +185,59 @@ public class HTTPConnector {
 
 		for (String s : cookiesAsArray) if (!s.isEmpty()) cookies += (s + "; "); //rebuild cookie string with non blank cookies
 		
+	}
+	
+	public boolean checkoutPost(OrderSettings settings) { //attempts to post checkout data, true if successful post, and return html is set in item settings
+
+		
+		try {
+			
+			String urlParameters = settings.getPostParameters();
+			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+			int postDataLength = postData.length;
+			
+			
+			HttpURLConnection con = (HttpURLConnection) new URL("THE URL GOES HERE").openConnection();           
+			con.setDoOutput(true);
+			con.setUseCaches(false);
+			con.setConnectTimeout(8000); //timeout after 8 seconds
+			con.setReadTimeout(8000);
+			con.setInstanceFollowRedirects(false);
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Host", "www.supremenewyork.com");
+			con.setRequestProperty("Connection", "keep-alive");
+			con.setRequestProperty("Content-Length", Integer.toString(postDataLength));
+			con.setRequestProperty("Accept", "*/*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript");
+			con.setRequestProperty("Origin", "http://www.supremenewyork.com");
+			con.setRequestProperty("X-CSRF-Token", "THE XCSRF TOKEN GOES HERE");
+			con.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+			con.setRequestProperty("User-Agent", RandomUserAgent.getRandomUserAgent());
+			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+			con.setRequestProperty("Referer", "THE REFERRER GOES HERE");
+			con.setRequestProperty("Accept-Encoding", "gzip, deflate");
+			con.setRequestProperty("Accept-Language", "en-US,en;q=0.8");
+			setCookies(con);
+			
+			//above setup not guaranteed for the checkout, this was stolen from the atc
+
+			new DataOutputStream(con.getOutputStream()).write(postData); //send the post
+
+			storeCookies(con);
+
+			settings.setCheckoutHTMLResponse(connectionToString(con)); //throws error if post failed, ensuring false will be returned
+
+			con.disconnect();
+
+			return true; //if error hasn't been thrown, everything went smoothly
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		
+		return false; //error thrown
 	}
 }
 
