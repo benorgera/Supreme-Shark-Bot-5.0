@@ -16,7 +16,7 @@ public class Main {
 	private static ArrayList<Thread> threads;
 
 	public static void main(String[] args) {
-
+		
 		LoadingGIF loader = new LoadingGIF("Initializing Supreme Shark Bot", "Supreme Shark Bot"); //starts loading gif
 
 		botSecurity = new SoftwareSecurity(loader);

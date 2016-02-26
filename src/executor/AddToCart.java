@@ -9,7 +9,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import backend.Item;
-import backend.Main;
 import backend.Order;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

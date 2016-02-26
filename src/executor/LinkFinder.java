@@ -1,6 +1,7 @@
 package executor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import backend.Item;
 import backend.Main;
 
@@ -11,21 +12,24 @@ public class LinkFinder  {
 	private TaskProcessor processor;
 	private HTTPConnector connector;
 
-	private String mostRecentHTML;
+	private HashMap<String, String> categoriesHTML;
 
 	private ArrayList<ItemLinkCamper> campers; //stores campers to be used as monitors for synchronization
 
 	public LinkFinder(ArrayList<Item> items, int refreshRate, TaskProcessor processor, HTTPConnector connector, int orderNumber) {
 		this.items = new ArrayList<Item>(items); //make a copy of the items ArrayList, because this one will be cleared out as links are found (and you don't want to clear the real objects, they're needed later in the checkout process
 		this.refreshRate = refreshRate;
-		this.mostRecentHTML = "";
 		this.processor = processor;
 		this.connector = connector;
 		campers = new ArrayList<ItemLinkCamper>();
-
+		
+		categoriesHTML = new HashMap<String, String>();
+		
 		for (Item i : items) { //start all of the workers for each item
 
-			ItemLinkCamper camper = new ItemLinkCamper(i, this, connector, processor, orderNumber); //make object
+			if (null == categoriesHTML.get(i.getCategory())) categoriesHTML.put(i.getCategory(), "placeholder"); //figure out what category pages need to be monitored for their html
+
+			ItemLinkCamper camper = new ItemLinkCamper(i, this, connector, processor, orderNumber); //make object for each item
 
 			Thread thread = new Thread(camper); //make runnable
 			Main.pushToWorkerArray(thread); //add runnable to 
@@ -35,14 +39,14 @@ public class LinkFinder  {
 	}
 
 
-	public String getMostRecentHTML() { //gives ItemLinkCampers most recent HTML from /shop/all
-		return mostRecentHTML;
+	public String getMostRecentHTML(String category) { //gives ItemLinkCampers most recent HTML from /shop/CATEGORY
+		return categoriesHTML.get(category);
 	}
 
 
 	public void findThem() { //gets new html from site
 		try {
-			mostRecentHTML = connector.getHTMLString("http://www.supremenewyork.com/shop/all");
+			pullCategoriesHTML();
 
 			processor.printSys("HTTP connection made");
 
@@ -52,7 +56,7 @@ public class LinkFinder  {
 
 			checkIfReady(); //check if all items found, if so move to next stage
 
-	
+
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt(); //if thread interrupted (bot aborted), interrupt yourself
 		}
@@ -90,5 +94,13 @@ public class LinkFinder  {
 		}
 	}
 
+
+	private void pullCategoriesHTML() { //pulls most recent HTML from each necessary category
+		 for (String s : categoriesHTML.keySet()) categoriesHTML.replace(s, connector.getHTMLString(getCategoryURL(s)));
+	}
+	
+	private String getCategoryURL(String category) { //returns the URL of the given category's /shop page
+		return "http://www.supremenewyork.com/shop/all/" + (category.equals("tops-sweaters") ? "tops_sweaters" : category);
+	}
 
 }
