@@ -62,6 +62,8 @@ public class AddToCart {
 		Elements sizes = doc.select("form select");
 
 		form.addAll(sizes); //form contains all inputs and all dropdowns
+		
+		String askingAbout = "size";
 
 		String data = "";
 		for (int i = 0; i < form.size(); i ++) { //dynamically scrape atc params
@@ -73,7 +75,8 @@ public class AddToCart {
 			if (i != 0) data += "&"; //if not first parameter, add & to separate it from previous parameter
 
 			if (!sizeOptions.isEmpty()) { //if it's not empty, there is a size dropdown
-				data += pullSize(sizeOptions, item);
+				data += pullSize(sizeOptions, item, askingAbout);
+				askingAbout = "option"; //we already propted them about size, lets say we're asking about "option" next time (which could mean quantity or some other option)
 			} else { //there is either no size dropdown or this is auth_token, utf8, or commit
 				String name = form.get(i).attr("name");
 				String value = form.get(i).attr("value");
@@ -99,9 +102,8 @@ public class AddToCart {
 
 	}
 
-	private String pullSize(Elements sizes, Item item) { //only one size, set it and return
+	private String pullSize(Elements sizes, Item item, String askingAbout) { //get proper size or option (maybe quantity, maybe other option) (stored in "askAbout"), and return its atc params
 
-		//size not being pulled when it should be
 
 		if (sizes.size() == 1) { //only one size, we don't need to think
 			processor.printSys("Item " + item.getItemNumber() + ": Size Number: " + sizes.get(0).attr("value") + " Because Only One Size Available");
@@ -126,7 +128,7 @@ public class AddToCart {
 
 		JPanel panel = new JPanel(new BorderLayout(0, 0));
 		panel.add(optionList, BorderLayout.SOUTH);
-		panel.add(new JLabel("Which of these is the correct size for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
+		panel.add(new JLabel("Which of these is the correct " + askingAbout + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
 
 		JOptionPane.showOptionDialog(null, panel, "Confirm Order " + order.getOrderNum() + " Item " + item.getItemNumber() + " Size", 0, 3, null, new String[]{"Ok"}, 0);
 		
@@ -136,7 +138,7 @@ public class AddToCart {
 		
 		String text = sizes.get(optionList.getSelectedIndex()).text();
 		
-		processor.printSys("Item " + item.getItemNumber() + ": User chose size " + text + " which had number " + value);
+		processor.printSys("Item " + item.getItemNumber() + ": User chose " + askingAbout + " " + text + " which had number " + value);
 		
 		return format(name, value);
 	}

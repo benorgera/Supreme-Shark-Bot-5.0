@@ -3,11 +3,6 @@ package executor;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,6 +30,7 @@ public class ItemLinkCamper implements Runnable {
 	
 	/*
 	 * 
+	 * BOT SHOULD PROCESS IF ADD TO CART ACUTALLY GOES THROUGH, BY CHECKING RESPONSE COOKIES
 	 * 
 	 * 
 	 * 
@@ -46,8 +42,6 @@ public class ItemLinkCamper implements Runnable {
 	 * 
 	 * 
 	 * 
-	 * EARLY LINKS NOT WORKING AT ALL
-	 * BOT MUST SCAN COOKIES TO MAKE SURE ITEMS ARE ACUTALLY ADDED TO CART, BECAUSE AN ERROR IS NO LONGER THROWN WHEN SOMETHING GOES WRONG
 	 */
 	
 	
@@ -106,42 +100,49 @@ public class ItemLinkCamper implements Runnable {
 
 	private boolean pullLink(String html) { //once its confirmed the item is up, pull the link and set it in item settings
 
-		PotentialItems possibilities = getValidLinks(html);
+		PotentialItems possibilities = getValidLinks(html, false);
 
-		System.out.println("Possibilities: " + possibilities.toString());
+		System.out.println("All Valid Links: " + possibilities);
 
-		PotentialItems definites = new PotentialItems();
+		PotentialItems haveKeywords = new PotentialItems();
 
 		for (int i = 0; i < possibilities.size(); i++) { //add links with keywords to definites
 			for (String keyword : item.getKeywords()) if (possibilities.getLinkText(i).contains(keyword)) {
-				definites.add(possibilities.get(i));
+				haveKeywords.add(possibilities.get(i));
 				break; //goto next iteration, no need to check this link again it was already added
 			}
 		} 
+		
+		System.out.println("Links With Keywords: " + haveKeywords);
+		
+		PotentialItems haveMaxKeywords = new PotentialItems();
 
 		int max = 0;
 
-		for (int i = 0; i < definites.size(); i++) {
+		for (int i = 0; i < haveKeywords.size(); i++) {
 			int keywordsNum = 0;
-			for (String keyword : item.getKeywords()) if (definites.getLinkText(i).contains(keyword)) keywordsNum++;
+			for (String keyword : item.getKeywords()) if (haveKeywords.getLinkText(i).contains(keyword)) keywordsNum++;
 			if (keywordsNum > max) max = keywordsNum;
 		}
+		
+		System.out.println("Max: " + max);
 
-
-		for (int i = 0; i < definites.size(); i++) { //iterate through definites, removing links which have less than max keywords
+		for (int i = 0; i < haveKeywords.size(); i++) { //iterate through definites, removing links which have less than max keywords
 			int keywordNums = 0;
-			for (String keyword : item.getKeywords()) if (definites.getLinkText(i).contains(keyword)) keywordNums++; //count keywords in link
-			if (keywordNums < max) definites.remove(i); //if less than max keywords found, remove item
+			for (String keyword : item.getKeywords()) if (haveKeywords.getLinkText(i).contains(keyword)) keywordNums++; //count keywords in link
+			if (keywordNums >= max) haveMaxKeywords.add(haveKeywords.get(i));
 		}
+		
+		System.out.println("Links with max keywords: " + haveMaxKeywords);
 
-		return processItems(definites, getColorCorrect(definites));
+		return processItems(haveMaxKeywords, getColorCorrect(haveMaxKeywords), false);
 	}
 
-	private int confirm(PotentialItems items) { //confirms that the 
+	private int confirm(PotentialItems items, boolean isEarlyLink) { //confirms that the 
 
 		ArrayList<String> prompt = new ArrayList<String>();
 
-		for (int i = 0; i < items.size(); i++) prompt.add(items.getLinkText(i));
+		for (int i = 0; i < items.size(); i++) prompt.add(isEarlyLink ? items.getURL(i).split("/")[4].replace("-",  " ") : items.getLinkText(i)); //if early link ask about color (using the different colors from the url, otherwise use the link text)
 		
 		if (prompt.equals(previousConfirmation)) {previousConfirmationNum++;} else {previousConfirmationNum = 0;}
 		
@@ -153,7 +154,8 @@ public class ItemLinkCamper implements Runnable {
 
 		JPanel panel = new JPanel(new BorderLayout(0, 0));
 		panel.add(optionList, BorderLayout.SOUTH);
-		panel.add(new JLabel("Which of these is the correct link for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
+		
+		panel.add(new JLabel("Which of these is the correct " + (isEarlyLink ? "color" : "item description") + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
 
 		if (JOptionPane.showOptionDialog(null, panel, "Confirm Order " + orderNumber + " Item " + item.getItemNumber() + " Link", 0, 3, null, new String[]{"None of these", "Ok"}, 0) == 1) return optionList.getSelectedIndex(); //they chose ok, return which link was chosen
 
@@ -216,25 +218,29 @@ public class ItemLinkCamper implements Runnable {
 	}
 
 	private boolean checkEarlyLink() { 
+		
+		System.out.println("Early Link To Be Checked: " + item.getEarlyLink());
 
 		Object[] res = connector.chechEarlyLink(item.getEarlyLink());
 
 		if (!(boolean) res[0]) return false; //if it failed return
 
-		PotentialItems definites = getValidLinks((String) res[1]); //res[1] is the html
+		PotentialItems validLinks = getValidLinks((String) res[1], true); //res[1] is the html of the item page
+		
+		System.out.println("Early Link Page Text: " + res[1]);
+		
+		System.out.println("Valid Links: " + validLinks);
 
-		for (int i = 0; i < definites.size(); i++) {
-			if (!formatLink(definites.getURL(i), false).contains(item.getEarlyLink())) {
-				definites.remove(i);
-			}
-		}
+		PotentialItems matchEarlyLink = new PotentialItems();
+		
+		for (int i = 0; i < validLinks.size(); i++) if (formatLink(validLinks.getURL(i), false).contains(item.getEarlyLink()) && !matchEarlyLink.containsURL(validLinks.getURL(i))) matchEarlyLink.add(validLinks.get(i)); //add all of the links
 
-		return processItems(definites, getColorCorrect(definites));
-
+		System.out.println("Match Early Link: " + matchEarlyLink);
+		
+		return processItems(matchEarlyLink, getColorCorrect(matchEarlyLink), true);
 	}
 
-
-	private PotentialItems getValidLinks(String html) { //get all links, with no duplicates or get requests
+	private PotentialItems getValidLinks(String html, boolean allowImages) { //get all links, with no duplicates or get requests
 
 		Document page = Jsoup.parse(html);
 
@@ -254,7 +260,7 @@ public class ItemLinkCamper implements Runnable {
 
 				String newLinkText = e.text().toLowerCase(); //convert to lower case
 				
-				if (!e.getElementsByTag("img").isEmpty()) { //this is the image, disregard it because it has no link text
+				if (!e.getElementsByTag("img").isEmpty() && !allowImages) { //this is the image, disregard it because it has no link text, unless this is called by early link, which doesn't care if its an image
 				
 				} else if (items.containsURL(urlWithoutGetRequests)) { //this url has already been registered
 
@@ -276,7 +282,7 @@ public class ItemLinkCamper implements Runnable {
 
 		PotentialItems colorCorrect =  new PotentialItems();
 
-		for (int i = 0; i < definites.size(); i++) {
+		for (int i = 0; i < definites.size(); i++) { //return all items whose urls contain the 
 			for (String color : item.getColors()) {
 				if (definites.getURL(i).contains(color)) {
 					colorCorrect.add(definites.get(i));
@@ -289,25 +295,33 @@ public class ItemLinkCamper implements Runnable {
 
 	}
 
-	private boolean processItems(PotentialItems definites, PotentialItems colorCorrect) { //prompts user if necessary, figures out proper item
+	private boolean processItems(PotentialItems definites, PotentialItems colorCorrect, boolean isEarlyLink) { //prompts user if necessary, figures out proper item
 
+		System.out.println("color correct:" + colorCorrect);
+		
+		System.out.println("definites: " + definites);
+		
 		if (colorCorrect.size() == 1) { //only one link
-
+			
 			item.setLink(formatLink(colorCorrect.getURL(0), true));
 
 		} else if (colorCorrect.size() == 0 && definites.size() > 1) { //no links in color correct but others 
 
-			int result = confirm(definites);
+			int result = confirm(definites, isEarlyLink);
 			if (result <= -1) return false; //they chose none or closed the dialog
 			item.setLink(formatLink(definites.getURL(0), true));
 
 		} else if (colorCorrect.size() == 0 && definites.size() == 1) { //no links in color correct but one in definites
-
+			
 			item.setLink(formatLink(definites.getURL(0), true));
 
 		} else if (colorCorrect.size() > 1) {
+			
+			System.out.println("");
 
-			int result = confirm(colorCorrect);
+			
+			//how do you get color ocrrect??
+			int result = confirm(colorCorrect, isEarlyLink);
 			if (result <= -1) return false; //they chose none or closed the dialog
 			item.setLink(formatLink(colorCorrect.getURL(result), true));
 

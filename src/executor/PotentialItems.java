@@ -36,6 +36,7 @@ public class PotentialItems {
 	}
 	
 	public void remove(int index) {
+		System.out.println("removed:" + Arrays.asList(get(index)));
 		urls.remove(index);
 		linkTexts.remove(index);
 	}
@@ -52,7 +53,6 @@ public class PotentialItems {
 		String s = "";
 		for (int i = 0; i < size(); i++) s += (Arrays.asList(get(i)) + "\n");
 		return s;
-		
 	}
 	
 	public int indexOfURL(String url) {
