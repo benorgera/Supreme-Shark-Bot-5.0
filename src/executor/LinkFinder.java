@@ -56,7 +56,6 @@ public class LinkFinder  {
 
 			checkIfReady(); //check if all items found, if so move to next stage
 
-
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt(); //if thread interrupted (bot aborted), interrupt yourself
 		} catch (Exception e) {
@@ -98,7 +97,7 @@ public class LinkFinder  {
 
 
 	private void pullCategoriesHTML() { //pulls most recent HTML from each necessary category
-		 for (String s : categoriesHTML.keySet()) categoriesHTML.replace(s, connector.getHTMLString(getCategoryURL(s)));
+		 for (String s : categoriesHTML.keySet()) categoriesHTML.replace(s, connector.getHTMLString(getCategoryURL(s), false));
 	}
 	
 	private String getCategoryURL(String category) { //returns the URL of the given category's /shop page

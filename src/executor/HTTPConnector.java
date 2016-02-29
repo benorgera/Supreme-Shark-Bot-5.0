@@ -28,11 +28,14 @@ public class HTTPConnector {
 		this.userAgent = RandomUserAgent.getRandomUserAgent();
 	}
 
-	public String getHTMLString(String url) {
+	public String getHTMLString(String url, boolean isCheckout) {
 		String mostRecentHTML = "";
 		try {
 			URLConnection con = settings.isUsingProxy() ? new URL(url).openConnection(proxyBuilder.getProxy()) : new URL(url).openConnection();
 			con.setUseCaches(false);
+			if (isCheckout) {
+				setCookies(con);
+			}
 			con.setConnectTimeout(8000); //timeout after 8 seconds
 			con.setReadTimeout(8000);
 			con.connect();
@@ -42,7 +45,7 @@ public class HTTPConnector {
 			processor.print("Connection to Supreme" + (settings.isUsingProxy() ? " using proxy " : " ") + "timed out");
 		} catch (IOException e) {
 			processor.print("Connection to Supreme" + (settings.isUsingProxy() ? " using proxy " : " ") + "failed");
-		} 
+		}
 
 
 		return mostRecentHTML;
@@ -84,8 +87,8 @@ public class HTTPConnector {
 			String xCSRFToken = item.getAuthenticityToken();
 
 			HttpURLConnection con = (HttpURLConnection) new URL(item.getAtcLink()).openConnection();           
-			con.setDoOutput(true);
 			con.setUseCaches(false);
+			con.setDoOutput(true);
 			con.setConnectTimeout(8000); //timeout after 8 seconds
 			con.setReadTimeout(8000);
 			con.setInstanceFollowRedirects(false);
@@ -127,7 +130,7 @@ public class HTTPConnector {
 			con.getInputStream(); //throws error if atc failed, ensuring false will be returned
 
 			con.disconnect();
-			
+
 			processor.printSys("Number of New Cookies: " + newCookies);
 
 			return newCookies > 1 ? true : false; //0 or 1 new cookies means nothing more was added to cart
@@ -156,20 +159,20 @@ public class HTTPConnector {
 
 		String newCookieName = cookie.split("=")[0];
 		if (cookies.contains(newCookieName)) replaceCookies(newCookieName);  //we have a cookie with the same name as the new cookie, swap them
-		
+
 		processor.printSys("New Cookie: " + cookie);
 		cookies += (cookie + "; "); //add the new cookie followed by a semicolon
-		
+
 		return 1;
 	}
 
 	private int storeCookies(URLConnection con) { //iterates through headers, adding new cookie, returning number of new cookies
 		String headerName = null;
-		
+
 		int totalNewCookies = 0;
-		
+
 		for (int i = 1; (headerName = con.getHeaderFieldKey(i)) != null; i++) if (headerName.equals("Set-Cookie")) totalNewCookies += addCookie(con.getHeaderField(i)); //add to the total the number of new cookies found by add cookie for each cookie
-		
+
 		return totalNewCookies;
 	}
 
@@ -194,19 +197,19 @@ public class HTTPConnector {
 		cookies = "";
 
 		for (String s : cookiesAsArray) if (!s.isEmpty()) cookies += (s + "; "); //rebuild cookie string with non blank cookies
-		
+
 	}
-	
+
 	public boolean checkoutPost(OrderSettings settings) { //attempts to post checkout data, index 0 is true if successful post, and response is passed back in index 1 
 
-		
+
 		try {
-			
-			String urlParameters = settings.getPostParameters();
+
+			String urlParameters = settings.getCheckoutParameters();
 			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 			int postDataLength = postData.length;
-			
-			
+
+
 			HttpURLConnection con = (HttpURLConnection) new URL(settings.getCheckoutLink()).openConnection();           
 			con.setDoOutput(true);
 			con.setUseCaches(false);
@@ -244,10 +247,10 @@ public class HTTPConnector {
 			e.printStackTrace();
 		}
 
-		
+
 		return false; //error thrown
 	}
-	
+
 }
 
 

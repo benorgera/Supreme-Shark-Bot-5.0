@@ -30,11 +30,9 @@ public class AddToCart {
 	}
 
 	public void addThem() {
+		Item currentItem = order.getItems().get(itemsAdded);
 
 		try {
-
-			Item currentItem = order.getItems().get(itemsAdded);
-
 			prepareItem(currentItem); //prepare item, maybe previous prepare failed. you could theoretically just prepare once
 
 			if (connector.atcPost(currentItem)) { //if successful, goto next item, reset attempts
@@ -45,24 +43,26 @@ public class AddToCart {
 				attempts++;
 			}
 
-			if (attempts >= 50 && order.getItems().size() > 1) { //too many attempts and other items to worry about
-				processor.setStatus(currentItem.getItemNumber(), "Add to Cart Failed");
-				itemsAdded++;
-				attempts = 0;
-			}
-
-			if (itemsAdded == order.getItems().size()) processor.setStage(Stage.CHECKOUT);
-
 		} catch (Exception e) {
 			processor.printSys("Add to cart error, retrying");
+			attempts++;
 		}
+
+
+		if (attempts >= 50 && order.getItems().size() > 1) { //too many attempts and other items to worry about
+			processor.setStatus(currentItem.getItemNumber(), "Add to Cart Failed");
+			itemsAdded++;
+			attempts = 0;
+		}
+
+		if (itemsAdded == order.getItems().size()) processor.setStage(Stage.CHECKOUT);
 	}
 
 	private void prepareItem(Item item) { //scrape item page for post parameters
 
 		processor.setStatus(item.getItemNumber(), "Adding to Cart (" + attempts + " attempts)");
 
-		Document doc = Jsoup.parse(connector.getHTMLString(item.getLink()));
+		Document doc = Jsoup.parse(connector.getHTMLString(item.getLink(), false));
 
 		Elements form = doc.select("form input");
 
@@ -90,7 +90,6 @@ public class AddToCart {
 				data += format(name, value);
 				processor.printSys("Item " + item.getItemNumber() + ": Added attribute " + name + " with value " + value + " to add to cart params");
 			}
-
 		}
 
 		processor.printSys("Item " + item.getItemNumber() + ": ATC Data: " + data);
@@ -160,7 +159,4 @@ public class AddToCart {
 		return returnValue;
 	}
 
-	private void terminate() {
-
-	}
 }

@@ -33,7 +33,7 @@ public class OrderSettings {
 	
 	//technical data
 	
-	private String postParameters;
+	private String checkoutParameters;
 	private String checkoutServerResponse;
 	private String checkoutLink;
 
@@ -240,12 +240,12 @@ public class OrderSettings {
 		
 	}
 
-	public String getPostParameters() {
-		return postParameters;
+	public String getCheckoutParameters() {
+		return checkoutParameters;
 	}
 
-	public void setPostParameters(String postParameters) {
-		this.postParameters = postParameters;
+	public void setCheckoutParameters(String checkoutParameters) {
+		this.checkoutParameters = checkoutParameters;
 	}
 
 	public String getCheckoutLink() {

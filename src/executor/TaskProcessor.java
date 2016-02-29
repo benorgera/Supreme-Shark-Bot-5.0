@@ -69,6 +69,8 @@ public class TaskProcessor implements Runnable {
 		LinkFinder linkFinder = new LinkFinder(order.getItems(), refreshRate, this, connector, order.getOrderNum()); //new link finder
 		
 		AddToCart atc = new AddToCart(order, this, connector);
+		
+		Checkout checkout = new Checkout(order, this, connector);
 
 		while (!Thread.currentThread().isInterrupted()) { //you must check if cancelled in every loop!!!
 
@@ -83,7 +85,9 @@ public class TaskProcessor implements Runnable {
 				atc.addThem();
 				break;
 			case CHECKOUT:
+				checkout.attemptCheckout();
 				Thread.currentThread().interrupt();
+				break;
 			}
 
 		}
@@ -102,7 +106,7 @@ public class TaskProcessor implements Runnable {
 	}
 	
 	public void setAllStatuses(String text) { //sets status of all items in table
-		for (int i = 0; i < order.getModel().getColumnCount(); i++) order.getModel().setValueAt(text, i, 5);
+		for (int i = 0; i < order.getModel().getRowCount(); i++) order.getModel().setValueAt(text, i, 5);
 	}
 	
 

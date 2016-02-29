@@ -183,7 +183,7 @@ public class ItemLinkCamper implements Runnable {
 			String linkPart = link.substring(0, link.lastIndexOf("/")); 
 			String colorPart = link.substring(link.lastIndexOf("/") + 1, link.length()); 
 
-			processor.printSys("Item " + item.getItemNumber() + " Two parts of link (item part and color part): " + linkPart + colorPart);
+			processor.printSys("Item " + item.getItemNumber() + " Two parts of link (item part and color part): " + linkPart + ": " + colorPart);
 
 			if (!colorPart.isEmpty()) setColorsAndEarlyLinkFromEarlyLink(colorPart, linkPart);  //if the color part of the link isn't empty
 
@@ -216,8 +216,14 @@ public class ItemLinkCamper implements Runnable {
 		for (int i = 0; i < validLinks.size(); i++) if (formatLink(validLinks.getURL(i), false).contains(item.getEarlyLink()) && !matchEarlyLink.containsURL(validLinks.getURL(i))) matchEarlyLink.add(validLinks.get(i)); //add all of the links
 
 		System.out.println("Match Early Link: " + matchEarlyLink);
+		
+		if (matchEarlyLink.size() == 0) { //this item only comes in one color, there are no links to other colors on the page
+			item.setLink(formatLink(item.getEarlyLink(), false));
+			return true;
+		} else { //this item comes in multiple colors, figure out the right one
+			return processItems(matchEarlyLink, getColorCorrect(matchEarlyLink), true);
+		}
 
-		return processItems(matchEarlyLink, getColorCorrect(matchEarlyLink), true);
 	}
 
 	private PotentialItems getValidLinks(String html, boolean allowImages) { //get all links, with no duplicates or get requests

@@ -83,7 +83,6 @@ public class SettingsGUI extends JFrame {
 
 	private OrderSettings orderSettings;
 
-	private final String[] checkoutTypeFieldOptions = {"Browserless (HTTP Mode)", "Browser (Firefox)"};
 	private final String[] countriesUS = {"USA", "CANADA"};
 	private final String[] countriesUK = {
 			"UK",
