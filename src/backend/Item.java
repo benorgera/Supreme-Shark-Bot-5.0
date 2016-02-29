@@ -11,7 +11,6 @@ public class Item {
 	private int itemNumber;
 
 	private String atcLink;
-	private String documentHTML;
 	private String authenticityToken;
 	private String atcParameters;
 	private String link; //set by link finder once link is found
@@ -101,14 +100,5 @@ public class Item {
 	public void setAuthenticityToken(String authenticityToken) {
 		this.authenticityToken = authenticityToken;
 	}
-
-	public String getDocumentHTML() {
-		return documentHTML;
-	}
-
-	public void setDocumentHTML(String documentHTML) {
-		this.documentHTML = documentHTML;
-	}
-	
 	
 }

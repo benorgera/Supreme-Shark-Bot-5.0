@@ -31,31 +31,38 @@ public class AddToCart {
 
 	public void addThem() {
 
-		if (attempts >= 100); //maybe skip item after set amount of tries?
+		try {
 
-		Item currentItem = order.getItems().get(itemsAdded);
+			Item currentItem = order.getItems().get(itemsAdded);
 
-		prepareItem(currentItem); //prepare item, maybe previous prepare failed. you could theoretically just prepare once
+			prepareItem(currentItem); //prepare item, maybe previous prepare failed. you could theoretically just prepare once
 
-		if (connector.atcPost(currentItem)) { //if successful, goto next item, reset attempts
-			processor.setStatus(currentItem.getItemNumber(), "Added to Cart");
-			itemsAdded++;
-			attempts = 0;
-		} else {
-			attempts++;
+			if (connector.atcPost(currentItem)) { //if successful, goto next item, reset attempts
+				processor.setStatus(currentItem.getItemNumber(), "Added to Cart");
+				itemsAdded++;
+				attempts = 0;
+			} else {
+				attempts++;
+			}
+
+			if (attempts >= 50 && order.getItems().size() > 1) { //too many attempts and other items to worry about
+				processor.setStatus(currentItem.getItemNumber(), "Add to Cart Failed");
+				itemsAdded++;
+				attempts = 0;
+			}
+
+			if (itemsAdded == order.getItems().size()) processor.setStage(Stage.CHECKOUT);
+
+		} catch (Exception e) {
+			processor.printSys("Add to cart error, retrying");
 		}
-
-		if (itemsAdded == order.getItems().size()) processor.setStage(Stage.CHECKOUT);
-
 	}
 
 	private void prepareItem(Item item) { //scrape item page for post parameters
 
 		processor.setStatus(item.getItemNumber(), "Adding to Cart (" + attempts + " attempts)");
 
-		item.setDocumentHTML(connector.getHTMLString(item.getLink()));
-
-		Document doc = Jsoup.parse(item.getDocumentHTML());
+		Document doc = Jsoup.parse(connector.getHTMLString(item.getLink()));
 
 		Elements form = doc.select("form input");
 
@@ -153,4 +160,7 @@ public class AddToCart {
 		return returnValue;
 	}
 
+	private void terminate() {
+
+	}
 }

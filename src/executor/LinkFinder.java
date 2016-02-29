@@ -59,6 +59,8 @@ public class LinkFinder  {
 
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt(); //if thread interrupted (bot aborted), interrupt yourself
+		} catch (Exception e) {
+			processor.printSys("Link finding error, retrying");
 		}
 
 

@@ -22,30 +22,6 @@ public class ItemLinkCamper implements Runnable {
 	private TaskProcessor processor;
 	private HTTPConnector connector;
 
-	
-	
-	
-	
-	
-	
-	/*
-	 * 
-	 * BOT SHOULD PROCESS IF ADD TO CART ACUTALLY GOES THROUGH, BY CHECKING RESPONSE COOKIES
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
-	
-	
-	
 	private int orderNumber;
 
 	private ArrayList<String> previousConfirmation; //the last JOptionPane shown, if its the same as the one before we dont want to ask again
@@ -66,26 +42,30 @@ public class ItemLinkCamper implements Runnable {
 
 		int count = 0;
 		while (!Thread.currentThread().isInterrupted()) {
-			count++;
+			try {
+				count++;
 
-			processor.setStatus(item.getItemNumber(), "Link Finding (" + count + " checks)");
+				processor.setStatus(item.getItemNumber(), "Link Finding (" + count + " checks)");
 
-			waitForUpdate();
+				waitForUpdate();
 
-			if (!item.getEarlyLink().isEmpty()) if (checkEarlyLink()) terminate();
+				if (!item.getEarlyLink().isEmpty()) if (checkEarlyLink()) terminate();
 
-			boolean shouldCheck = false;
+				boolean shouldCheck = false;
 
-			for (String keyword : item.getKeywords()) { //iterate through keywords, if any are in the html, check it
-				if (linkFinder.getMostRecentHTML(item.getCategory()).toLowerCase().contains(keyword) && !keyword.isEmpty()) {
-					shouldCheck = true;
-					break;
+				for (String keyword : item.getKeywords()) { //iterate through keywords, if any are in the html, check it
+					if (linkFinder.getMostRecentHTML(item.getCategory()).toLowerCase().contains(keyword) && !keyword.isEmpty()) {
+						shouldCheck = true;
+						break;
+					}
 				}
-			}
 
-			if (shouldCheck) { //if a keyword was found, try and check the HTML again
-				checkHTML();
-				processor.printSys("Item "+ item.getItemNumber() + " checked HTML " + count + " times");
+				if (shouldCheck) { //if a keyword was found, try and check the HTML again
+					checkHTML();
+					processor.printSys("Item "+ item.getItemNumber() + " checked HTML " + count + " times");
+				}
+			} catch (Exception e) {
+				processor.printSys("Item "+ item.getItemNumber() + " HTML check error, retrying");
 			}
 
 
@@ -112,9 +92,9 @@ public class ItemLinkCamper implements Runnable {
 				break; //goto next iteration, no need to check this link again it was already added
 			}
 		} 
-		
+
 		System.out.println("Links With Keywords: " + haveKeywords);
-		
+
 		PotentialItems haveMaxKeywords = new PotentialItems();
 
 		int max = 0;
@@ -124,7 +104,7 @@ public class ItemLinkCamper implements Runnable {
 			for (String keyword : item.getKeywords()) if (haveKeywords.getLinkText(i).contains(keyword)) keywordsNum++;
 			if (keywordsNum > max) max = keywordsNum;
 		}
-		
+
 		System.out.println("Max: " + max);
 
 		for (int i = 0; i < haveKeywords.size(); i++) { //iterate through haveKeywords, adding links with max number of keywords to haveMaxKeywords
@@ -132,7 +112,7 @@ public class ItemLinkCamper implements Runnable {
 			for (String keyword : item.getKeywords()) if (haveKeywords.getLinkText(i).contains(keyword)) keywordNums++; //count keywords in link
 			if (keywordNums >= max) haveMaxKeywords.add(haveKeywords.get(i));
 		}
-		
+
 		System.out.println("Links with max keywords: " + haveMaxKeywords);
 
 		return processItems(haveMaxKeywords, getColorCorrect(haveMaxKeywords), false);
@@ -143,18 +123,18 @@ public class ItemLinkCamper implements Runnable {
 		ArrayList<String> prompt = new ArrayList<String>();
 
 		for (int i = 0; i < items.size(); i++) prompt.add(isEarlyLink ? items.getURL(i).split("/")[4].replace("-",  " ") : items.getLinkText(i)); //if early link ask about color (using the different colors from the url, otherwise use the link text)
-		
+
 		if (prompt.equals(previousConfirmation)) {previousConfirmationNum++;} else {previousConfirmationNum = 0;}
-		
+
 		if (previousConfirmationNum >= 2) return -1; //if we already asked about these links twice, dont ask again
-		
+
 		previousConfirmation = prompt; //this was the previous confirmation
 
 		JComboBox<Object> optionList = new JComboBox<Object>(prompt.toArray());
 
 		JPanel panel = new JPanel(new BorderLayout(0, 0));
 		panel.add(optionList, BorderLayout.SOUTH);
-		
+
 		panel.add(new JLabel("Which of these is the correct " + (isEarlyLink ? "color" : "item description") + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
 
 		if (JOptionPane.showOptionDialog(null, panel, "Confirm Order " + orderNumber + " Item " + item.getItemNumber() + " Link", 0, 3, null, new String[]{"None of these", "Ok"}, 0) == 1) return optionList.getSelectedIndex(); //they chose ok, return which link was chosen
@@ -218,7 +198,7 @@ public class ItemLinkCamper implements Runnable {
 	}
 
 	private boolean checkEarlyLink() { 
-		
+
 		System.out.println("Early Link To Be Checked: " + item.getEarlyLink());
 
 		Object[] res = connector.chechEarlyLink(item.getEarlyLink());
@@ -226,17 +206,17 @@ public class ItemLinkCamper implements Runnable {
 		if (!(boolean) res[0]) return false; //if it failed return
 
 		PotentialItems validLinks = getValidLinks((String) res[1], true); //res[1] is the html of the item page
-		
+
 		System.out.println("Early Link Page Text: " + res[1]);
-		
+
 		System.out.println("Valid Links: " + validLinks);
 
 		PotentialItems matchEarlyLink = new PotentialItems();
-		
+
 		for (int i = 0; i < validLinks.size(); i++) if (formatLink(validLinks.getURL(i), false).contains(item.getEarlyLink()) && !matchEarlyLink.containsURL(validLinks.getURL(i))) matchEarlyLink.add(validLinks.get(i)); //add all of the links
 
 		System.out.println("Match Early Link: " + matchEarlyLink);
-		
+
 		return processItems(matchEarlyLink, getColorCorrect(matchEarlyLink), true);
 	}
 
@@ -259,9 +239,9 @@ public class ItemLinkCamper implements Runnable {
 				String urlWithoutGetRequests = e.attr("href").split("\\?")[0]; //remove get requests
 
 				String newLinkText = e.text().toLowerCase(); //convert to lower case
-				
+
 				if (!e.getElementsByTag("img").isEmpty() && !allowImages) { //this is the image, disregard it because it has no link text, unless this is called by early link, which doesn't care if its an image
-				
+
 				} else if (items.containsURL(urlWithoutGetRequests)) { //this url has already been registered
 
 					int indexOfThisURL = items.indexOfURL(urlWithoutGetRequests);
@@ -298,11 +278,11 @@ public class ItemLinkCamper implements Runnable {
 	private boolean processItems(PotentialItems definites, PotentialItems colorCorrect, boolean isEarlyLink) { //prompts user if necessary, figures out proper item
 
 		System.out.println("color correct:" + colorCorrect);
-		
+
 		System.out.println("definites: " + definites);
-		
+
 		if (colorCorrect.size() == 1) { //only one link
-			
+
 			item.setLink(formatLink(colorCorrect.getURL(0), true));
 
 		} else if (colorCorrect.size() == 0 && definites.size() > 1) { //no links in color correct but others 
@@ -312,13 +292,13 @@ public class ItemLinkCamper implements Runnable {
 			item.setLink(formatLink(definites.getURL(0), true));
 
 		} else if (colorCorrect.size() == 0 && definites.size() == 1) { //no links in color correct but one in definites
-			
+
 			item.setLink(formatLink(definites.getURL(0), true));
 
 		} else if (colorCorrect.size() > 1) {
-			
+
 			int max = 0;
-			
+
 			PotentialItems haveMaxColors = new PotentialItems();
 
 			for (int i = 0; i < colorCorrect.size(); i++) { //count max number of colors in any link
@@ -326,7 +306,7 @@ public class ItemLinkCamper implements Runnable {
 				for (String color : item.getColors()) if (colorCorrect.getURL(i).contains(color)) colorsNum++;
 				if (colorsNum > max) max = colorsNum;
 			}
-			
+
 			System.out.println("Max: " + max);
 
 			for (int i = 0; i < colorCorrect.size(); i++) { //add links with max number of colors to haveMaxColors
@@ -334,13 +314,13 @@ public class ItemLinkCamper implements Runnable {
 				for (String color : item.getColors()) if (colorCorrect.getURL(i).contains(color)) colorsNum++; //count keywords in link
 				if (colorsNum >= max) haveMaxColors.add(colorCorrect.get(i));
 			}
-			
+
 			if (haveMaxColors.size() == 1) {
 				item.setLink(formatLink(haveMaxColors.getURL(0), true)); //only one link has the max number of colors, its correct
 				return true;
 			}
-			
-			
+
+
 			//more than one link has the max number of colors, must prompt to find the correct one
 			int result = confirm(haveMaxColors, isEarlyLink);
 			if (result <= -1) return false; //they chose none or closed the dialog
