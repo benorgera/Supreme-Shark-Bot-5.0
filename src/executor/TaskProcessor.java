@@ -13,7 +13,7 @@ public class TaskProcessor implements Runnable {
 
 	private Order order;
 	private JTextArea txtConsole;
-	public Stage stage;
+	private Stage stage;
 	private WebView htmlConsole;
 	private HTTPConnector connector;
 
@@ -110,6 +110,10 @@ public class TaskProcessor implements Runnable {
 		Thread thread = new Thread(new RunnableErrorPane(message, "Order " + order.getOrderNum() + ": " + title));
 		Main.pushToWorkerArray(thread);
 		thread.start();
+	}
+	
+	public void setStage(Stage s) {
+		this.stage = s;
 	}
 
 

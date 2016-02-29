@@ -514,7 +514,7 @@ public class GUI extends JFrame {
 	}
 
 	private int confirmAction(String type, Integer order) { //calls prompt which prompts, called when order or item deleted
-		String message = order == null ? "delete the selected item?" : "delete Order " + order + "?";
+		String message = order == null ? "delete the selected item?" : "delete order " + order + "?";
 
 		return prompt("Are you sure you want to " + message, "Confirm " + type + " Deletion");
 	}

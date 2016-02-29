@@ -106,7 +106,7 @@ public class ItemLinkCamper implements Runnable {
 
 		PotentialItems haveKeywords = new PotentialItems();
 
-		for (int i = 0; i < possibilities.size(); i++) { //add links with keywords to definites
+		for (int i = 0; i < possibilities.size(); i++) { //add links with keywords to haveKeywords
 			for (String keyword : item.getKeywords()) if (possibilities.getLinkText(i).contains(keyword)) {
 				haveKeywords.add(possibilities.get(i));
 				break; //goto next iteration, no need to check this link again it was already added
@@ -119,7 +119,7 @@ public class ItemLinkCamper implements Runnable {
 
 		int max = 0;
 
-		for (int i = 0; i < haveKeywords.size(); i++) {
+		for (int i = 0; i < haveKeywords.size(); i++) { //find max number of keywords of haveKeywords
 			int keywordsNum = 0;
 			for (String keyword : item.getKeywords()) if (haveKeywords.getLinkText(i).contains(keyword)) keywordsNum++;
 			if (keywordsNum > max) max = keywordsNum;
@@ -127,7 +127,7 @@ public class ItemLinkCamper implements Runnable {
 		
 		System.out.println("Max: " + max);
 
-		for (int i = 0; i < haveKeywords.size(); i++) { //iterate through definites, removing links which have less than max keywords
+		for (int i = 0; i < haveKeywords.size(); i++) { //iterate through haveKeywords, adding links with max number of keywords to haveMaxKeywords
 			int keywordNums = 0;
 			for (String keyword : item.getKeywords()) if (haveKeywords.getLinkText(i).contains(keyword)) keywordNums++; //count keywords in link
 			if (keywordNums >= max) haveMaxKeywords.add(haveKeywords.get(i));
@@ -317,13 +317,34 @@ public class ItemLinkCamper implements Runnable {
 
 		} else if (colorCorrect.size() > 1) {
 			
-			System.out.println("");
-
+			int max = 0;
 			
-			//how do you get color ocrrect??
-			int result = confirm(colorCorrect, isEarlyLink);
+			PotentialItems haveMaxColors = new PotentialItems();
+
+			for (int i = 0; i < colorCorrect.size(); i++) { //count max number of colors in any link
+				int colorsNum = 0;
+				for (String color : item.getColors()) if (colorCorrect.getURL(i).contains(color)) colorsNum++;
+				if (colorsNum > max) max = colorsNum;
+			}
+			
+			System.out.println("Max: " + max);
+
+			for (int i = 0; i < colorCorrect.size(); i++) { //add links with max number of colors to haveMaxColors
+				int colorsNum = 0;
+				for (String color : item.getColors()) if (colorCorrect.getURL(i).contains(color)) colorsNum++; //count keywords in link
+				if (colorsNum >= max) haveMaxColors.add(colorCorrect.get(i));
+			}
+			
+			if (haveMaxColors.size() == 1) {
+				item.setLink(formatLink(haveMaxColors.getURL(0), true)); //only one link has the max number of colors, its correct
+				return true;
+			}
+			
+			
+			//more than one link has the max number of colors, must prompt to find the correct one
+			int result = confirm(haveMaxColors, isEarlyLink);
 			if (result <= -1) return false; //they chose none or closed the dialog
-			item.setLink(formatLink(colorCorrect.getURL(result), true));
+			item.setLink(formatLink(haveMaxColors.getURL(result), true));
 
 		} else {
 			//extract link like from the jordans

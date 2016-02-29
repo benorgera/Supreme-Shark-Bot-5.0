@@ -80,7 +80,6 @@ public class SettingsGUI extends JFrame {
 	private JTextField proxyUserField;
 	private JTextField proxyPassField;
 	private JFormattedTextField refreshRateField;
-	private JComboBox<String> checkoutTypeField;
 
 	private OrderSettings orderSettings;
 
@@ -427,15 +426,11 @@ public class SettingsGUI extends JFrame {
 
 		JLabel refreshRateLabel = new JLabel("Refresh Rate (milliseconds):");
 
-		JLabel checkoutTypeLabel = new JLabel("Checkout Type:");
-
 		techPanel.add(Box.createRigidArea(new Dimension(0,10)), "span"); //spacer under proxy area
 		techPanel.add(new JLabel("Checkout Settings:"), "span");
 		techPanel.add(Box.createRigidArea(new Dimension(0,10)), "span"); //spacer under header
 		techPanel.add(refreshRateLabel);
 		techPanel.add(refreshRateField);
-		techPanel.add(checkoutTypeLabel);
-		techPanel.add(checkoutTypeField);
 
 		buildFieldsAsArray(); //initialize the array used in the checkout profiles and order settings
 		setFieldsAccordingToOrderSettings(); //gets order settings object values and fills out form with them
@@ -446,7 +441,7 @@ public class SettingsGUI extends JFrame {
 	}
 
 	private void buildFieldsAsArray() {
-		fieldsAsArray = new Object[23];
+		fieldsAsArray = new Object[22];
 		fieldsAsArray[0] = nameField;
 		fieldsAsArray[1] = emailField;
 		fieldsAsArray[2] = phoneField;
@@ -469,7 +464,6 @@ public class SettingsGUI extends JFrame {
 		fieldsAsArray[19] = proxyPortField;
 		fieldsAsArray[20] = proxyUserField;
 		fieldsAsArray[21] = proxyPassField;
-		fieldsAsArray[22] = checkoutTypeField;
 	}
 
 	private void setReqsJP() {
@@ -591,9 +585,6 @@ public class SettingsGUI extends JFrame {
 		refreshRateField = new JFormattedTextField(integerFieldFormatter);
 		integerFieldFormatter.setMaximumFractionDigits(0);
 		refreshRateField.setColumns(10);
-
-		checkoutTypeField = new JComboBox<String>();
-		checkoutTypeField.setModel(new DefaultComboBoxModel<String>(checkoutTypeFieldOptions));
 
 	}
 

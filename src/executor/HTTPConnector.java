@@ -19,11 +19,13 @@ public class HTTPConnector {
 	private OrderSettings settings;
 	private TaskProcessor processor;
 	private String cookies = "";
+	private String userAgent;
 
 	public HTTPConnector(OrderSettings settings, TaskProcessor processor) {
 		this.proxyBuilder = settings.isUsingProxy() ? new ProxyBuilder(settings.getProxyAddress(), settings.getProxyPort(), settings.getProxyUser(), settings.getProxytPass()) : null;
 		this.settings = settings;
 		this.processor = processor;
+		this.userAgent = RandomUserAgent.getRandomUserAgent();
 	}
 
 	public String getHTMLString(String url) {
@@ -95,7 +97,7 @@ public class HTTPConnector {
 			con.setRequestProperty("Origin", "http://www.supremenewyork.com");
 			con.setRequestProperty("X-CSRF-Token", xCSRFToken);
 			con.setRequestProperty("X-Requested-With", "XMLHttpRequest");
-			con.setRequestProperty("User-Agent", RandomUserAgent.getRandomUserAgent());
+			con.setRequestProperty("User-Agent", userAgent);
 			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 			con.setRequestProperty("Referer", itemLink);
 			con.setRequestProperty("Accept-Encoding", "gzip, deflate");
@@ -120,13 +122,15 @@ public class HTTPConnector {
 
 			new DataOutputStream(con.getOutputStream()).write(postData); //send the post
 
-			storeCookies(con);
+			int newCookies = storeCookies(con);
 
 			con.getInputStream(); //throws error if atc failed, ensuring false will be returned
 
 			con.disconnect();
+			
+			processor.printSys("Number of New Cookies: " + newCookies);
 
-			return true; //if error hasn't been thrown, everything went smoothly
+			return newCookies > 1 ? true : false; //0 or 1 new cookies means nothing more was added to cart
 
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -147,20 +151,26 @@ public class HTTPConnector {
 		return mostRecentHTML;
 	}
 
-	private void addCookie(String cookie) { //adds received cookie to cookie string
-		if (cookies.contains(cookie)) return; //we have this exact cookie
+	private int addCookie(String cookie) { //adds received cookie to cookie string, returns number of new cookies
+		if (cookies.contains(cookie)) return 0; //we have this exact cookie
 
 		String newCookieName = cookie.split("=")[0];
 		if (cookies.contains(newCookieName)) replaceCookies(newCookieName);  //we have a cookie with the same name as the new cookie, swap them
 		
 		processor.printSys("New Cookie: " + cookie);
 		cookies += (cookie + "; "); //add the new cookie followed by a semicolon
+		
+		return 1;
 	}
 
-	private void storeCookies(URLConnection con) { //iterates through headers, adding new cookie
+	private int storeCookies(URLConnection con) { //iterates through headers, adding new cookie, returning number of new cookies
 		String headerName = null;
 		
-		for (int i = 1; (headerName = con.getHeaderFieldKey(i)) != null; i++) if (headerName.equals("Set-Cookie")) addCookie(con.getHeaderField(i));               
+		int totalNewCookies = 0;
+		
+		for (int i = 1; (headerName = con.getHeaderFieldKey(i)) != null; i++) if (headerName.equals("Set-Cookie")) totalNewCookies += addCookie(con.getHeaderField(i)); //add to the total the number of new cookies found by add cookie for each cookie
+		
+		return totalNewCookies;
 	}
 
 	private void setCookies(URLConnection conn) { //add stored cookies to new URLConnection
@@ -187,7 +197,7 @@ public class HTTPConnector {
 		
 	}
 	
-	public boolean checkoutPost(OrderSettings settings) { //attempts to post checkout data, true if successful post, and return html is set in item settings
+	public boolean checkoutPost(OrderSettings settings) { //attempts to post checkout data, index 0 is true if successful post, and response is passed back in index 1 
 
 		
 		try {
@@ -197,7 +207,7 @@ public class HTTPConnector {
 			int postDataLength = postData.length;
 			
 			
-			HttpURLConnection con = (HttpURLConnection) new URL("THE URL GOES HERE").openConnection();           
+			HttpURLConnection con = (HttpURLConnection) new URL(settings.getCheckoutLink()).openConnection();           
 			con.setDoOutput(true);
 			con.setUseCaches(false);
 			con.setConnectTimeout(8000); //timeout after 8 seconds
@@ -207,24 +217,22 @@ public class HTTPConnector {
 			con.setRequestProperty("Host", "www.supremenewyork.com");
 			con.setRequestProperty("Connection", "keep-alive");
 			con.setRequestProperty("Content-Length", Integer.toString(postDataLength));
-			con.setRequestProperty("Accept", "*/*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript");
+			con.setRequestProperty("Cache-Control", "max-age=0");
+			con.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 			con.setRequestProperty("Origin", "http://www.supremenewyork.com");
-			con.setRequestProperty("X-CSRF-Token", "THE XCSRF TOKEN GOES HERE");
-			con.setRequestProperty("X-Requested-With", "XMLHttpRequest");
-			con.setRequestProperty("User-Agent", RandomUserAgent.getRandomUserAgent());
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-			con.setRequestProperty("Referer", "THE REFERRER GOES HERE");
+			con.setRequestProperty("Upgrade-Insecure-Requests", "1");
+			con.setRequestProperty("User-Agent", userAgent);
+			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			con.setRequestProperty("Referer", "https://www.supremenewyork.com/checkout");
 			con.setRequestProperty("Accept-Encoding", "gzip, deflate");
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.8");
 			setCookies(con);
-			
-			//above setup not guaranteed for the checkout, this was stolen from the atc
 
 			new DataOutputStream(con.getOutputStream()).write(postData); //send the post
 
 			storeCookies(con);
 
-			settings.setCheckoutHTMLResponse(connectionToString(con)); //throws error if post failed, ensuring false will be returned
+			settings.setCheckoutServerResponse(connectionToString(con)); //throws error if post failed, ensuring false will be returned
 
 			con.disconnect();
 
@@ -239,6 +247,7 @@ public class HTTPConnector {
 		
 		return false; //error thrown
 	}
+	
 }
 
 

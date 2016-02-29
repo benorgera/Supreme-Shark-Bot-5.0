@@ -17,6 +17,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		
+		System.out.println(1 % 10);
+		
 		LoadingGIF loader = new LoadingGIF("Initializing Supreme Shark Bot", "Supreme Shark Bot"); //starts loading gif
 
 		botSecurity = new SoftwareSecurity(loader);

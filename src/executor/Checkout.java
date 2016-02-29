@@ -34,7 +34,7 @@ public class Checkout {
 			
 	}
 	
-	private void processResponse() { //makes sure checkout was successful, if not prompt user or try again, depending on if supreme sent any JS errors
+	private void processResponse() { //makes sure checkout was successful, if not prompt user or try again, depending on if supreme sent any errors
 		
 	}
 	

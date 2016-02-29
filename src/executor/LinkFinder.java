@@ -86,7 +86,7 @@ public class LinkFinder  {
 
 		if (items.isEmpty()) { //all items removed (meaning they were found)
 			processor.print("All item links found");
-			processor.stage = Stage.ADD_TO_CART; //next stage
+			processor.setStage(Stage.ADD_TO_CART); //next stage
 		} else {
 			synchronized (this) { //synchronized wait so it can be woken if more items found (to avoid a sleep during a period in which all links are found)
 				wait(refreshRate);

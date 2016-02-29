@@ -45,7 +45,7 @@ public class AddToCart {
 			attempts++;
 		}
 
-		if (itemsAdded == order.getItems().size()) processor.stage = Stage.CHECKOUT;
+		if (itemsAdded == order.getItems().size()) processor.setStage(Stage.CHECKOUT);
 
 	}
 
@@ -62,7 +62,7 @@ public class AddToCart {
 		Elements sizes = doc.select("form select");
 
 		form.addAll(sizes); //form contains all inputs and all dropdowns
-		
+
 		String askingAbout = "size";
 
 		String data = "";
@@ -94,9 +94,7 @@ public class AddToCart {
 		processor.printSys("Item " + item.getItemNumber() + ": ATC Post Link: " + atcLink);
 		item.setAtcLink(atcLink); //dynamically scrape post link
 
-
-		Element link = doc.select("head meta[name=csrf-token]").first();
-		String authToken = link.attr("content");
+		String authToken = doc.select("head meta[name=csrf-token]").first().attr("content");
 		processor.printSys("Item " + item.getItemNumber() + ": Authenticity Token: " + authToken);
 		item.setAuthenticityToken(authToken);
 
@@ -114,15 +112,15 @@ public class AddToCart {
 
 		for (int i = 0 ; i < sizes.size(); i ++) {
 			Element element = sizes.get(i);
-			
+
 			sizeTexts[i] = element.text(); //if we need to prompt them later we already built the array
-				
+
 			if (element.text().toLowerCase().contains(item.getSize().toLowerCase()) && !item.getSize().toLowerCase().isEmpty()) { //compare items text to entered text in GUI
 				processor.printSys("Item " + item.getItemNumber() + ": Size Number: " + element.attr("value") + " Because It Matched the Entered Size");
 				return format(element.parent().attr("name"), element.attr("value"));
 			}
 		}
-		
+
 
 		JComboBox<Object> optionList = new JComboBox<Object>(sizeTexts);
 
@@ -131,15 +129,15 @@ public class AddToCart {
 		panel.add(new JLabel("Which of these is the correct " + askingAbout + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
 
 		JOptionPane.showOptionDialog(null, panel, "Confirm Order " + order.getOrderNum() + " Item " + item.getItemNumber() + " Size", 0, 3, null, new String[]{"Ok"}, 0);
-		
+
 		String name = sizes.get(optionList.getSelectedIndex()).parent().attr("name");
-		
+
 		String value = sizes.get(optionList.getSelectedIndex()).attr("value");
-		
+
 		String text = sizes.get(optionList.getSelectedIndex()).text();
-		
+
 		processor.printSys("Item " + item.getItemNumber() + ": User chose " + askingAbout + " " + text + " which had number " + value);
-		
+
 		return format(name, value);
 	}
 

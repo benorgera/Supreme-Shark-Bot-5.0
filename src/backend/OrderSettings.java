@@ -25,8 +25,7 @@ public class OrderSettings {
 	private String proxyPort;
 	private String proxyUser;
 	private String proxyPass;
-	private String checkoutType;
-
+	
 	private String[] fieldValuesAsArray;
 	
 	private boolean usingProxy = false;
@@ -35,10 +34,11 @@ public class OrderSettings {
 	//technical data
 	
 	private String postParameters;
-	private String checkoutHTMLResponse;
+	private String checkoutServerResponse;
+	private String checkoutLink;
 
 	public OrderSettings() {
-		fieldValuesAsArray = new String [23];//makes array of values in same order as checkout info
+		fieldValuesAsArray = new String[22];//makes array of values in same order as checkout info
 		initializeValues(); //initializes each string int the array
 	}
 
@@ -183,14 +183,6 @@ public class OrderSettings {
 		this.address1 = address1;
 	}
 
-	public String getCheckoutType() {
-		return checkoutType;
-	}
-
-	public void setCheckoutType(String checkoutType) {
-		this.checkoutType = checkoutType;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -245,7 +237,6 @@ public class OrderSettings {
 		setProxyPort(array[19]);
 		setProxyUser(array[20]);
 		setProxyPass(array[21]);
-		setCheckoutType(array[22]);	
 		
 	}
 
@@ -257,13 +248,20 @@ public class OrderSettings {
 		this.postParameters = postParameters;
 	}
 
-	public String getCheckoutHTMLResponse() {
-		return checkoutHTMLResponse;
+	public String getCheckoutLink() {
+		return checkoutLink;
 	}
 
-	public void setCheckoutHTMLResponse(String checkoutHTMLResponse) {
-		this.checkoutHTMLResponse = checkoutHTMLResponse;
+	public void setCheckoutLink(String checkoutLink) {
+		this.checkoutLink = checkoutLink;
 	}
-	
+
+	public String getCheckoutServerResponse() {
+		return checkoutServerResponse;
+	}
+
+	public void setCheckoutServerResponse(String checkoutServerResponse) {
+		this.checkoutServerResponse = checkoutServerResponse;
+	}
 
 }
