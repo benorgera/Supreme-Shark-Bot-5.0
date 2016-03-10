@@ -3,10 +3,6 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
-//import javafx.application.Platform;
-//import javafx.embed.swing.JFXPanel;
-//import javafx.scene.Scene;
-//import javafx.scene.web.WebView;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
@@ -46,7 +42,7 @@ import java.util.Date;
 public class GUI extends JFrame {
 
 	private Date enableDate;
-	
+
 	private static final long serialVersionUID = -2271100967580465591L;
 	private static boolean isPro; //true if pro
 	private JPanel contentPane;
@@ -60,10 +56,8 @@ public class GUI extends JFrame {
 	private final String[] newItemRow =  {"", "", "", "", "", "", "Delete Item"};
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
 	private TabChangeListener tabChange;
-	
-	private boolean techMessagesEnabled = false;
 
-//	private WebView webView;
+	private boolean techMessagesEnabled = false;
 
 	private JLabel scheduledDateLabel = new JLabel(); //blank unless scheduler enabled
 
@@ -140,7 +134,7 @@ public class GUI extends JFrame {
 		testAndDeactivatePanel.add(deactivateLicense, BorderLayout.WEST);
 		testAndDeactivatePanel.add(testProxies, BorderLayout.EAST);
 
-		
+
 		Action deactivateLicenseAction = new AbstractAction() {
 
 			private static final long serialVersionUID = 1774086347779837678L;
@@ -160,42 +154,18 @@ public class GUI extends JFrame {
 
 		JPanel splitPaneHolder = new JPanel();
 		splitPaneHolder.setLayout(new BorderLayout());
-
-		JSplitPane splitPane = new JSplitPane();
-		splitPaneHolder.add(splitPane, BorderLayout.NORTH);
-		splitPaneHolder.add(deactivateAndEnableButtonsPanel, BorderLayout.SOUTH);
-
-		splitPane.setResizeWeight(0.5);
-		contentPane.add(splitPaneHolder, BorderLayout.SOUTH);
-
+		
 		JPanel textConsolePanel = new JPanel();
 
-		JPanel htmlConsolePanel = new JPanel();
+		splitPaneHolder.add(textConsolePanel, BorderLayout.NORTH);
+		splitPaneHolder.add(deactivateAndEnableButtonsPanel, BorderLayout.SOUTH);
 
-//		JFXPanel jfxPanel = new JFXPanel();
+		contentPane.add(splitPaneHolder, BorderLayout.SOUTH);
 
-		htmlConsolePanel.setPreferredSize(new Dimension(100, 150));
-
-//		Platform.runLater(() -> {
-//			webView = new WebView();
-//			webView.setZoom(.5);
-//			jfxPanel.setScene(new Scene(webView));
-//			webView.getEngine().load("http://www.supremenewyork.com/shop/all");
-//			//		    webView.setDisable(true); //make it read only
-//		});
-
-
-		splitPane.setLeftComponent(textConsolePanel);
 		textConsolePanel.setLayout(new BorderLayout());
-
-		splitPane.setRightComponent(htmlConsolePanel);
-		htmlConsolePanel.setLayout(new BorderLayout());
 
 		JScrollPane textConsoleScroller = new JScrollPane();
 		textConsolePanel.add(textConsoleScroller, BorderLayout.CENTER);
-
-//		htmlConsolePanel.add(jfxPanel, BorderLayout.CENTER);
-
 
 		JLabel textConsole = new JLabel("Text Console:");
 		textConsolePanel.add(textConsole, BorderLayout.NORTH);
@@ -204,9 +174,9 @@ public class GUI extends JFrame {
 		JPanel clearConsoleButtonPanel = new JPanel(new BorderLayout());
 
 		JButton clearConsoleButton = new JButton("Clear Text Console");
-		
+
 		JCheckBox enableTechMessagesCheckbox = new JCheckBox("Enable Technical Messages");
-		
+
 		clearConsoleButtonPanel.add(enableTechMessagesCheckbox, BorderLayout.WEST);
 
 		clearConsoleButtonPanel.add(clearConsoleButton, BorderLayout.EAST);
@@ -223,7 +193,7 @@ public class GUI extends JFrame {
 		};
 
 		clearConsoleButton.addActionListener(clearConsole);
-		
+
 		Action enableTechMessages = new AbstractAction() {
 
 			private static final long serialVersionUID = 3515543695745849483L;
@@ -232,17 +202,12 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				techMessagesEnabled = ((JCheckBox) e.getSource()).isSelected();
 			}
-			
+
 		};
-		
+
 		enableTechMessagesCheckbox.addActionListener(enableTechMessages);
 
 		textConsolePanel.add(clearConsoleButtonPanel, BorderLayout.SOUTH);
-
-
-		JLabel htmlConsole = new JLabel("HTML Console:");
-		htmlConsolePanel.add(htmlConsole, BorderLayout.NORTH);
-		htmlConsole.setHorizontalAlignment(SwingConstants.CENTER);
 
 		textConsoleArea = new JTextArea();
 		textConsoleArea.setRows(8);
@@ -356,7 +321,7 @@ public class GUI extends JFrame {
 		orderTabHolder.addTab("Order "+orderCount, orderPanel);
 
 		for (int i = 0; i < orderTabHolder.getTabCount(); i ++) if (getTabAsString(i, null).equals("+")) orderTabHolder.removeTabAt(i); //removes tab to add tab if new order being added
-			
+
 		orderTabHolder.addTab("+", null);
 
 		Action deleteOrAdd = new AbstractAction() {
@@ -397,7 +362,7 @@ public class GUI extends JFrame {
 	private void addItem() {
 		MyDefaultTableModel model = Main.getOrders().get(getTabAsInt(null, null) - 1).getModel(); //get selected tab of pane and get its order and that orders tablemodel
 		int rows = model.getRowCount();
-		
+
 		if (rows >= 5 && !isPro) { //num is 5 because there's the row with the '+' button
 			Prompter.throwError("Limit of 4 items reached, you must upgrade to pro for infinite items", "Max Items Reached");
 		} else {
@@ -411,7 +376,7 @@ public class GUI extends JFrame {
 	private void setAllButOneUneditable(int row, MyDefaultTableModel model) {
 		//makes add new item row uneditable after delete item
 		for (int i = 0; i <= 4; i++) model.setCellEditable(row, i, false);
-		
+
 	}
 
 	private void setAllEditable(int row, MyDefaultTableModel model) {
@@ -419,7 +384,7 @@ public class GUI extends JFrame {
 		//sets every column in a row editable, except status column, called following new order or new item
 		System.out.println("Setting all columns editable for row " + row);
 		for (int i = 0; i <= 6; i++) model.setCellEditable(row, i, !(i == 5));
-		
+
 	}
 
 	private void addNewItemButtonRow(MyDefaultTableModel model) {
@@ -476,14 +441,14 @@ public class GUI extends JFrame {
 
 	private void deleteOrder() {
 		int order = getTabAsInt(null, null);
-		
+
 		if (order == 1 && orderTabHolder.getTabCount() == 2) { //only one order tab in tabbed pane
 			Prompter.throwError("Order 1 cannot be deleted, only 1 order exists!", "Deletion Error");
 			return;
 		}
-		
+
 		System.out.println("Delete order " + order + " pending");
-		
+
 		if (confirmAction("Order", order) == 0) { // show the joptionpane
 			//delete the order and set back the order count
 			orderTabHolder.removeChangeListener(tabChange); //remove tab listener so new order isnt addde if the + tab is selected once the previously selected tab dissppears
@@ -492,7 +457,7 @@ public class GUI extends JFrame {
 			editOrderObjects(); //resets order numbers and buttons in order objects array following delete
 
 			if (getTabAsString(null, null).equals("+")) orderTabHolder.setSelectedIndex(orderTabHolder.getTabCount() - 2); //deselect + tab if its selected following deletion
-			
+
 			orderTabHolder.addChangeListener(tabChange); //re-add the change listener now that + deselected
 			orderCount--; //drop the order count
 
@@ -525,7 +490,7 @@ public class GUI extends JFrame {
 
 		//null they want the current tab, otherwise the want the specified tab
 		return at == null ? tempTabbedPane.getTitleAt(orderTabHolder.getSelectedIndex()).replace("Order ", "").replace(" Settings","") : tempTabbedPane.getTitleAt(at).replace("Order ", "").replace(" Settings","");
-	
+
 	}
 
 	private int getTabAsInt(Integer at, JTabbedPane source) {
@@ -584,7 +549,7 @@ public class GUI extends JFrame {
 	}
 
 	private void processEnableOrAbort() { //processes enable/ abort action (called by scheduler and by button click)
-		
+
 		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable() && allOrderSettingsAreSet()) {
 			enableRegardlessOfProxyReadinessOrALackThereof();
 		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
@@ -600,7 +565,7 @@ public class GUI extends JFrame {
 	public void enableRegardlessOfProxyReadinessOrALackThereof() { //called to enable bot, scheduler calls this to bypass any warnings
 		enableDate = new Date();
 		setItemInfoFromTable();
-//		new Dispatcher(Main.getOrders(), textConsoleArea, webView).deploy(); //launch bot
+		//		new Dispatcher(Main.getOrders(), textConsoleArea, webView).deploy(); //launch bot
 		toggleButton();
 		new Dispatcher(Main.getOrders(), textConsoleArea, null).deploy(); //launch bot
 	}
@@ -630,16 +595,16 @@ public class GUI extends JFrame {
 	private void abortStatuses() { //sets status of each item to abort following bot abortion
 
 		for (Order o : Main.getOrders()) for (int i = 0; i < o.getModel().getRowCount(); i ++) o.getModel().setValueAt("Aborted", i, 5);
-	
+
 	}
 
 	public boolean areTechMessagesEnabled() { //tells processor whether it should print tech messages
 		return techMessagesEnabled;
 	}
-	
+
 	private boolean allOrderSettingsAreSet() {
 		boolean allOrderSettingsAreSet = true;		
-		
+
 		for (Order o : Main.getOrders()) {
 			if (!o.getOrderSettings().areSettingsSet()) {
 				Prompter.throwError("Order " + o.getOrderNum() + " Settings are not set so bot cannot be enabled", "Bot Not Enabled");

@@ -1,12 +1,15 @@
 package backend;
 
 import gui.LoadingGIF;
+
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.prefs.Preferences;
@@ -85,9 +88,19 @@ public class SoftwareSecurity {
 
 	private void updateSoftware(JSONObject JSON) {
 		System.out.println("Updating software");
-		//future things pulled from JSON must be added to the blank list of json keys`
-		//this json object will contain info about the new version
+		
+		String version = JSON.getString("version");
+		String features = JSON.getString("message");
+		
+		Prompter.throwSuccess("Update Offers: " + features, "Supreme Shark Bot v " + version + " Now Available");
 
+		Prompter.throwSuccess("Your web browser will no open with the link to the newest version. If prompted, chose to save the file \nand not open it. Click launch help on the bot home screen once the bot opens for a detailed installation video.", "Update Instructions");
+
+		try {
+			Desktop.getDesktop().browse(new URI("http://supremesharkbot.com:8080/update/?key=" + activationKeyValue));
+		} catch (Exception e) {
+			Prompter.throwError("Your browser is not supported for bot updates, please email us at team@supremesharkbot.com for assistance", "Browser Not Supported");
+		}
 	}
 
 	private Object[] checkOutdated() { //returns [true, JSON from version script on server] or [false, JSON from version script on server] 

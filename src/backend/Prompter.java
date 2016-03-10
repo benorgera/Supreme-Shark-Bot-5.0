@@ -22,6 +22,7 @@ public class Prompter {
 	}
 
 	public static int[] comboPrompt(String message, String title, String[] options, String[] buttons) { //prompt with a combobox dropdown, return the selected button and the selected combo option
+		System.out.println("prompting");
 
 		JComboBox<Object> optionList = new JComboBox<Object>(options);
 
@@ -29,7 +30,7 @@ public class Prompter {
 		panel.add(optionList, BorderLayout.SOUTH);
 
 		panel.add(new JLabel(message), BorderLayout.NORTH);
-
+		
 		int res = JOptionPane.showOptionDialog(null, panel, "Confirm Order " + title, 0, 3, null, buttons, 0);
 		
 		return new int[] {res, optionList.getSelectedIndex()};

@@ -60,6 +60,7 @@ public class ItemLinkCamper implements Runnable {
 					processor.printSys("Item "+ item.getItemNumber() + " checked HTML " + count + " times");
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				processor.printSys("Item "+ item.getItemNumber() + " HTML check error, retrying");
 			}
 
@@ -115,17 +116,29 @@ public class ItemLinkCamper implements Runnable {
 
 	private int confirm(PotentialItems items, boolean isEarlyLink) { //confirms that the 
 
+		System.out.println("in confirm");
+		
 		ArrayList<String> prompt = new ArrayList<String>();
 
 		for (int i = 0; i < items.size(); i++) prompt.add(isEarlyLink ? items.getURL(i).split("/")[4].replace("-",  " ") : items.getLinkText(i)); //if early link ask about color (using the different colors from the url, otherwise use the link text)
 
 		if (prompt.equals(previousConfirmation)) {previousConfirmationNum++;} else {previousConfirmationNum = 0;}
 
+		System.out.println("previousconfirmation num" + previousConfirmationNum);
+		
 		if (previousConfirmationNum >= 2) return -1; //if we already asked about these links twice, dont ask again
 
+		System.out.println("didnt break, about to prompt");
+		
 		previousConfirmation = prompt; //this was the previous confirmation
+		
+		System.out.println("literally calling comboPrompt");
 
-		int[] res = Prompter.comboPrompt("Which of these is the correct " + (isEarlyLink ? "color" : "item description") + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?", "Confirm Order " + orderNumber + " Item " + item.getItemNumber() + " Link", (String[]) prompt.toArray(), new String[]{"None of these", "Ok"});
+		String[] options = Arrays.copyOf(prompt.toArray(), prompt.toArray().length, String[].class);
+		
+		int[] res = Prompter.comboPrompt(("Which of these is the correct " + (isEarlyLink ? "color" : "item description") + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), ("Confirm Order " + orderNumber + " Item " + item.getItemNumber()) + " Link", options, new String[]{"None of these", "Ok"});
+		
+		System.out.println("res: " + Arrays.asList(res));
 		
 		if (res[0] == 1) return res[1]; //they chose ok, return which link was chosen
 

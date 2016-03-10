@@ -16,6 +16,7 @@ public class Checkout {
 	private Order order;
 	private TaskProcessor processor;
 	private HTTPConnector connector;
+	private int errorPromptsNum = 0;
 
 	int attempts = 0;
 
@@ -26,6 +27,7 @@ public class Checkout {
 	}
 
 	public void attemptCheckout() {
+		
 		try {
 
 			prepCheckout();
@@ -40,6 +42,12 @@ public class Checkout {
 
 		processor.setAllStatuses("Checkout (" + attempts + " attempts)");
 
+		if (Thread.currentThread().isInterrupted()) {
+			Thread.currentThread().interrupt();
+			System.out.println("Thread interrupted");
+			return;
+		}
+		
 	}
 
 	private void prepCheckout() { //process form data by loading checkout page and seeing what it wants, set ordersettings post parameters accordingly
@@ -100,7 +108,11 @@ public class Checkout {
 		Elements errors = doc.select("div[class=errors]");
 		
 		if (!errors.isEmpty()) { //there are errors on the page
-			processor.print("Supreme returned the checkout errors: " + errors.text());
+			processor.print("Supreme returned the checkout errors: " + errors.text().replace(", ", ",\n\t\t"));
+			if (errorPromptsNum < 2) {
+				errorPromptsNum++;
+				processor.throwRunnableErrorPane("Order Settings need to be edited to fix the following errors:\n\t\t" + errors.text().replace(", ", ",\n\t\t"), "Checkout Errors");
+			}
 			return; //there are errors, checkout wasn't successful
 		}
 		
@@ -112,6 +124,9 @@ public class Checkout {
 			processor.print("Checkout Successful, Order: " + orderNumber);
 			Thread.currentThread().interrupt();
 		}
+		
+		processor.print("Checkout unsuccessful, retrying");
+		return; //try again
 		
 	}
 

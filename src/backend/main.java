@@ -22,14 +22,11 @@ public class Main {
 		botSecurity = new SoftwareSecurity(loader);
 		try {
 			botSecurity.initialize();
-//						botSecurity.clearPrefsRoot(); //testing purposes only, should be removed
 			botSecurity.processStatus();
 		} catch (Exception e) {
 			System.out.println("Unforeseen security error"); //this should never be thrown 
 			e.printStackTrace();
 		}
-		
-
 
 		loader.passUI("Initializing bot interface");
 		orders = new ArrayList<Order>();
