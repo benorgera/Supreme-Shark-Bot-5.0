@@ -56,13 +56,15 @@ public class ProxyTester implements Runnable {
 			for (Long l : resNums) total += l;
 			long avg = total / resNums.size();
 
-			results.add("Order "+o.getOrderNum()+" proxy initialized successfully\n\tAverage Connection Time to Supreme Server: " + avg + " ms\n\tProxy Connects to " + (!html.contains("LDN") ? (html.contains("TYO") ? "Tokyo" : "NYC") : "London") + " Store");
-		} catch (NullPointerException | IllegalArgumentException e) {
-			results.add("Order "+o.getOrderNum()+" proxy is not set in order settings");
+			results.add("Order " + o.getOrderNum() + " proxy initialized successfully\n\tAverage Connection Time to Supreme Server: " + avg + " ms\n\tProxy Connects to " + (!html.contains("LDN") ? (html.contains("TYO") ? "Tokyo" : "NYC") : "London") + " Store");
+		} catch (NullPointerException e) {
+			results.add("Order " + o.getOrderNum() + " proxy is not set in order settings");
+		} catch (IllegalArgumentException e) {
+			results.add("Order " + o.getOrderNum() + " proxy is not set in order settings");
 		} catch (java.net.SocketTimeoutException e) {
-			results.add("Order "+o.getOrderNum()+" proxy timed out");
+			results.add("Order " + o.getOrderNum() + " proxy timed out");
 		} catch (Exception w) {
-			results.add(w.getMessage().contains("503") ? "Order "+o.getOrderNum()+" proxy banned from Supreme Server, they returned a 503 error" : "Order "+o.getOrderNum()+" proxy failed");
+			results.add(w.getMessage().contains("503") ? "Order " + o.getOrderNum() + " proxy banned from Supreme Server, they returned a 503 error" : "Order " + o.getOrderNum() + " proxy failed");
 		}
 
 		for (String s : results) area.setText(area.getText() +"\n"+s); //notify user of results

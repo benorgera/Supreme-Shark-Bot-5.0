@@ -206,7 +206,7 @@ public class ItemLinkCamper implements Runnable {
 
 		Object[] res = connector.chechEarlyLink(item.getEarlyLink());
 
-		if (!(boolean) res[0]) return false; //if it failed return
+		if (!(Boolean) res[0]) return false; //if it failed return
 
 		PotentialItems validLinks = getValidLinks((String) res[1], true); //res[1] is the html of the item page
 
