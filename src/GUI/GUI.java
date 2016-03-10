@@ -22,7 +22,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.DefaultCaret;
 import javax.swing.JTabbedPane;
-import javax.swing.JSplitPane;
 import executor.Dispatcher;
 import backend.ButtonColumn;
 import backend.Encrypter;

@@ -127,7 +127,7 @@ public class AddToCart {
 		}
 
 
-		int[] res = Prompter.comboPrompt("Which of these is the correct " + askingAbout + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?", "Confirm Order " + order.getOrderNum() + " Item " + item.getItemNumber() + " Size", sizeTexts, new String[]{"Ok"});
+		int[] res = Prompter.comboPrompt("Which of these is the correct " + askingAbout + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?", "Confirm Order " + order.getOrderNum() + " Item " + item.getItemNumber() + " " + askingAbout.substring(0, 1).toUpperCase() + askingAbout.substring(1), sizeTexts, new String[]{"Ok"});
 		
 		String name = sizes.get(res[1]).parent().attr("name");
 

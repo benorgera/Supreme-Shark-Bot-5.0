@@ -153,7 +153,7 @@ public class Checkout {
 
 			String setTo = "";
 
-			if (settings.getStore().equals("US/CANADA")) {
+//			if (settings.getStore().equals("US/CANADA")) {
 
 				if (i == 0) {
 					setTo = "✓";
@@ -202,12 +202,12 @@ public class Checkout {
 				} else if (i == 22) {
 					setTo = "AVOID_STRING";
 				} 
-
-			} else if (settings.getStore().equals("UK")) {
-
-			} else {
-				//jp
-			}
+//
+//			} else if (settings.getStore().equals("UK")) {
+//
+//			} else {
+//				//jp
+//			}
 
 			if (setTo.isEmpty()) setTo = ""; //no null
 
