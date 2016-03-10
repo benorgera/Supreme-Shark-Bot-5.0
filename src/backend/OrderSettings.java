@@ -3,6 +3,8 @@ package backend;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
+import com.google.common.base.CharMatcher;
+
 public class OrderSettings {
 	private String store;
 	private String name;
@@ -25,14 +27,15 @@ public class OrderSettings {
 	private String proxyPort;
 	private String proxyUser;
 	private String proxyPass;
-	
+
 	private String[] fieldValuesAsArray;
-	
+
 	private boolean usingProxy = false;
-	
-	
+
+	private boolean settingsSet = false; //tells bot whether settings have been inputted, if false bot cant be enabled
+
 	//technical data
-	
+
 	private String checkoutParameters;
 	private String checkoutServerResponse;
 	private String checkoutLink;
@@ -60,6 +63,7 @@ public class OrderSettings {
 
 		System.out.println("Values assigned in order settings");
 		storeValuesFromArray(fieldValuesAsArray);
+		settingsSet = true; //the user has no inputted order settings
 	}
 
 
@@ -92,6 +96,16 @@ public class OrderSettings {
 	}
 	public void setCountry(String country) {
 		this.country = country;
+
+		//set store based on country
+		if (country.equals("USA") || country.equals("CANADA")) {
+			setStore("US/CANADA");
+		} else if (CharMatcher.ASCII.matchesAllOf(country)) { //its not jp because those characters are unicode
+			setStore("UK");
+		} else {
+			setStore("JAPAN");
+		}
+		System.out.println("Store based on country: " + getStore());
 	}
 	public String getStateAbbr() {
 		return stateAbbr;
@@ -109,7 +123,14 @@ public class OrderSettings {
 		return ccNumber;
 	}
 	public void setCcNumber(String ccNumber) {
-		this.ccNumber = ccNumber;
+		String justNumbers = ccNumber.replace(" ", "");
+		if (ccNumber.isEmpty() || getCcProvider().isEmpty() || justNumbers.length() < 10) {
+			this.ccNumber = ccNumber;
+		} else if (getCcProvider().equals("American Express")) {
+			this.ccNumber = justNumbers.substring(0, 4) + " " + justNumbers.substring(4, 10) + " " + justNumbers.substring(10);
+		} else {
+			this.ccNumber = justNumbers.substring(0, 4) + " " + justNumbers.substring(4, 8) + " " + justNumbers.substring(8, 12) + " " + justNumbers.substring(12);
+		}
 	}
 	public String getExpMonth() {
 		return expMonth;
@@ -172,7 +193,27 @@ public class OrderSettings {
 	}
 
 	public void setPhone(String phone) {
-		this.phone = phone;
+
+		phone = phone.replaceAll("[^\\d.]", ""); //get only numbers
+
+
+		//format as (123) 456-7890
+
+		if (phone.length() >= 10) {		
+			
+			String firstThree = phone.substring(0, 3);
+
+			String secondThree = phone.substring(3, 6);
+
+			String lastFour = phone.substring(6, 10);
+
+			this.phone = "(" + firstThree + ") " + secondThree + "-" + lastFour; 
+
+		} else {
+			
+			this.phone = phone;
+			
+		}
 	}
 
 	public String getAddress1() {
@@ -198,7 +239,7 @@ public class OrderSettings {
 	private void initializeValues() {//initializes values in array	
 		for (int i = 0; i < fieldValuesAsArray.length; i ++) fieldValuesAsArray[i] = (i != 14 ? "" : "400"); //set field blank, unless its refresh rate
 	}
-		
+
 	public String getProxyPort() {
 		return proxyPort;
 	}
@@ -210,10 +251,11 @@ public class OrderSettings {
 	public boolean isUsingProxy() {
 		return this.usingProxy;
 	}
-	
+
 	public void setUsingProxy(boolean isUsingProxy) {
 		this.usingProxy = isUsingProxy;
 	}
+
 	private void storeValuesFromArray(String[] array) { //takes values from array and 
 		setName(array[0]);
 		setEmail(array[1]);
@@ -230,14 +272,14 @@ public class OrderSettings {
 		setExpYear(array[12]);
 		setCvv(array[13]);
 		setRefreshRate(array[14]);
-	    //15 is from the old checkout profiles (autoproccess/ disable images are deprecated)
+		//15 is from the old checkout profiles (autoproccess/ disable images are deprecated)
 		//16 is from the old checkout profiles (autoproccess/ disable images are deprecated)
 		setAddress3(array[17]);
 		setProxyAddress(array[18]);
 		setProxyPort(array[19]);
 		setProxyUser(array[20]);
 		setProxyPass(array[21]);
-		
+
 	}
 
 	public String getCheckoutParameters() {
@@ -262,6 +304,10 @@ public class OrderSettings {
 
 	public void setCheckoutServerResponse(String checkoutServerResponse) {
 		this.checkoutServerResponse = checkoutServerResponse;
+	}
+
+	public boolean areSettingsSet() {
+		return settingsSet;
 	}
 
 }

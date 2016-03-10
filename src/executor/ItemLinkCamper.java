@@ -1,19 +1,14 @@
 package executor;
 
-import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
 import backend.Item;
+import backend.Prompter;
 
 public class ItemLinkCamper implements Runnable {
 
@@ -130,14 +125,9 @@ public class ItemLinkCamper implements Runnable {
 
 		previousConfirmation = prompt; //this was the previous confirmation
 
-		JComboBox<Object> optionList = new JComboBox<Object>(prompt.toArray());
-
-		JPanel panel = new JPanel(new BorderLayout(0, 0));
-		panel.add(optionList, BorderLayout.SOUTH);
-
-		panel.add(new JLabel("Which of these is the correct " + (isEarlyLink ? "color" : "item description") + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
-
-		if (JOptionPane.showOptionDialog(null, panel, "Confirm Order " + orderNumber + " Item " + item.getItemNumber() + " Link", 0, 3, null, new String[]{"None of these", "Ok"}, 0) == 1) return optionList.getSelectedIndex(); //they chose ok, return which link was chosen
+		int[] res = Prompter.comboPrompt("Which of these is the correct " + (isEarlyLink ? "color" : "item description") + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?", "Confirm Order " + orderNumber + " Item " + item.getItemNumber() + " Link", (String[]) prompt.toArray(), new String[]{"None of these", "Ok"});
+		
+		if (res[0] == 1) return res[1]; //they chose ok, return which link was chosen
 
 		//maybe make the confirmation a runnable so this item can keep checking,  and then have it notify this thread once its answered
 		//and have it so if two confirmations are up at one time one is interrupted (because you dont want two prompts open)

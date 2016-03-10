@@ -15,7 +15,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -33,10 +32,10 @@ import backend.ButtonColumn;
 import backend.Encrypter;
 import backend.Item;
 import backend.Order;
+import backend.Prompter;
 import backend.ProxyTester;
 import backend.SetCentered;
 import backend.Main;
-
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.io.IOException;
@@ -373,7 +372,7 @@ public class GUI extends JFrame {
 						setAllButOneUneditable(table.getModel().getRowCount() - 1, model); //makes add new item row uneditable after delete item
 					}
 				} else if (((DefaultTableModel) table.getModel()).getRowCount() == 2 && buttonText.contains("Delete")) { //theyre trying to delete the only item
-					JOptionPane.showMessageDialog(null, "Item 1 cannot be deleted, only 1 item exists!");
+					Prompter.throwError("Item 1 cannot be deleted, only 1 item exists!", "Deletion Error");
 				} else { //they're adding an item
 					addItem();
 				}
@@ -400,7 +399,7 @@ public class GUI extends JFrame {
 		int rows = model.getRowCount();
 		
 		if (rows >= 5 && !isPro) { //num is 5 because there's the row with the '+' button
-			JOptionPane.showMessageDialog(null, "Limit of 4 items reached, you must upgrade to pro for infinite items");
+			Prompter.throwError("Limit of 4 items reached, you must upgrade to pro for infinite items", "Max Items Reached");
 		} else {
 			model.addRow(newItemRow); 
 			setAllEditable(rows - 1, model);
@@ -479,7 +478,7 @@ public class GUI extends JFrame {
 		int order = getTabAsInt(null, null);
 		
 		if (order == 1 && orderTabHolder.getTabCount() == 2) { //only one order tab in tabbed pane
-			JOptionPane.showMessageDialog(null, "Order 1 cannot be deleted, only 1 order exists!");
+			Prompter.throwError("Order 1 cannot be deleted, only 1 order exists!", "Deletion Error");
 			return;
 		}
 		
@@ -516,11 +515,7 @@ public class GUI extends JFrame {
 	private int confirmAction(String type, Integer order) { //calls prompt which prompts, called when order or item deleted
 		String message = order == null ? "delete the selected item?" : "delete order " + order + "?";
 
-		return prompt("Are you sure you want to " + message, "Confirm " + type + " Deletion");
-	}
-
-	private int prompt(String message, String title) { //called by confirm action, also called upon license deactivation
-		return JOptionPane.showOptionDialog(null, message, title, 0, 0, null, null, 0);
+		return Prompter.prompt("Are you sure you want to " + message, "Confirm " + type + " Deletion");
 	}
 
 	private String getTabAsString(Integer at, JTabbedPane source) { //get title of tab as String with only numbers or '+'
@@ -545,8 +540,7 @@ public class GUI extends JFrame {
 
 				if (Main.getOrdersListLength() >= 1 && !isPro) {//they have regular version and have too many orders
 					orderTabHolder.setSelectedIndex(orderTabHolder.getSelectedIndex()-1); //sets selected tab back one to avoid it being the '+'
-					JOptionPane.showMessageDialog(null, "Limit of one order has been reached, you must upgrade to pro for infinite orders");
-
+					Prompter.throwError("Limit of one order has been reached, you must upgrade to pro for infinite orders", "Max Orders Reached");
 					//add a link to upgrade in that joptionpane, or buttons to do so (an upgrade and a cancel button)
 				} else {
 					new Order();
@@ -565,12 +559,12 @@ public class GUI extends JFrame {
 	}
 
 	private void processDeactivate() { //maybe have a prompt asking if they want to reactivate on windows or mac, because this current setup will give them their existing OS bot regardless
-		if (prompt("Deactivating license will disable the bot on this computer. You will be able to reactivate and redownload on any computer\nusing the key in the original email we sent you upon purchase. Are you sure you want to deactivate this license? ", "Are you sure you want to deactivate this license?") == 0) {	
+		if (Prompter.prompt("Deactivating license will disable the bot on this computer. You will be able to reactivate and redownload on any computer\nusing the key in the original email we sent you upon purchase. Are you sure you want to deactivate this license? ", "Are you sure you want to deactivate this license?") == 0) {	
 			if (Main.getBotSecurity().deactivateLicense()) { //runs deactivate license from software security, which returns true if deactivated
-				JOptionPane.showMessageDialog(null,"License deactivated successfully! Your download link and activation key from your purchase confirmation email have\nbeen reactivated. You may now reactivate the bot on any computer using those credentials. The bot will exit now.", "License Deactivated", 2);
+				Prompter.throwSuccess("License deactivated successfully! Your download link and activation key from your purchase confirmation email have\nbeen reactivated. You may now reactivate the bot on any computer using those credentials. The bot will exit now.", "License Deactivated");
 				System.exit(0);
 			} else { //deactivation failed, could've been sparked by their already having 0 downloads in the db
-				JOptionPane.showMessageDialog(null, "Licence deactivation failed. Check your internet connection because deactivation requires internet connectivity. \nIf this problem persists, email us at team@supremesharkbot.com for a manual deactivation.", "Deactivation Failed", 0);
+				Prompter.throwError("Licence deactivation failed. Check your internet connection because deactivation requires internet connectivity. \nIf this problem persists, email us at team@supremesharkbot.com for a manual deactivation.", "Deactivation Failed");
 			}
 		}	
 	}
@@ -586,11 +580,12 @@ public class GUI extends JFrame {
 		int counter = 0;
 		for (Order o : Main.getOrders()) if (!o.getOrderSettings().isUsingProxy()) counter++;
 
-		return counter > 2 ? (prompt("More than two orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
+		return counter > 2 ? (Prompter.prompt("More than two orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
 	}
 
 	private void processEnableOrAbort() { //processes enable/ abort action (called by scheduler and by button click)
-		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable()) {
+		
+		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable() && allOrderSettingsAreSet()) {
 			enableRegardlessOfProxyReadinessOrALackThereof();
 		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
 			Main.interruptThreads(); //abort bot
@@ -640,6 +635,18 @@ public class GUI extends JFrame {
 
 	public boolean areTechMessagesEnabled() { //tells processor whether it should print tech messages
 		return techMessagesEnabled;
+	}
+	
+	private boolean allOrderSettingsAreSet() {
+		boolean allOrderSettingsAreSet = true;		
+		
+		for (Order o : Main.getOrders()) {
+			if (!o.getOrderSettings().areSettingsSet()) {
+				Prompter.throwError("Order " + o.getOrderNum() + " Settings are not set so bot cannot be enabled", "Bot Not Enabled");
+				allOrderSettingsAreSet = false;
+			}
+		}
+		return allOrderSettingsAreSet;
 	}
 
 

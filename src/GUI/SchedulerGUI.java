@@ -18,6 +18,7 @@ import backend.SchedulerEnabler;
 import backend.SchedulerSettings;
 import backend.SetCentered;
 import backend.Main;
+import backend.Order;
 import eu.hansolo.custom.SteelCheckBox;
 import eu.hansolo.tools.ColorDef;
 import net.miginfocom.swing.MigLayout;
@@ -70,13 +71,17 @@ public class SchedulerGUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				settings.setSelected(switcher.isSelected());
-				if (switcher.isSelected() && new Date().compareTo((Date) timeSpinner.getValue()) <= 0) { //now that settings has the proper values
+				if (!allOrderSettingsAreSet()) {
+					switcher.setSelected(false);
+					return;
+				} else if (switcher.isSelected() && new Date().compareTo((Date) timeSpinner.getValue()) <= 0) { //now that settings has the proper values
+					settings.setSelected(switcher.isSelected());
 					setupScheduler();
 					System.out.println("Scheduled for an acceptable date, not less than or equal to the current date");
-				} else if (!switcher.isSelected() ){
+				} else if (!switcher.isSelected()){
 					unsetScheduler();
 				} else {
+					switcher.setSelected(false);
 					System.out.println("Scheduled for an unacceptable date, less than or equal to the current date");
 					JOptionPane.showMessageDialog(null, "Error, bot cannot be scheduled to a time before or equal to the current time!");
 					return;
@@ -131,6 +136,18 @@ public class SchedulerGUI extends JFrame {
 	
 	private void cancelTimers() {
 		for (Timer t: Main.getTimerStack()) t.cancel();
+	}
+	
+	private boolean allOrderSettingsAreSet() {
+		boolean allOrderSettingsAreSet = true;		
+		
+		for (Order o : Main.getOrders()) {
+			if (!o.getOrderSettings().areSettingsSet()) {
+				JOptionPane.showMessageDialog(null, "Order " + o.getOrderNum() + " Settings are not set so bot cannot be scheduled");
+				allOrderSettingsAreSet = false;
+			}
+		}
+		return allOrderSettingsAreSet;
 	}
 
 }

@@ -86,7 +86,6 @@ public class TaskProcessor implements Runnable {
 				break;
 			case CHECKOUT:
 				checkout.attemptCheckout();
-				Thread.currentThread().interrupt();
 				break;
 			}
 

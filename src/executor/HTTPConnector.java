@@ -4,11 +4,15 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
+import javax.net.ssl.HttpsURLConnection;
+import org.apache.commons.io.IOUtils;
 import backend.Item;
 import backend.OrderSettings;
 import backend.RandomUserAgent;
@@ -33,9 +37,7 @@ public class HTTPConnector {
 		try {
 			URLConnection con = settings.isUsingProxy() ? new URL(url).openConnection(proxyBuilder.getProxy()) : new URL(url).openConnection();
 			con.setUseCaches(false);
-			if (isCheckout) {
-				setCookies(con);
-			}
+			if (isCheckout) setCookies(con);
 			con.setConnectTimeout(8000); //timeout after 8 seconds
 			con.setReadTimeout(8000);
 			con.connect();
@@ -86,7 +88,10 @@ public class HTTPConnector {
 			String itemLink = item.getLink();
 			String xCSRFToken = item.getAuthenticityToken();
 
-			HttpURLConnection con = (HttpURLConnection) new URL(item.getAtcLink()).openConnection();           
+			String url = item.getAtcLink();
+
+			HttpURLConnection con = settings.isUsingProxy() ? (HttpURLConnection)(new URL(url).openConnection(proxyBuilder.getProxy())) : (HttpURLConnection)(new URL(url).openConnection());
+
 			con.setUseCaches(false);
 			con.setDoOutput(true);
 			con.setConnectTimeout(8000); //timeout after 8 seconds
@@ -107,24 +112,11 @@ public class HTTPConnector {
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.8");
 			setCookies(con);
 
-			//			POST /shop/169443/add HTTP/1.1
-			//			Host: www.supremenewyork.com
-			//			Connection: keep-alive
-			//			Content-Length: 114
-			//			Accept: */*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript
-			//			Origin: http://www.supremenewyork.com
-			//			X-CSRF-Token: j/3WH4FuSfPEDw9GkzSmeYrH14VZrcI1S1KXJO+24/8=
-			//			X-Requested-With: XMLHttpRequest
-			//			User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36
-			//			Content-Type: application/x-www-form-urlencoded; charset=UTF-8
-			//			Referer: http://www.supremenewyork.com/shop/pants/eat-me-sweatshort
-			//			Accept-Encoding: gzip, deflate
-			//			Accept-Language: en-US,en;q=0.8
-			//
-			//			utf8=%E2%9C%93&authenticity_token=RWvrnsyge9GlIfS5rX63S5p%2B5J%2Bcd6hecMFnhZ9XjQk%3D&size=28959&commit=add+to+cart
-
-			new DataOutputStream(con.getOutputStream()).write(postData); //send the post
-
+			DataOutputStream doStream = new DataOutputStream(con.getOutputStream());
+			doStream.write(postData);
+			doStream.flush();
+			doStream.close();
+			
 			int newCookies = storeCookies(con);
 
 			con.getInputStream(); //throws error if atc failed, ensuring false will be returned
@@ -135,10 +127,9 @@ public class HTTPConnector {
 
 			return newCookies > 1 ? true : false; //0 or 1 new cookies means nothing more was added to cart
 
-		} catch (MalformedURLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+
 		}
 
 		return false; //error thrown, something failed, lets try again
@@ -146,12 +137,9 @@ public class HTTPConnector {
 	}
 
 	private String connectionToString(URLConnection con) throws IOException { //gets body of connection as string
-		String mostRecentHTML = "";
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		String inputLine = "";
-		while ((inputLine = in.readLine()) != null) mostRecentHTML += inputLine; //read html stream
-		in.close();
-		return mostRecentHTML;
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(con.getInputStream(), writer, "UTF-8");
+		return writer.toString();
 	}
 
 	private int addCookie(String cookie) { //adds received cookie to cookie string, returns number of new cookies
@@ -200,7 +188,7 @@ public class HTTPConnector {
 
 	}
 
-	public boolean checkoutPost(OrderSettings settings) { //attempts to post checkout data, index 0 is true if successful post, and response is passed back in index 1 
+	public boolean checkoutPost() { //attempts to post checkout data, index 0 is true if successful post, and response is passed back in index 1 
 
 
 		try {
@@ -209,10 +197,11 @@ public class HTTPConnector {
 			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 			int postDataLength = postData.length;
 
+			HttpsURLConnection con = settings.isUsingProxy() ? (HttpsURLConnection)(new URL(settings.getCheckoutLink()).openConnection(proxyBuilder.getProxy())) : (HttpsURLConnection)(new URL(settings.getCheckoutLink()).openConnection());
 
-			HttpURLConnection con = (HttpURLConnection) new URL(settings.getCheckoutLink()).openConnection();           
-			con.setDoOutput(true);
 			con.setUseCaches(false);
+			con.setDoOutput(true);
+			con.setDoInput(true);
 			con.setConnectTimeout(8000); //timeout after 8 seconds
 			con.setReadTimeout(8000);
 			con.setInstanceFollowRedirects(false);
@@ -222,20 +211,24 @@ public class HTTPConnector {
 			con.setRequestProperty("Content-Length", Integer.toString(postDataLength));
 			con.setRequestProperty("Cache-Control", "max-age=0");
 			con.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-			con.setRequestProperty("Origin", "http://www.supremenewyork.com");
+			con.setRequestProperty("Origin", "https://www.supremenewyork.com");
 			con.setRequestProperty("Upgrade-Insecure-Requests", "1");
 			con.setRequestProperty("User-Agent", userAgent);
 			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			con.setRequestProperty("Referer", "https://www.supremenewyork.com/checkout");
 			con.setRequestProperty("Accept-Encoding", "gzip, deflate");
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.8");
+
 			setCookies(con);
 
-			new DataOutputStream(con.getOutputStream()).write(postData); //send the post
+			DataOutputStream doStream = new DataOutputStream(con.getOutputStream());
+			doStream.write(postData);
+			doStream.flush();
+			doStream.close();
 
+			settings.setCheckoutServerResponse(deflateGzipStream(new GZIPInputStream(con.getInputStream()))); //store the html response
+			
 			storeCookies(con);
-
-			settings.setCheckoutServerResponse(connectionToString(con)); //throws error if post failed, ensuring false will be returned
 
 			con.disconnect();
 
@@ -245,13 +238,28 @@ public class HTTPConnector {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-
+		} 
 
 		return false; //error thrown
 	}
+	
+	private String deflateGzipStream(GZIPInputStream g) throws IOException {
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(g, "UTF-8"));
+
+		String line;
+		String htmlResponse = "";
+
+		while ((line = reader.readLine()) != null) htmlResponse += line;
+
+		reader.close();
+
+		return htmlResponse;
+	}
+
 
 }
+
 
 
 

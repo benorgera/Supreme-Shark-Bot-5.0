@@ -1,15 +1,12 @@
 package executor;
 
-import java.awt.BorderLayout;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import backend.Item;
 import backend.Order;
+import backend.Prompter;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,7 +18,7 @@ public class AddToCart {
 	private TaskProcessor processor;
 	private HTTPConnector connector;
 	private int itemsAdded = 0;
-	private int attempts = 0; //number of times same item has been tried to atc, if not working after set threshold skip item or prompt
+	private int attempts = 1; //number of times same item has been tried to atc, if not working after set threshold skip item or prompt
 
 	public AddToCart(Order order, TaskProcessor processor, HTTPConnector connector) {
 		this.order = order;
@@ -38,12 +35,14 @@ public class AddToCart {
 			if (connector.atcPost(currentItem)) { //if successful, goto next item, reset attempts
 				processor.setStatus(currentItem.getItemNumber(), "Added to Cart");
 				itemsAdded++;
-				attempts = 0;
+				attempts = 1;
 			} else {
 				attempts++;
+				processor.printSys("Add to cart failed, retrying");
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			processor.printSys("Add to cart error, retrying");
 			attempts++;
 		}
@@ -52,10 +51,10 @@ public class AddToCart {
 		if (attempts >= 50 && order.getItems().size() > 1) { //too many attempts and other items to worry about
 			processor.setStatus(currentItem.getItemNumber(), "Add to Cart Failed");
 			itemsAdded++;
-			attempts = 0;
+			attempts = 1;
 		}
 
-		if (itemsAdded == order.getItems().size()) processor.setStage(Stage.CHECKOUT);
+		if (itemsAdded == order.getItems().size()) processor.setStage(Stage.CHECKOUT); //all items added, move on to checkout
 	}
 
 	private void prepareItem(Item item) { //scrape item page for post parameters
@@ -128,19 +127,13 @@ public class AddToCart {
 		}
 
 
-		JComboBox<Object> optionList = new JComboBox<Object>(sizeTexts);
+		int[] res = Prompter.comboPrompt("Which of these is the correct " + askingAbout + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?", "Confirm Order " + order.getOrderNum() + " Item " + item.getItemNumber() + " Size", sizeTexts, new String[]{"Ok"});
+		
+		String name = sizes.get(res[1]).parent().attr("name");
 
-		JPanel panel = new JPanel(new BorderLayout(0, 0));
-		panel.add(optionList, BorderLayout.SOUTH);
-		panel.add(new JLabel("Which of these is the correct " + askingAbout + " for them item with keywords '" + Arrays.asList(item.getKeywords()).toString().replace("[", "").replace("]", "")  + "'" + (!item.getEarlyLink().isEmpty() ? " and early link '" + item.getEarlyLink() + "'": "") + " in color '" + Arrays.asList(item.getColors()).toString().replace("[", "").replace("]", "") + "'?"), BorderLayout.NORTH);
+		String value = sizes.get(res[1]).attr("value");
 
-		JOptionPane.showOptionDialog(null, panel, "Confirm Order " + order.getOrderNum() + " Item " + item.getItemNumber() + " Size", 0, 3, null, new String[]{"Ok"}, 0);
-
-		String name = sizes.get(optionList.getSelectedIndex()).parent().attr("name");
-
-		String value = sizes.get(optionList.getSelectedIndex()).attr("value");
-
-		String text = sizes.get(optionList.getSelectedIndex()).text();
+		String text = sizes.get(res[1]).text();
 
 		processor.printSys("Item " + item.getItemNumber() + ": User chose " + askingAbout + " " + text + " which had number " + value);
 
@@ -151,7 +144,7 @@ public class AddToCart {
 		String returnValue = null;
 
 		try {
-			returnValue = (name + "=" + URLEncoder.encode(value, "UTF-8"));
+			returnValue = (URLEncoder.encode(name, "UTF-8") + "=" + URLEncoder.encode(value, "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace(); //this should never happen
 		}
