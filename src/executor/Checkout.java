@@ -3,6 +3,7 @@ package executor;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,9 +17,11 @@ public class Checkout {
 	private Order order;
 	private TaskProcessor processor;
 	private HTTPConnector connector;
-	private int errorPromptsNum = 0;
+	private boolean errorPrompted = false;
+	
+	private HashMap<String, String> optionResponses = new HashMap<String, String>(); //store responses to disambiguation prompts, so they aren't asked twice
 
-	int attempts = 0;
+	private int attempts = 0;
 
 	public Checkout(Order order, TaskProcessor processor, HTTPConnector connector) {
 		this.order = order;
@@ -41,12 +44,6 @@ public class Checkout {
 		attempts++;
 
 		processor.setAllStatuses("Checkout (" + attempts + " attempts)");
-
-		if (Thread.currentThread().isInterrupted()) {
-			Thread.currentThread().interrupt();
-			System.out.println("Thread interrupted");
-			return;
-		}
 		
 	}
 
@@ -88,14 +85,20 @@ public class Checkout {
 
 		System.out.println("New option " + optionHolder.attr("name") + " with expectedValue: " + expectedValue + " and options:");
 
-		for (Element e : options) if (e.text().toLowerCase().equals(expectedValue.toLowerCase())) return e.attr("value");
+		for (Element e : options) if (e.text().toLowerCase().equals(expectedValue.toLowerCase())) return e.attr("value"); //try and find the prompter option
 
+		//no option matched the expectation:
+		
+		if (optionResponses.containsKey(optionHolder.attr("name"))) return optionResponses.get(optionHolder.attr("name")); //if same field was already prompted, reuse that answer
+		
 		String[] promptOptions = new String[options.size()];
 
 		for (int i = 0; i < options.size(); i++) promptOptions[i] = options.get(i).text();
 
 		int[] res = Prompter.comboPrompt("Which of these is the correct option for the checkout field '" + optionHolder.attr("name") + "' with expected value '" + expectedValue + "'?", "Checkout Field Confirmation", promptOptions, new String[]{"OK"});
 
+		optionResponses.put(optionHolder.attr("name"), options.get(res[1]).attr("value")); //store this reponse in case this question must be asked again
+		
 		return options.get(res[1]).attr("value"); //return the inner text of the index of the selected option
 	}
 
@@ -108,10 +111,12 @@ public class Checkout {
 		Elements errors = doc.select("div[class=errors]");
 		
 		if (!errors.isEmpty()) { //there are errors on the page
-			processor.print("Supreme returned the checkout errors: " + errors.text().replace(", ", ",\n\t\t"));
-			if (errorPromptsNum < 2) {
-				errorPromptsNum++;
+			if (!errorPrompted) {
+				errorPrompted = true;
+				Prompter.buttonOptionPrompt("Order Settings need to be edited to fix the following errors:\n\t\t" + errors.text().replace(", ", ",\n\t\t"), "Checkout Errors, Abort?", new String[]{"Abort Bot", "Retry"});
 				processor.throwRunnableErrorPane("Order Settings need to be edited to fix the following errors:\n\t\t" + errors.text().replace(", ", ",\n\t\t"), "Checkout Errors");
+			} else {
+				processor.print("Supreme returned the checkout errors:\n\t" + errors.text().replace(", ", ",\n\t"));
 			}
 			return; //there are errors, checkout wasn't successful
 		}

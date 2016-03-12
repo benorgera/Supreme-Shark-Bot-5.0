@@ -20,6 +20,10 @@ public class Prompter {
 	public static void throwSuccess(String message, String title) {
 		JOptionPane.showMessageDialog(null, message, title, 1);
 	}
+	
+	public static int buttonOptionPrompt(String message, String title, String[] options) {
+		return JOptionPane.showOptionDialog(null, message, title, 0, 0, null, options, 0);
+	}
 
 	public static int[] comboPrompt(String message, String title, String[] options, String[] buttons) { //prompt with a combobox dropdown, return the selected button and the selected combo option
 		System.out.println("prompting");

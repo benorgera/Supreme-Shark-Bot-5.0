@@ -74,6 +74,8 @@ public class TaskProcessor implements Runnable {
 
 		while (!Thread.currentThread().isInterrupted()) { //you must check if cancelled in every loop!!!
 
+			System.out.println("Interruption Status: " + Thread.currentThread().isInterrupted());
+			
 			printSys("Stage: " + stage.name());
 
 			switch (stage) {
@@ -90,7 +92,6 @@ public class TaskProcessor implements Runnable {
 			}
 
 		}
-		if (Thread.currentThread().isInterrupted()) print("Thread Aborted");
 
 	}
 

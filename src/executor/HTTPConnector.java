@@ -225,8 +225,10 @@ public class HTTPConnector {
 			doStream.write(postData);
 			doStream.flush();
 			doStream.close();
+			
+			processor.printSys("Checkout Response Encoding: " + con.getContentEncoding());
 
-			settings.setCheckoutServerResponse(deflateGzipStream(new GZIPInputStream(con.getInputStream()))); //store the html response
+			settings.setCheckoutServerResponse(con.getContentEncoding().equals("gzip") ? deflateGzipStream(new GZIPInputStream(con.getInputStream())) : connectionToString(con)); //store the html response, deflate it if its compressed
 			
 			storeCookies(con);
 

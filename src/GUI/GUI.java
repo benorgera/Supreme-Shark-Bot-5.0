@@ -469,7 +469,7 @@ public class GUI extends JFrame {
 			if (getTabAsInt(i, null) != prev) {
 				orderTabHolder.setTitleAt(i, "Order " + prev); //reset tab names
 				Main.getOrders().get(i).setDeleteButtonText("Delete Order " + prev); //reset delete button
-				Main.getOrders().get(i).setSettingsButtonText("Order " + prev + "Settings"); //reset settings button
+				Main.getOrders().get(i).setSettingsButtonText("Order " + prev + " Settings"); //reset settings button
 				Main.getOrders().get(i).setOrderNum(prev); //reset order numbers
 			}
 			prev++;
