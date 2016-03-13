@@ -547,15 +547,19 @@ public class GUI extends JFrame {
 		return counter > 2 ? (Prompter.prompt("More than two orders have no proxies set, and too many connections on one IP can result\nin a temporary ban. Are you sure you want to proceed with current configuration?", "IP Ban Risk") == 0) : true;
 	}
 
+	public void abort() {
+		Main.interruptThreads(); //abort threads
+		System.out.println("Process Time: " + (new Date().getTime() - enableDate.getTime()) + " milliseconds"); //only 
+		toggleButton(); //change 
+		abortStatuses();
+	}
+	
 	private void processEnableOrAbort() { //processes enable/ abort action (called by scheduler and by button click)
 
 		if (enableBotButton.getText().equals("Enable Bot") && configurationIsAcceptable() && allOrderSettingsAreSet()) {
 			enableRegardlessOfProxyReadinessOrALackThereof();
 		} else if (enableBotButton.getText().equals("Abort Bot")) { //if the bot was actually enabled, abort it
-			Main.interruptThreads(); //abort bot
-			System.out.println("Process Time: " + (new Date().getTime() - enableDate.getTime()) + " milliseconds"); //only 
-			toggleButton();
-			abortStatuses();
+			abort(); //abort the bot
 		} else {
 			//dont do anything if the configuration is acceptable prompt failed (due to too many proxy-less connections)
 		}
@@ -593,7 +597,11 @@ public class GUI extends JFrame {
 
 	private void abortStatuses() { //sets status of each item to abort following bot abortion
 
-		for (Order o : Main.getOrders()) for (int i = 0; i < o.getModel().getRowCount(); i ++) o.getModel().setValueAt("Aborted", i, 5);
+		for (Order o : Main.getOrders()) for (int i = 0; i < o.getModel().getRowCount(); i++) {
+			o.getModel().setValueAt("Aborted", i, 5);
+			o.getModel().fireTableCellUpdated(i, 5);
+		}
+		
 
 	}
 

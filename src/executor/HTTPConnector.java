@@ -226,9 +226,11 @@ public class HTTPConnector {
 			doStream.flush();
 			doStream.close();
 			
-			processor.printSys("Checkout Response Encoding: " + con.getContentEncoding());
-
-			settings.setCheckoutServerResponse(con.getContentEncoding().equals("gzip") ? deflateGzipStream(new GZIPInputStream(con.getInputStream())) : connectionToString(con)); //store the html response, deflate it if its compressed
+			String encoding = con.getContentEncoding();
+			
+			processor.printSys("Checkout Response Encoding: " + encoding);
+			
+			settings.setCheckoutServerResponse("gzip".equals(encoding) ? deflateGzipStream(new GZIPInputStream(con.getInputStream())) : connectionToString(con)); //store the html response, deflate it if its compressed
 			
 			storeCookies(con);
 

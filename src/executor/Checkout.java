@@ -8,6 +8,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import backend.Main;
 import backend.Order;
 import backend.OrderSettings;
 import backend.Prompter;
@@ -82,14 +84,19 @@ public class Checkout {
 	private String pullOptionValue(Element optionHolder, String expectedValue) {
 
 		Elements options = optionHolder.select("option");
+		
+		String name = optionHolder.attr("name");
 
-		System.out.println("New option " + optionHolder.attr("name") + " with expectedValue: " + expectedValue + " and options:");
+		System.out.println("New option " + name + " with expectedValue: " + expectedValue + " and options:");
 
 		for (Element e : options) if (e.text().toLowerCase().equals(expectedValue.toLowerCase())) return e.attr("value"); //try and find the prompter option
 
 		//no option matched the expectation:
 		
-		if (optionResponses.containsKey(optionHolder.attr("name"))) return optionResponses.get(optionHolder.attr("name")); //if same field was already prompted, reuse that answer
+		if (optionResponses.containsKey(name)) {
+			processor.printSys("Option: " + name + " value inferred to be: " + optionResponses.get(name) + " based on prevoius prompt");
+			return optionResponses.get(name); //if same field was already prompted, reuse that answer
+		}
 		
 		String[] promptOptions = new String[options.size()];
 
@@ -113,12 +120,15 @@ public class Checkout {
 		if (!errors.isEmpty()) { //there are errors on the page
 			if (!errorPrompted) {
 				errorPrompted = true;
-				Prompter.buttonOptionPrompt("Order Settings need to be edited to fix the following errors:\n\t\t" + errors.text().replace(", ", ",\n\t\t"), "Checkout Errors, Abort?", new String[]{"Abort Bot", "Retry"});
-				processor.throwRunnableErrorPane("Order Settings need to be edited to fix the following errors:\n\t\t" + errors.text().replace(", ", ",\n\t\t"), "Checkout Errors");
+				int res = Prompter.buttonOptionPrompt("Order Settings need to be edited to fix the following errors:\n\t\t" + errors.text().replace(", ", ",\n\t\t"), "Checkout Errors, Abort?", new String[]{"Abort Bot", "Keep Trying"});
+				System.out.println("Prompt reponse: " + res);
+				if (res == 0) Main.getGUI().abort(); //if they chose abort, abort
 			} else {
 				processor.print("Supreme returned the checkout errors:\n\t" + errors.text().replace(", ", ",\n\t"));
 			}
+			
 			return; //there are errors, checkout wasn't successful
+			
 		}
 		
 		Elements orderConfirmation = doc.select("div[id=confirmation]");

@@ -103,6 +103,7 @@ public class TaskProcessor implements Runnable {
 
 	public void setStatus(int itemNumber, String text) { //sets status of item in table
 		order.getModel().setValueAt(text, itemNumber - 1, 5);
+		order.getModel().fireTableCellUpdated(itemNumber - 1, 5);
 	}
 	
 	public void setAllStatuses(String text) { //sets status of all items in table
@@ -119,7 +120,6 @@ public class TaskProcessor implements Runnable {
 	public void setStage(Stage s) {
 		this.stage = s;
 	}
-
 
 
 	//you must check if cancelled in every loop, otherwise abort wont work (see line 33)!!!
