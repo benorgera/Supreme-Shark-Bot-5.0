@@ -232,7 +232,7 @@ public class Checkout {
 				} else if (i == 3) {
 					setTo = settings.getEmail();
 				} else if (i == 4) {
-					setTo = settings.getPhone(); //need formatting
+					setTo = settings.getPhoneUnformatted(); //no formatting for UK
 				} else if (i == 5) {
 					setTo = settings.getAddress1();
 				} else if (i == 6) {
@@ -274,101 +274,58 @@ public class Checkout {
 				
 			} else { //jp
 				
-//				if (i == 0) {
-//					setTo = givenValue;
-//				} else if (i == 1) {
-//					setTo = givenValue;
-//				} else if (i == 2) {
-//					setTo = settings.getName().split(" ")[0];
-//				} else if (i == 3) {
-//					setTo = settings.getEmail();
-//				} else if (i == 4) {
-//					setTo = settings.getPhone(); //need formatting
-//				} else if (i == 5) {
-//					setTo = settings.getAddress1();
-//				} else if (i == 6) {
-//					setTo = settings.getAddress2();
-//				} else if (i == 7) {
-//					setTo = settings.getAddress3();
-//				} else if (i == 8) {
-//					setTo = settings.getCity();
-//				} else if (i == 9) {
-//					setTo = settings.getPostalCode();
-//				} else if (i == 10) {
-//					setTo = pullOptionValue(current, settings.getCountry());
-//				} else if (i == 11) {
-//					setTo = givenValue;
-//				} else if (i == 12) {
-//					setTo = ""; //store credit id
-//				} else if (i == 13) {
-//					setTo = "AVOID_STRING";
-//				} else if (i == 14) {
-//					setTo = pullOptionValue(current, settings.getCcProvider());
-//				} else if (i == 15) {
-//					setTo = settings.getCcNumber();
-//				} else if (i == 16) {
-//					setTo = pullOptionValue(current, settings.getExpMonth());
-//				} else if (i == 17) {
-//					setTo = pullOptionValue(current, settings.getExpYear());
-//				} else if (i == 18) {
-//					setTo = settings.getCvv();
-//				} else if (i == 19) {
-//					setTo = givenValue;
-//				} else if (i == 20) {
-//					setTo = givenValue;
-//				} else if (i == 21) {
-//					setTo = "";
-//				} else if (i == 22) {
-//					setTo = "AVOID_STRING";
-//				} 
-//				
-//				
+				if (i == 0) {
+					setTo = givenValue;
+				} else if (i == 1) {
+					setTo = givenValue;
+				} else if (i == 2) {
+					try {
+						setTo = settings.getName().split(" ")[1]; //last name
+					} catch (Exception e) {
+						setTo = settings.getName();
+					}
+				} else if (i == 3) {
+					try {
+						setTo = settings.getName().split(" ")[0]; //last name
+					} catch (Exception e) {
+						setTo = settings.getName();
+					}
+				} else if (i == 4) {
+					setTo = settings.getEmail();
+				} else if (i == 5) {
+					setTo = settings.getPhoneUnformatted(); //no formatting for jp
+				} else if (i == 6) {
+					setTo = pullOptionValue(current, settings.getCountry());
+				} else if (i == 7) {
+					setTo = settings.getCity();
+				} else if (i == 8) {
+					setTo = settings.getAddress1();
+				} else if (i == 9) {
+					setTo = settings.getPostalCode();
+				} else if (i == 10) {
+					setTo = givenValue;
+				} else if (i == 11) {
+					setTo = "AVOID_STRING";
+				} else if (i == 12) {
+					setTo = pullOptionValue(current, settings.getCcProvider());
+				} else if (i == 13) {
+					setTo = settings.getCcNumber();
+				} else if (i == 14) {
+					setTo = settings.getExpMonth();
+				} else if (i == 15) {
+					setTo = settings.getExpYear();
+				} else if (i == 16) {
+					setTo = settings.getCvv();
+				} else if (i == 17) {
+					setTo = givenValue;
+				} else if (i == 18) {
+					setTo = givenValue;
+				} else if (i == 19) {
+					setTo = "";
+				} else if (i == 20) {
+					setTo = "AVOID_STRING";
+				}
 				
-				//with payment info
-				
-//				* utf8:%E2%9C%93
-//				* authenticity_token:voqH8zUwy5JsBKyoD6%2FELpEV4KLVuRp8hC6ilDnTQJs%3D
-//				* credit_card%5Blast_name%5D:Ben
-//				* credit_card%5Bfirst_name%5D:Charles
-//				* order%5Bemail%5D:johnsmith%40gmail.com
-//				* order%5Btel%5D:9737635340
-//				* order%5Bbilling_state%5D:+%E6%A0%83%E6%9C%A8%E7%9C%8C
-//				* order%5Bbilling_city%5D:South+Orange
-//				* order%5Bbilling_address%5D:427+Page+Terrace
-//				* order%5Bbilling_zip%5D:07079
-//				* same_as_billing_address:1
-//				* credit_card%5Btype%5D:master
-//				* credit_card%5Bcnb%5D:3534+5435+3654+6466
-//				* credit_card%5Bmonth%5D:03
-//				* credit_card%5Byear%5D:2016
-//				* credit_card%5Bvval%5D:456
-//				* order%5Bterms%5D:0
-//				* order%5Bterms%5D:1
-//				* hpcvv:
-//
-				
-				//with pay at door
-//
-//				* utf8:%E2%9C%93
-//				* authenticity_token:voqH8zUwy5JsBKyoD6%2FELpEV4KLVuRp8hC6ilDnTQJs%3D
-//				* credit_card%5Blast_name%5D:Ben
-//				* credit_card%5Bfirst_name%5D:Charles
-//				* order%5Bemail%5D:johnsmith%40gmail.com
-//				* order%5Btel%5D:9737635340
-//				* order%5Bbilling_state%5D:+%E6%A0%83%E6%9C%A8%E7%9C%8C
-//				* order%5Bbilling_city%5D:South+Orange
-//				* order%5Bbilling_address%5D:427+Page+Terrace
-//				* order%5Bbilling_zip%5D:07079
-//				* same_as_billing_address:1
-//				* credit_card%5Btype%5D:cod
-//				* credit_card%5Bcnb%5D:3534+5435+3654+6466
-//				* credit_card%5Bmonth%5D:03
-//				* credit_card%5Byear%5D:2016
-//				* credit_card%5Bvval%5D:456
-//				* order%5Bterms%5D:0
-//				* order%5Bterms%5D:1
-//				* hpcvv:
-
 				
 			}
 

@@ -216,6 +216,10 @@ public class OrderSettings {
 		}
 	}
 
+	public String getPhoneUnformatted() {
+		return getPhone().replace(" ", "").replace("(", "").replace(")", "").replace("-", " ");
+	}
+	
 	public String getAddress1() {
 		return address1;
 	}

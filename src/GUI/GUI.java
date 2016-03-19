@@ -51,7 +51,7 @@ public class GUI extends JFrame {
 	private JButton enableBotButton;
 
 	private final String[] comboBoxOptions = {"jackets", "shirts", "tops-sweaters", "sweatshirts", "pants", "t-shirts", "hats", "bags", "accessories", "skate", "shoes", "shorts"};
-	private final String[] headers = {"Keywords", "Category", "Colors", "Size", "Early Link", "Status", "Actions"};
+	private final String[] headers = {"Keywords *", "Category", "Colors *", "Size", "Early Link", "Status", "Actions"};
 	private final String[] newItemRow =  {"", "", "", "", "", "", "Delete Item"};
 	private final String[] newItemButtonRow =  {"", "", "", "", "", "", "+"};
 	private TabChangeListener tabChange;
@@ -64,9 +64,8 @@ public class GUI extends JFrame {
 		GUI.isPro = isPro;
 		setTitle("Supreme Shark Bot " + Double.toString(thisVersionNumber) + (isPro ? " Pro" : ""));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		contentPane = new JPanel();
+		contentPane = new JPanel(new BorderLayout());
 		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout());
 
 		Action launchHelpAction = new AbstractAction() {
 
@@ -89,15 +88,13 @@ public class GUI extends JFrame {
 			}
 		};
 
-		JPanel orderTabHolderHolder = new JPanel();
-		orderTabHolderHolder.setLayout(new BorderLayout());
+		JPanel orderTabHolderHolder = new JPanel(new BorderLayout());
 		contentPane.add(orderTabHolderHolder, BorderLayout.CENTER);
 
 		orderTabHolder = new JTabbedPane(JTabbedPane.TOP);
 		orderTabHolderHolder.add(orderTabHolder, BorderLayout.CENTER);
 
-		JPanel deactivateAndEnableButtonsPanel = new JPanel();
-		deactivateAndEnableButtonsPanel.setLayout(new BorderLayout());
+		JPanel deactivateAndEnableButtonsPanel = new JPanel(new BorderLayout());
 
 		enableBotButton = new JButton("Enable Bot");
 
@@ -151,17 +148,15 @@ public class GUI extends JFrame {
 
 		orderTabHolder.addChangeListener(tabChange = new TabChangeListener());
 
-		JPanel splitPaneHolder = new JPanel();
-		splitPaneHolder.setLayout(new BorderLayout());
 		
-		JPanel textConsolePanel = new JPanel();
+		JPanel splitPaneHolder = new JPanel(new BorderLayout());
+		
+		JPanel textConsolePanel = new JPanel(new BorderLayout());
 
 		splitPaneHolder.add(textConsolePanel, BorderLayout.NORTH);
 		splitPaneHolder.add(deactivateAndEnableButtonsPanel, BorderLayout.SOUTH);
 
 		contentPane.add(splitPaneHolder, BorderLayout.SOUTH);
-
-		textConsolePanel.setLayout(new BorderLayout());
 
 		JScrollPane textConsoleScroller = new JScrollPane();
 		textConsolePanel.add(textConsoleScroller, BorderLayout.CENTER);
@@ -214,7 +209,7 @@ public class GUI extends JFrame {
 
 
 		//makes textConsoleArea  always scroll to bottom
-		DefaultCaret caret = (DefaultCaret)textConsoleArea.getCaret();
+		DefaultCaret caret = (DefaultCaret) textConsoleArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 		textConsoleScroller.setViewportView(textConsoleArea);
@@ -223,12 +218,9 @@ public class GUI extends JFrame {
 		contentPane.add(logoPanel, BorderLayout.NORTH);
 
 
-		JPanel topButtonPanel = new JPanel();
-		topButtonPanel.setLayout(new BorderLayout());
+		JPanel topButtonPanel = new JPanel(new BorderLayout());
 
-
-		JPanel schedulerHolderPanel = new JPanel();
-		schedulerHolderPanel.setLayout(new BorderLayout());
+		JPanel schedulerHolderPanel = new JPanel(new BorderLayout());
 		scheduledDateLabel.setVisible(false);
 
 		JButton schedulerButton = new JButton("Scheduler Settings");
@@ -262,11 +254,10 @@ public class GUI extends JFrame {
 		table.setDefaultRenderer(Object.class, new MyDefaultTableCellRenderer());
 		table.getTableHeader().setReorderingAllowed(false);
 
-		JPanel orderPanel = new JPanel();
-		orderPanel.setLayout(new BorderLayout());
+		JPanel orderPanel = new JPanel(new BorderLayout());
 
 		JScrollPane tableHolderScrollPane = new JScrollPane();
-		JPanel tableHolder = new JPanel();
+		JPanel tableHolder = new JPanel(new BorderLayout());
 
 		Action deleteOrderAction = new AbstractAction() {
 
@@ -279,13 +270,11 @@ public class GUI extends JFrame {
 			}
 		};
 
-		tableHolder.setLayout(new BorderLayout());
-		JButton deleteOrderButton = new JButton("Delete Order "+orderCount);
+		JButton deleteOrderButton = new JButton("Delete Order " + orderCount);
 		deleteOrderButton.addActionListener(deleteOrderAction);
 
 
-		JPanel buttonPanelHolder = new JPanel();//this block makes the delete order goto the southeast
-		buttonPanelHolder.setLayout(new BorderLayout());
+		JPanel buttonPanelHolder = new JPanel(new BorderLayout());//this block makes the delete order goto the southeast
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(deleteOrderButton);
 		buttonPanelHolder.add(buttonPanel, BorderLayout.EAST);
@@ -310,7 +299,11 @@ public class GUI extends JFrame {
 		buttonPanelHolder.add(orderSettingsButtonHolder, BorderLayout.WEST);
 		orderPanel.add(buttonPanelHolder, BorderLayout.SOUTH);
 
-
+		JPanel asteriskHolder = new JPanel(new BorderLayout());
+		asteriskHolder.add(new JLabel("* denotes a field in which multiple words can be entered, each separated by a space"), BorderLayout.EAST);
+		
+		buttonPanelHolder.add(asteriskHolder, BorderLayout.SOUTH);
+		
 		tableHolder.add(table.getTableHeader(), BorderLayout.NORTH);
 		tableHolder.add(table, BorderLayout.CENTER);
 

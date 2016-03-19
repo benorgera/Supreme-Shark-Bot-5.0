@@ -364,7 +364,7 @@ public class SettingsGUI extends JFrame {
 		addressPanel.add(expMonthField);	
 		addressPanel.add(expMonthReq);
 
-		JLabel expYearLabel = new JLabel("Expiration Year:");
+		JLabel expYearLabel = new JLabel("Expiration Year (4 digits):");
 		addressPanel.add(expYearLabel);	
 		addressPanel.add(expYearField);	
 		addressPanel.add(expYearReq);

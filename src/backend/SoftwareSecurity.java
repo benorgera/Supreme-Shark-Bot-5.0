@@ -47,6 +47,8 @@ public class SoftwareSecurity {
 	}
 
 	public void initialize() {
+		
+		System.out.println(this.getClass().getName());
 		loadingGIF.passUI("Checking activation key");
 		prefs = Preferences.userRoot().node(this.getClass().getName());
 		activationKeyValue = prefs.get(activatedKeyToken, "failed"); //sets activationKeyValue, itll be failed if failed
