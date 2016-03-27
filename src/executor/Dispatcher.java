@@ -1,5 +1,6 @@
 package executor;
 
+import java.net.Authenticator;
 import java.util.ArrayList;
 import javafx.scene.web.WebView;
 import javax.swing.JTextArea;
@@ -20,6 +21,11 @@ public class Dispatcher {
 	}
 
 	public void deploy() { //deploys new TaskProccessor thread for each order
+		
+		ProxyAuthenticator auth = new ProxyAuthenticator(); 
+		auth.initialize();
+		Authenticator.setDefault(auth);
+		
 		for (Order o : orders) {
 			Thread thread = new Thread(new TaskProcessor(o, txtConsole, htmlConsole));
 			Main.pushToWorkerArray(thread);
